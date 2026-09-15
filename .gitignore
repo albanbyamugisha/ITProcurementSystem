@@ -1,0 +1,21 @@
+# NetBeans keeps computer-specific settings in this folder.
+/nbproject/private/
+
+# These files are generated when we build or run the project.
+/build/
+/dist/
+*.class
+
+# Download the JDBC driver locally instead of committing its JAR file.
+/lib/*.jar
+
+# Keep temporary files and local credentials out of GitHub.
+*.bak
+*.mwb.bak
+*.mwb~
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+*~
