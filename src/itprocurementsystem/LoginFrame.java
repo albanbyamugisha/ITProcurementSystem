@@ -7,6 +7,9 @@ package itprocurementsystem;
 // JOptionPane displays a short message when the user clicks Login.
 import javax.swing.JOptionPane;
 
+// SQLException lets the form handle database problems separately from incorrect credentials.
+import java.sql.SQLException;
+
 /**
  *
  * @author alban-byamugisha
@@ -133,12 +136,44 @@ public class LoginFrame extends javax.swing.JFrame {
             return;
         }
 
-        // For now, we have only checked that both fields contain input.
-        // We will check the username and password against the database next.
-        JOptionPane.showMessageDialog(this,
-                "Both fields are filled. Database login will be added next.",
-                "Input Check",
-                JOptionPane.INFORMATION_MESSAGE);
+        // Read the password without trimming it because spaces may be intentional.
+        String password = new String(jPasswordFieldPassword.getPassword());
+
+        try {
+            // Create a UserDAO object and ask it to check the account in the database.
+            UserDAO userDAO = new UserDAO();
+            boolean correctLogin = userDAO.checkLogin(username, password);
+
+            if (correctLogin) {
+                // Authentication now works. We will build the next screen in a later step.
+                JOptionPane.showMessageDialog(this,
+                        "Login successful! The next screen will be added in our next step.",
+                        "Login",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Use the same message for a wrong username and a wrong password.
+                JOptionPane.showMessageDialog(this,
+                        "Incorrect username or password.",
+                        "Login Failed",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            // A database problem is different from incorrect login details.
+            JOptionPane.showMessageDialog(this,
+                    "Could not check your account. Check that XAMPP MySQL is running\n"
+                    + "and that the database and JDBC connection settings are correct.",
+                    "Database Problem",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalStateException ex) {
+            // Avoid showing a technical error if password hashing is unavailable.
+            JOptionPane.showMessageDialog(this,
+                    "Password checking is unavailable. Please check your Java installation.",
+                    "Login Problem",
+                    JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Clear the visible password after every attempt, whether it succeeds or fails.
+            jPasswordFieldPassword.setText("");
+        }
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
     /**

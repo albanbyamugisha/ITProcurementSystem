@@ -11,7 +11,7 @@ The project is being built step by step using Java, JDBC, MySQL and NetBeans. Co
 - Added a shared `DBConnection` class.
 - Tested the Java connection successfully with a message window.
 
-The login form now has username and password fields and a Login button. It checks for an empty username or password. Database authentication and the procurement features have not been implemented yet.
+The centered login form checks required input and verifies credentials against the users table. PasswordUtil calculates the password hash, and UserDAO performs the database query using PreparedStatement. Successful login currently displays a message; session tracking, role-based screens and procurement features are still to come.
 
 ## Tools
 
@@ -25,6 +25,7 @@ The login form now has username and password fields and a Login button. It check
 
 - `src/itprocurementsystem/`: commented Java source code.
 - `db/it_procurement_schema.sql`: database creation script.
+- `db/test_user.sql`: repeatable setup for an IT department and requester test account.
 - `db/it_procurement_er.mwb`: editable ER model.
 - `db/it_procurement_er.png`: exported ER diagram.
 - `db/`: PDF and SVG copies of the diagram.
@@ -43,7 +44,7 @@ The local connection uses database `it_procurement_db`, server `localhost`, port
 
 ## Planned features
 
-- User login for requesters, managers and purchasers.
+- Remember the logged-in user and open the screen for their role.
 - Equipment requests containing multiple items.
 - Vendor quotations and manager approvals.
 - Delivery tracking and inventory records.
@@ -54,13 +55,22 @@ We will build the Swing screens using NetBeans Design view and commit progress a
 
 ![IT procurement ER diagram](db/it_procurement_er.png)
 
-## Try the login input checks
+## Try database login
 
-Right-click `LoginFrame.java` in NetBeans and choose **Run File**. The project's main class still runs the separate database connection test.
+1. For a fresh database, run `db/it_procurement_schema.sql`, then `db/test_user.sql`.
+2. Right-click `LoginFrame.java` in NetBeans and choose **Run File**. The project's main class still runs the separate database connection test.
+3. Sign in with username **requester** and password **Requester123!**.
 
-- Leave both fields empty and click Login: it asks for a username.
-- Enter only spaces as the username: it still asks for a username.
-- Enter a username but no password: it asks for a password.
-- Fill both fields: it confirms that input is present, not that the account is valid.
+The test account is an application user. It is separate from the MySQL root account, whose password is still empty. The seed script stores the SHA-256 hash and leaves any existing requester account unchanged. These are public demonstration credentials for this local assignment. SHA-256 follows the original brief; it is not a substitute for salted password hashing in a deployed application.
 
-The messages and focus changes help the user fill the form. Database login will be added in the next step.
+- Empty username, including spaces only: asks for a username.
+- Empty password: asks for a password.
+- Incorrect username or password: displays one generic failure message.
+- Correct test credentials: displays **Login successful!** The next screen has not been built yet.
+- Database unavailable: displays a database error instead of saying the credentials are wrong.
+
+The password field is cleared after each database login attempt. Passwords are compared exactly, including case and spaces.
+
+## Checks for this step
+
+All Java sources compiled with Java 8-compatible syntax and APIs. Eleven direct checks against the local database passed, covering correct credentials, username trimming, incorrect password, password case and spaces, missing user, SQL input, blank/missing values and hash length. Running the seed script twice left one IT department and one requester account. The Login button uses the same tested UserDAO method; the updated graphical flow should also be tried in NetBeans.
