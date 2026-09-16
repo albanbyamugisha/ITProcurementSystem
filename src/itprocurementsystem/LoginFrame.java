@@ -22,6 +22,10 @@ public class LoginFrame extends javax.swing.JFrame {
         // Create the labels, input fields and button arranged in Design view.
         initComponents();
 
+        // Center this window on the screen after its size has been set.
+        // null means we center it on the screen, rather than beside another window.
+        setLocationRelativeTo(null);
+
         // Remove the designer's sample password so the user starts with an empty field.
         jPasswordFieldPassword.setText("");
     }
