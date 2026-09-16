@@ -11,7 +11,7 @@ The project is being built step by step using Java, JDBC, MySQL and NetBeans. Co
 - Added a shared `DBConnection` class.
 - Tested the Java connection successfully with a message window.
 
-The login screen and procurement features have not been implemented yet.
+The login form now has username and password fields and a Login button. It checks for an empty username or password. Database authentication and the procurement features have not been implemented yet.
 
 ## Tools
 
@@ -53,3 +53,14 @@ We will build the Swing screens using NetBeans Design view and commit progress a
 ## ER diagram
 
 ![IT procurement ER diagram](db/it_procurement_er.png)
+
+## Try the login input checks
+
+Right-click `LoginFrame.java` in NetBeans and choose **Run File**. The project's main class still runs the separate database connection test.
+
+- Leave both fields empty and click Login: it asks for a username.
+- Enter only spaces as the username: it still asks for a username.
+- Enter a username but no password: it asks for a password.
+- Fill both fields: it confirms that input is present, not that the account is valid.
+
+The messages and focus changes help the user fill the form. Database login will be added in the next step.

@@ -4,6 +4,9 @@
  */
 package itprocurementsystem;
 
+// JOptionPane displays a short message when the user clicks Login.
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author alban-byamugisha
@@ -98,7 +101,40 @@ public class LoginFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-        // TODO add your handling code here:
+        // Read the username. trim() removes spaces from its beginning and end.
+        String username = jTextFieldUsername.getText().trim();
+
+        // An empty username, or one containing only spaces, is not allowed.
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please enter your username.",
+                    "Missing Username",
+                    JOptionPane.WARNING_MESSAGE);
+
+            // Move the cursor to the username field and stop this button action.
+            jTextFieldUsername.requestFocusInWindow();
+            return;
+        }
+
+        // getPassword() returns the typed characters; length tells us how many.
+        // We do not trim passwords because spaces can be part of a password.
+        if (jPasswordFieldPassword.getPassword().length == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Please enter your password.",
+                    "Missing Password",
+                    JOptionPane.WARNING_MESSAGE);
+
+            // Move the cursor to the password field and wait for the user to fill it.
+            jPasswordFieldPassword.requestFocusInWindow();
+            return;
+        }
+
+        // For now, we have only checked that both fields contain input.
+        // We will check the username and password against the database next.
+        JOptionPane.showMessageDialog(this,
+                "Both fields are filled. Database login will be added next.",
+                "Input Check",
+                JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
     /**
