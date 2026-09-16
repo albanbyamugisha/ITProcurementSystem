@@ -11,7 +11,7 @@ The project is being built step by step using Java, JDBC, MySQL and NetBeans. Co
 - Added a shared `DBConnection` class.
 - Tested the Java connection successfully with a message window.
 
-The centered login form checks required input and verifies credentials against the users table. PasswordUtil calculates the password hash, and UserDAO performs the database query using PreparedStatement. Successful login currently displays a message; session tracking, role-based screens and procurement features are still to come.
+The centered login form checks required input and verifies credentials against the users table. PasswordUtil calculates the password hash, and UserDAO performs the database query using PreparedStatement. Successful login currently displays a message; Session now remembers the verified user ID, username, full name and role. Role-based screens and procurement features are still to come.
 
 ## Tools
 
@@ -44,7 +44,7 @@ The local connection uses database `it_procurement_db`, server `localhost`, port
 
 ## Planned features
 
-- Remember the logged-in user and open the screen for their role.
+- Build the main window and open the screen for the logged-in user's role.
 - Equipment requests containing multiple items.
 - Vendor quotations and manager approvals.
 - Delivery tracking and inventory records.
@@ -66,7 +66,7 @@ The test account is an application user. It is separate from the MySQL root acco
 - Empty username, including spaces only: asks for a username.
 - Empty password: asks for a password.
 - Incorrect username or password: displays one generic failure message.
-- Correct test credentials: displays **Login successful!** The next screen has not been built yet.
+- Correct test credentials: displays a welcome message with the user's full name and role. The main window has not been built yet.
 - Database unavailable: displays a database error instead of saying the credentials are wrong.
 
 The password field is cleared after each database login attempt. Passwords are compared exactly, including case and spaces.
@@ -74,3 +74,9 @@ The password field is cleared after each database login attempt. Passwords are c
 ## Checks for this step
 
 All Java sources compiled with Java 8-compatible syntax and APIs. Eleven direct checks against the local database passed, covering correct credentials, username trimming, incorrect password, password case and spaces, missing user, SQL input, blank/missing values and hash length. Running the seed script twice left one IT department and one requester account. The Login button uses the same tested UserDAO method; the updated graphical flow should also be tried in NetBeans.
+
+## Remembering the signed-in user
+
+`Session.java` keeps the user ID, username, full name and role in private static fields. Simple getters let screens read those details. `UserDAO` fills them only after checking the password, and clears them before every new login attempt and on database errors. `Session.clear()` is also ready for the Logout button we will add later. Passwords are not stored in the session.
+
+`static` makes these details shared within this one desktop application. `private` keeps other classes from assigning the fields directly. Closing the program loses the session; it does not change the database.
