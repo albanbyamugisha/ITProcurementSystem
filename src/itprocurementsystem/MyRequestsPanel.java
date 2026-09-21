@@ -4,6 +4,14 @@
  */
 package itprocurementsystem;
 
+// These classes handle button clicks, database errors and the table's rows.
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  * We use a JPanel because this request list appears inside MainFrame.
  * It groups the request table, Refresh button and request count in one screen.
@@ -20,6 +28,56 @@ public class MyRequestsPanel extends javax.swing.JPanel {
     public MyRequestsPanel() {
         // Create the controls and layout arranged in NetBeans Design view.
         initComponents();
+
+        // Connect Refresh outside the layout code maintained by NetBeans.
+        jButtonRefresh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                loadRequests();
+            }
+        });
+
+        // Show the current user's saved requests as soon as this panel is created.
+        loadRequests();
+    }
+
+    // Read the database again so the table reflects newly submitted requests.
+    public void loadRequests() {
+        // Clear old rows first so repeated refreshes cannot duplicate them.
+        DefaultTableModel model = (DefaultTableModel) jTableRequests.getModel();
+        model.setRowCount(0);
+        jLabelCount.setText("Loading requests...");
+        jButtonRefresh.setEnabled(false);
+
+        try {
+            // The DAO reads only requests belonging to the signed-in requester.
+            RequestDAO requestDAO = new RequestDAO();
+            ArrayList<RequestSummary> requests = requestDAO.getMyRequests();
+
+            // Each summary becomes one row, in the same order as our column headings.
+            for (int i = 0; i < requests.size(); i++) {
+                RequestSummary request = requests.get(i);
+                model.addRow(new Object[] {request.getRequestId(),
+                    request.getDateCreated(), request.getStatus(),
+                    request.getTotal().setScale(2), request.getNotes()});
+            }
+            // An empty list is normal when the user has not submitted anything yet.
+            jLabelCount.setText("Requests: " + requests.size());
+        } catch (SQLException ex) {
+            // Do not show a misleading count of zero when the database could not be read.
+            jLabelCount.setText("Requests unavailable");
+            JOptionPane.showMessageDialog(this,
+                    "Could not load requests. Check that MySQL is running, then click Refresh.",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            // The DAO rejects access when there is no signed-in requester.
+            jLabelCount.setText("Please log in as a requester");
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "Login Required", JOptionPane.WARNING_MESSAGE);
+        } finally {
+            // Allow another refresh after success or failure.
+            jButtonRefresh.setEnabled(true);
+        }
     }
 
     /**
@@ -31,19 +89,73 @@ public class MyRequestsPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabelTitle = new javax.swing.JLabel();
+        jButtonRefresh = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableRequests = new javax.swing.JTable();
+        jLabelCount = new javax.swing.JLabel();
+
+        jLabelTitle.setText("My Requests");
+
+        jButtonRefresh.setText("Refresh");
+
+        jTableRequests.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Request ID", "Date Created", "Status", "Total", "Notes"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTableRequests);
+
+        jLabelCount.setText("Requests: 0");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButtonRefresh)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 544, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelCount))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonRefresh)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabelCount)
+                .addGap(178, 178, 178))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonRefresh;
+    private javax.swing.JLabel jLabelCount;
+    private javax.swing.JLabel jLabelTitle;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTableRequests;
     // End of variables declaration//GEN-END:variables
 }
