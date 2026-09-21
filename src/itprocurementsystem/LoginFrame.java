@@ -11,6 +11,9 @@ import javax.swing.JOptionPane;
 import java.sql.SQLException;
 
 /**
+ * We use a JFrame because the login screen needs its own window.
+ * It can appear before the main window and has a title bar and close button.
+ * Extending JFrame gives this class the basic features of a Swing window.
  *
  * @author alban-byamugisha
  */

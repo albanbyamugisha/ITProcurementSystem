@@ -9,6 +9,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * We use a JFrame because this is the application's main window after login.
+ * It holds the navigation buttons and the content area for our panels.
+ * Keeping those panels in one window lets the user move between tasks easily.
+ * Extending JFrame gives this class the basic features of a Swing window.
  *
  * @author alban-byamugisha
  */
