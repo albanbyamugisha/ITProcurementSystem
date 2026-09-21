@@ -48,6 +48,62 @@ public class RequestPanel extends javax.swing.JPanel {
                 addItem();
             }
         });
+
+        // One selected row makes it clear which item Remove Selected will remove.
+        jTableItems.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jButtonRemoveItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                removeSelectedItem();
+            }
+        });
+
+        // Clear resets the unsaved request only after the user confirms.
+        jButtonClear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                int answer = JOptionPane.showConfirmDialog(RequestPanel.this,
+                        "Clear all items, notes and entered values in this request?",
+                        "Clear Request", JOptionPane.YES_NO_OPTION);
+                // No or closing the dialog leaves the request unchanged.
+                if (answer == JOptionPane.YES_OPTION) {
+                    clearRequest();
+                }
+            }
+        });
+    }
+
+    // Remove the selected item from both our object list and the visible table.
+    private void removeSelectedItem() {
+        int selectedRow = jTableItems.getSelectedRow();
+        // A value of -1 means the user has not selected a row.
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Select an item in the table first.");
+            return;
+        }
+        // Convert the displayed row number to its data position if sorting is used later.
+        int itemIndex = jTableItems.convertRowIndexToModel(selectedRow);
+        requestItems.remove(itemIndex);
+        DefaultTableModel model = (DefaultTableModel) jTableItems.getModel();
+        model.removeRow(itemIndex);
+        updateTotal();
+    }
+
+    // Reset the unsaved request. This method does not delete anything from MySQL.
+    private void clearRequest() {
+        requestItems.clear();
+        // Setting the row count to zero removes every visible item row.
+        DefaultTableModel model = (DefaultTableModel) jTableItems.getModel();
+        model.setRowCount(0);
+        jTableItems.clearSelection();
+        jComboBoxCategory.setSelectedIndex(0);
+        jTextFieldDescription.setText("");
+        jTextFieldQuantity.setText("1");
+        jTextFieldUnitCost.setText("0.00");
+        jTextAreaNotes.setText("");
+        // The now-empty item list produces a total of 0.00.
+        updateTotal();
+        jTextFieldDescription.requestFocusInWindow();
     }
 
     // Validate the fields before adding anything to the list or table.
