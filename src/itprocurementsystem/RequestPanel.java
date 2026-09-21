@@ -49,6 +49,14 @@ public class RequestPanel extends javax.swing.JPanel {
             }
         });
 
+        // Send the whole request to MySQL when Submit Request is clicked.
+        jButtonSubmit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                submitRequest();
+            }
+        });
+
         // One selected row makes it clear which item Remove Selected will remove.
         jTableItems.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jButtonRemoveItem.addActionListener(new ActionListener() {
@@ -71,6 +79,53 @@ public class RequestPanel extends javax.swing.JPanel {
                 }
             }
         });
+    }
+
+    // Save the complete request only when its items have been added to the table.
+    private void submitRequest() {
+        // A logged-out user must log in again before submitting a request.
+        if (Session.getUserId() == 0 || !"Requester".equals(Session.getRole())) {
+            JOptionPane.showMessageDialog(this, "Please log in as a requester first.");
+            return;
+        }
+        if (requestItems.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Add at least one item before submitting.");
+            return;
+        }
+        // Avoid silently losing an item that was typed but not added to the table.
+        if (jComboBoxCategory.getSelectedIndex() > 0
+                || !jTextFieldDescription.getText().trim().isEmpty()
+                || !"1".equals(jTextFieldQuantity.getText().trim())
+                || !"0.00".equals(jTextFieldUnitCost.getText().trim())) {
+            JOptionPane.showMessageDialog(this,
+                    "You have unfinished item fields. Add the item or reset those fields first.");
+            return;
+        }
+
+        // Disable this button while saving to avoid a second submission.
+        jButtonSubmit.setEnabled(false);
+        try {
+            RequestDAO requestDAO = new RequestDAO();
+            int requestId = requestDAO.saveRequest(Session.getUserId(),
+                    jTextAreaNotes.getText(), requestItems);
+            // Clear only after saving succeeds. Failed attempts keep the entered data.
+            clearRequest();
+            JOptionPane.showMessageDialog(this,
+                    "Request #" + requestId + " submitted successfully. Status: Pending.",
+                    "Request Saved", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Could not confirm the save. Your form has been kept. "
+                    + "Check the database connection and saved requests before trying again.",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            // Show the validation message supplied by our data access class.
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "Check Request", JOptionPane.WARNING_MESSAGE);
+        } finally {
+            // finally runs whether saving succeeded or an error occurred.
+            jButtonSubmit.setEnabled(true);
+        }
     }
 
     // Remove the selected item from both our object list and the visible table.
