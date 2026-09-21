@@ -4,6 +4,10 @@
  */
 package itprocurementsystem;
 
+// These classes let us respond when the Logout button is clicked.
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  *
  * @author alban-byamugisha
@@ -19,8 +23,57 @@ public class MainFrame extends javax.swing.JFrame {
         // Create the components arranged in NetBeans Design view.
         initComponents();
 
+        // Do not open the main window without a verified login.
+        if (Session.getUserId() == 0) {
+            dispose();
+            throw new IllegalStateException("Please log in before opening the main window.");
+        }
+
+        // Display the details remembered after a successful database login.
+        jLabelWelcome.setText("Welcome, " + Session.getFullName());
+        jLabelRole.setText("Role: " + Session.getRole());
+
+        // Begin with all navigation buttons hidden, then show the ones for this role.
+        jButtonRequests.setVisible(false);
+        jButtonQuotes.setVisible(false);
+        jButtonDeliveries.setVisible(false);
+
+        // A requester submits requests; a manager reviews quotations and approvals.
+        if ("Requester".equals(Session.getRole())) {
+            jButtonRequests.setVisible(true);
+        } else if ("Manager".equals(Session.getRole())) {
+            jButtonQuotes.setVisible(true);
+        } else if ("Purchaser".equals(Session.getRole())) {
+            // A purchaser works with both quotations and deliveries.
+            jButtonQuotes.setVisible(true);
+            jButtonDeliveries.setVisible(true);
+        }
+
+        // A listener waits for a button click and runs actionPerformed when it happens.
+        // We connect it here because no Logout handler was created in Design view.
+        // The code stays outside NetBeans' generated layout block.
+        jButtonLogout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                // Keep the logout steps in a separate method so they are easy to read.
+                logout();
+            }
+        });
+
         // Open this window in the middle of the screen.
         setLocationRelativeTo(null);
+    }
+
+    // Forget the signed-in user and return to the login window.
+    private void logout() {
+        Session.clear();
+
+        // Show a fresh login form with empty input fields.
+        LoginFrame loginFrame = new LoginFrame();
+        loginFrame.setVisible(true);
+
+        // Close only this window. The application continues with LoginFrame.
+        dispose();
     }
 
     /**
@@ -36,7 +89,7 @@ public class MainFrame extends javax.swing.JFrame {
         jPanelSidebar = new javax.swing.JPanel();
         jLabelWelcome = new javax.swing.JLabel();
         jLabelRole = new javax.swing.JLabel();
-        Logout = new javax.swing.JButton();
+        jButtonLogout = new javax.swing.JButton();
         jButtonDeliveries = new javax.swing.JButton();
         jButtonQuotes = new javax.swing.JButton();
         jButtonRequests = new javax.swing.JButton();
@@ -50,7 +103,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabelRole.setText("Role");
 
-        Logout.setText("Logout");
+        jButtonLogout.setText("Logout");
+        jButtonLogout.addActionListener(this::jButtonLogoutActionPerformed);
 
         jButtonDeliveries.setText("Deliveries");
 
@@ -66,13 +120,12 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanelSidebarLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(jPanelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabelWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
-                        .addComponent(jLabelRole, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jButtonRequests, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonQuotes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonDeliveries, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Logout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButtonLogout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabelRole, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabelWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(95, Short.MAX_VALUE))
         );
         jPanelSidebarLayout.setVerticalGroup(
@@ -89,7 +142,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jButtonDeliveries)
                 .addGap(80, 80, 80)
-                .addComponent(Logout)
+                .addComponent(jButtonLogout)
                 .addContainerGap())
         );
 
@@ -135,8 +188,16 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonRequestsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRequestsActionPerformed
-        // TODO add your handling code here:
+        // The request-entry panel will be built in a later Design-view step.
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "The request screen will be added in our next step.",
+                "Requests",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButtonRequestsActionPerformed
+
+    private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonLogoutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -159,13 +220,23 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new MainFrame().setVisible(true));
+        // Swing opens windows on its event thread so screen updates run in order.
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Run File must also require login rather than opening the main window directly.
+                if (Session.getUserId() == 0) {
+                    new LoginFrame().setVisible(true);
+                } else {
+                    new MainFrame().setVisible(true);
+                }
+            }
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Logout;
     private javax.swing.JButton jButtonDeliveries;
+    private javax.swing.JButton jButtonLogout;
     private javax.swing.JButton jButtonQuotes;
     private javax.swing.JButton jButtonRequests;
     private javax.swing.JLabel jLabelRole;

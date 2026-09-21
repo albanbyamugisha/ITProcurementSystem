@@ -40,10 +40,18 @@ public class ITProcurementSystem {
             return;
         }
 
-        // Reaching this point means the connection test and automatic close succeeded.
-        JOptionPane.showMessageDialog(null,
-                "Database connected successfully!",
-                "Connection Test",
-                JOptionPane.INFORMATION_MESSAGE);
+        // The connection check succeeded. Start with nobody signed in.
+        Session.clear();
+
+        // Swing uses an event thread to handle window updates and button clicks.
+        // Runnable holds the instructions that this thread should run.
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Run Project now opens the login form instead of only a test message.
+                LoginFrame loginFrame = new LoginFrame();
+                loginFrame.setVisible(true);
+            }
+        });
     }
 }

@@ -144,14 +144,18 @@ public class LoginFrame extends javax.swing.JFrame {
             boolean correctLogin = userDAO.checkLogin(username, password);
 
             if (correctLogin) {
-                // Read the verified user's name and role from the session.
-                // We will use these same details in the main window when we build it.
+                // Tell the user that the database accepted their login details.
                 JOptionPane.showMessageDialog(this,
-                        "Welcome, " + Session.getFullName() + "!\n"
-                        + "Your role is: " + Session.getRole() + "\n"
-                        + "The main window will be added in our next step.",
-                        "Login",
+                        "Welcome, " + Session.getFullName() + "!",
+                        "Login Successful",
                         JOptionPane.INFORMATION_MESSAGE);
+
+                // Open the main window, which reads the user's details from Session.
+                MainFrame mainFrame = new MainFrame();
+                mainFrame.setVisible(true);
+
+                // Close the login window after the main window has opened.
+                dispose();
             } else {
                 // Use the same message for a wrong username and a wrong password.
                 JOptionPane.showMessageDialog(this,

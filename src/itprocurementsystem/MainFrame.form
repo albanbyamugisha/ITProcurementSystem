@@ -66,14 +66,12 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jLabelWelcome" pref="72" max="32767" attributes="0"/>
-                          <Component id="jLabelRole" max="32767" attributes="0"/>
-                      </Group>
                       <Component id="jButtonRequests" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonQuotes" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonDeliveries" alignment="0" max="32767" attributes="0"/>
-                      <Component id="Logout" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonLogout" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jLabelRole" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jLabelWelcome" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace pref="95" max="32767" attributes="0"/>
               </Group>
@@ -93,7 +91,7 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jButtonDeliveries" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="80" max="-2" attributes="0"/>
-                  <Component id="Logout" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButtonLogout" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -110,10 +108,13 @@
             <Property name="text" type="java.lang.String" value="Role"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="Logout">
+        <Component class="javax.swing.JButton" name="jButtonLogout">
           <Properties>
             <Property name="text" type="java.lang.String" value="Logout"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonLogoutActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonDeliveries">
           <Properties>
