@@ -17,6 +17,9 @@ import java.awt.event.ActionListener;
  * @author alban-byamugisha
  */
 public class MainFrame extends javax.swing.JFrame {
+    // Keep one request panel so clicking Requests again preserves unfinished entries.
+    // null means we have not created the panel yet.
+    private RequestPanel requestPanel;
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
 
@@ -192,11 +195,29 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonRequestsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRequestsActionPerformed
-        // The request-entry panel will be built in a later Design-view step.
-        javax.swing.JOptionPane.showMessageDialog(this,
-                "The request screen will be added in our next step.",
-                "Requests",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        // Check the role before opening the form, as well as hiding its button.
+        if (!"Requester".equals(Session.getRole())) {
+            return;
+        }
+
+        // Create the form only on the first click. Later clicks reuse the same object.
+        if (requestPanel == null) {
+            requestPanel = new RequestPanel();
+        }
+
+        // Remove the previous screen from the content area, leaving the sidebar alone.
+        jPanelContent.removeAll();
+
+        // BorderLayout lets the new screen fill the available content area.
+        jPanelContent.setLayout(new java.awt.BorderLayout());
+
+        // A scroll pane keeps every field reachable when the window is small.
+        javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane(requestPanel);
+        jPanelContent.add(scrollPane, java.awt.BorderLayout.CENTER);
+
+        // Recalculate the layout, then redraw the content area to show the form.
+        jPanelContent.revalidate();
+        jPanelContent.repaint();
     }//GEN-LAST:event_jButtonRequestsActionPerformed
 
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
