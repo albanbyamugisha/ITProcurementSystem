@@ -6,12 +6,12 @@ The project is being built step by step using Java, JDBC, MySQL and NetBeans. Co
 
 ## Current progress
 
-- Created the database schema with 16 related tables.
-- Reverse-engineered the database into an ER diagram using MySQL Workbench.
-- Added a shared `DBConnection` class.
-- Tested the Java connection successfully with a message window.
-
-The centered login form checks required input and verifies credentials against the users table. PasswordUtil calculates the password hash, and UserDAO performs the database query using PreparedStatement. Successful login currently displays a message; Session now remembers the verified user ID, username, full name and role. Role-based screens and procurement features are still to come.
+- Database schema and reverse-engineered ER diagram.
+- Database login, session tracking, role-based navigation and logout.
+- Request entry with database categories, input validation and exact money totals.
+- Add Item, Remove Selected and Clear controls.
+- Submit Request saves the request and its items in one transaction with Pending status.
+- My Requests data query is ready; its NetBeans panel is the next design step.
 
 ## Tools
 
@@ -31,21 +31,20 @@ The centered login form checks required input and verifies credentials against t
 - `db/`: PDF and SVG copies of the diagram.
 - `nbproject/` and `build.xml`: NetBeans project configuration.
 
-## Run the current connection test
+## Run the application
 
 1. Open this project in NetBeans.
 2. Start MySQL in XAMPP.
 3. Execute `db/it_procurement_schema.sql` using your MySQL connection.
 4. Download MySQL Connector/J 26.7.0 and put its JAR in a `lib` folder in this project. The driver is not included in Git.
 5. Check Project Properties → Libraries. If necessary, add the JAR using Add JAR/Folder.
-6. Run `ITProcurementSystem`. A successful test displays **Database connected successfully!**
+6. Run `ITProcurementSystem` to open the login window.
 
 The local connection uses database `it_procurement_db`, server `localhost`, port `3306`, username `root` and an empty password. These are the local assignment settings; use appropriate credentials and connection security for any deployed system.
 
 ## Planned features
 
-- Build the main window and open the screen for the logged-in user's role.
-- Equipment requests containing multiple items.
+- Display submitted requests and their statuses.
 - Vendor quotations and manager approvals.
 - Delivery tracking and inventory records.
 
@@ -57,8 +56,8 @@ We will build the Swing screens using NetBeans Design view and commit progress a
 
 ## Try database login
 
-1. For a fresh database, run `db/it_procurement_schema.sql`, then `db/test_user.sql`.
-2. Right-click `LoginFrame.java` in NetBeans and choose **Run File**. The project's main class still runs the separate database connection test.
+1. For a fresh database, run `db/it_procurement_schema.sql`, then `db/test_user.sql` and `db/sample_categories.sql`.
+2. Choose **Run Project** in NetBeans.
 3. Sign in with username **requester** and password **Requester123!**.
 
 The test account is an application user. It is separate from the MySQL root account, whose password is still empty. The seed script stores the SHA-256 hash and leaves any existing requester account unchanged. These are public demonstration credentials for this local assignment. SHA-256 follows the original brief; it is not a substitute for salted password hashing in a deployed application.
@@ -66,7 +65,7 @@ The test account is an application user. It is separate from the MySQL root acco
 - Empty username, including spaces only: asks for a username.
 - Empty password: asks for a password.
 - Incorrect username or password: displays one generic failure message.
-- Correct test credentials: displays a welcome message with the user's full name and role. The main window has not been built yet.
+- Correct test credentials: displays a welcome message with the user's full name and role. The main window opens with the buttons allowed for that role.
 - Database unavailable: displays a database error instead of saying the credentials are wrong.
 
 The password field is cleared after each database login attempt. Passwords are compared exactly, including case and spaces.
@@ -77,6 +76,6 @@ All Java sources compiled with Java 8-compatible syntax and APIs. Eleven direct 
 
 ## Remembering the signed-in user
 
-`Session.java` keeps the user ID, username, full name and role in private static fields. Simple getters let screens read those details. `UserDAO` fills them only after checking the password, and clears them before every new login attempt and on database errors. `Session.clear()` is also ready for the Logout button we will add later. Passwords are not stored in the session.
+`Session.java` keeps the user ID, username, full name and role in private static fields. Simple getters let screens read those details. `UserDAO` fills them only after checking the password, and clears them before every new login attempt and on database errors. The Logout button calls `Session.clear()` before returning to login. Passwords are not stored in the session.
 
 `static` makes these details shared within this one desktop application. `private` keeps other classes from assigning the fields directly. Closing the program loses the session; it does not change the database.

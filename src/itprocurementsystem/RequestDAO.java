@@ -11,6 +11,42 @@ import java.util.ArrayList;
 // This data access class keeps the saving SQL separate from the Swing form.
 public class RequestDAO {
 
+    // Read only requests belonging to the currently signed-in requester.
+    public ArrayList<RequestSummary> getMyRequests() throws SQLException {
+        // Check the session here as well as controlling which buttons are visible.
+        if (Session.getUserId() <= 0 || !"Requester".equals(Session.getRole())) {
+            throw new IllegalArgumentException("Please log in as a requester first.");
+        }
+        ArrayList<RequestSummary> requests = new ArrayList<RequestSummary>();
+
+        // LEFT JOIN keeps a request visible even if it has no items.
+        // SUM adds the line totals; COALESCE uses zero when there are no item values.
+        // The WHERE condition ensures we do not return another requester's records.
+        String sql = "SELECT r.request_id, r.date_created, r.request_status, r.notes, "
+                + "COALESCE(SUM(i.quantity * i.estimated_cost), 0) AS total "
+                + "FROM requests r LEFT JOIN request_items i ON i.request_id = r.request_id "
+                + "WHERE r.requester_id = ? "
+                + "GROUP BY r.request_id, r.date_created, r.request_status, r.notes "
+                + "ORDER BY r.date_created DESC, r.request_id DESC";
+
+        // Automatically close the connection, statement and results after reading.
+        try (Connection connection = DBConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, Session.getUserId());
+            try (ResultSet result = statement.executeQuery()) {
+                // Create one summary per request, with the newest requests first.
+                while (result.next()) {
+                    requests.add(new RequestSummary(result.getInt("request_id"),
+                            result.getTimestamp("date_created"),
+                            result.getString("request_status"), result.getBigDecimal("total"),
+                            result.getString("notes")));
+                }
+            }
+        }
+        return requests;
+    }
+
+
     // Return the new request ID only after all its items have been saved.
     public int saveRequest(int requesterId, String notes, ArrayList<RequestItem> items)
             throws SQLException {
