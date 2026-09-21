@@ -4,6 +4,11 @@
  */
 package itprocurementsystem;
 
+// These classes help us keep category objects and report database problems.
+import java.util.ArrayList;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  * We use a JPanel because the request form will sit inside MainFrame.
  * A panel groups related controls, such as the request fields and buttons.
@@ -14,12 +19,53 @@ package itprocurementsystem;
  */
 public class RequestPanel extends javax.swing.JPanel {
 
+    // Keep the category IDs as well as the names displayed by our String combo box.
+    private ArrayList<Category> categories = new ArrayList<Category>();
+
     /**
      * Creates new form RequestPanel
      */
     public RequestPanel() {
         // Create the controls and layout arranged in NetBeans Design view.
         initComponents();
+
+        // Fill the dropdown from MySQL after NetBeans has created its controls.
+        loadCategories();
+    }
+
+    // Read the saved categories and display their names in the dropdown.
+    private void loadCategories() {
+        // Remove old choices and keep the first choice as an instruction only.
+        categories.clear();
+        jComboBoxCategory.removeAllItems();
+        jComboBoxCategory.addItem("Select category");
+        jComboBoxCategory.setEnabled(false);
+
+        try {
+            // Ask the DAO to read the database instead of putting SQL in the form.
+            CategoryDAO categoryDAO = new CategoryDAO();
+            categories = categoryDAO.getAllCategories();
+
+            // Add names in the same order as the objects in our list.
+            // Combo-box index 1 matches list index 0 because of "Select category".
+            for (int i = 0; i < categories.size(); i++) {
+                jComboBoxCategory.addItem(categories.get(i).getCategoryName());
+            }
+
+            // Only allow a choice when the database has categories to choose from.
+            if (categories.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "No categories are saved. Run db/sample_categories.sql, then log in again.",
+                        "Categories", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                jComboBoxCategory.setEnabled(true);
+            }
+        } catch (SQLException ex) {
+            // Leave the dropdown disabled so an unsuccessful load cannot be used.
+            JOptionPane.showMessageDialog(this,
+                    "Could not load categories. Check that MySQL is running, then log in again.",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
