@@ -8,6 +8,11 @@ package itprocurementsystem;
 import java.util.ArrayList;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+// These classes handle money, button clicks and rows in our table.
+import java.math.BigDecimal;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * We use a JPanel because the request form will sit inside MainFrame.
@@ -22,6 +27,9 @@ public class RequestPanel extends javax.swing.JPanel {
     // Keep the category IDs as well as the names displayed by our String combo box.
     private ArrayList<Category> categories = new ArrayList<Category>();
 
+    // Store the actual items, including category IDs, until the request is submitted.
+    private ArrayList<RequestItem> requestItems = new ArrayList<RequestItem>();
+
     /**
      * Creates new form RequestPanel
      */
@@ -31,6 +39,72 @@ public class RequestPanel extends javax.swing.JPanel {
 
         // Fill the dropdown from MySQL after NetBeans has created its controls.
         loadCategories();
+
+        // Connect the button outside the layout code maintained by NetBeans.
+        jButtonAddItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                // Run these steps whenever the user clicks Add Item.
+                addItem();
+            }
+        });
+    }
+
+    // Validate the fields before adding anything to the list or table.
+    private void addItem() {
+        int selectedIndex = jComboBoxCategory.getSelectedIndex();
+        // Index zero is the instruction, not a category from the database.
+        if (selectedIndex <= 0 || selectedIndex > categories.size()) {
+            JOptionPane.showMessageDialog(this, "Please select a category.");
+            jComboBoxCategory.requestFocusInWindow();
+            return;
+        }
+
+        try {
+            // Convert text to numbers. Invalid text causes NumberFormatException.
+            int quantity = Integer.parseInt(jTextFieldQuantity.getText().trim());
+            BigDecimal unitCost = new BigDecimal(jTextFieldUnitCost.getText().trim());
+
+            // Subtract one because the dropdown starts with our instruction option.
+            Category category = categories.get(selectedIndex - 1);
+            RequestItem item = new RequestItem(category,
+                    jTextFieldDescription.getText(), quantity, unitCost);
+
+            // Keep the object for later saving, then show its values in a new table row.
+            requestItems.add(item);
+            DefaultTableModel model = (DefaultTableModel) jTableItems.getModel();
+            model.addRow(new Object[] {category.getCategoryName(), item.getDescription(),
+                item.getQuantity(), item.getUnitCost(), item.getLineTotal()});
+            updateTotal();
+
+            // Clear only the item fields so the user can enter another item.
+            // The request's notes and previously added rows remain in place.
+            jComboBoxCategory.setSelectedIndex(0);
+            jTextFieldDescription.setText("");
+            jTextFieldQuantity.setText("1");
+            jTextFieldUnitCost.setText("0.00");
+            jTextFieldDescription.requestFocusInWindow();
+        } catch (NumberFormatException ex) {
+            // Handle conversion errors before the more general validation errors below.
+            JOptionPane.showMessageDialog(this,
+                    "Enter a whole-number quantity and a numeric unit cost, for example 1250.50.",
+                    "Check Item", JOptionPane.WARNING_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            // The RequestItem constructor supplies a simple message for invalid values.
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "Check Item", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    // Recalculate the total from the item objects rather than text typed into the table.
+    private void updateTotal() {
+        BigDecimal total = new BigDecimal("0.00");
+        for (int i = 0; i < requestItems.size(); i++) {
+            // BigDecimal.add returns a new value, so assign it back to total.
+            total = total.add(requestItems.get(i).getLineTotal());
+        }
+        // toPlainString displays ordinary decimal notation, with no exponent.
+        jTextFieldTotal.setText(total.toPlainString());
     }
 
     // Read the saved categories and display their names in the dropdown.
