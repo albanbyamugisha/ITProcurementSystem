@@ -72,6 +72,7 @@
                       <Component id="jButtonLogout" alignment="0" max="32767" attributes="0"/>
                       <Component id="jLabelRole" alignment="0" max="32767" attributes="0"/>
                       <Component id="jLabelWelcome" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonMyRequests" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace pref="95" max="32767" attributes="0"/>
               </Group>
@@ -84,8 +85,10 @@
                   <Component id="jLabelWelcome" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jLabelRole" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="78" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
                   <Component id="jButtonRequests" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="15" max="32767" attributes="0"/>
+                  <Component id="jButtonMyRequests" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jButtonQuotes" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -133,6 +136,11 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonRequestsActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonMyRequests">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="My Requests"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

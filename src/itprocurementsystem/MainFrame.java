@@ -20,6 +20,9 @@ public class MainFrame extends javax.swing.JFrame {
     // Keep one request panel so clicking Requests again preserves unfinished entries.
     // null means we have not created the panel yet.
     private RequestPanel requestPanel;
+
+    // Reuse the history panel, but reload its saved requests each time it opens.
+    private MyRequestsPanel myRequestsPanel;
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
 
@@ -42,12 +45,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         // Begin with all navigation buttons hidden, then show the ones for this role.
         jButtonRequests.setVisible(false);
+        jButtonMyRequests.setVisible(false);
         jButtonQuotes.setVisible(false);
         jButtonDeliveries.setVisible(false);
 
         // A requester submits requests; a manager reviews quotations and approvals.
         if ("Requester".equals(Session.getRole())) {
             jButtonRequests.setVisible(true);
+            jButtonMyRequests.setVisible(true);
         } else if ("Manager".equals(Session.getRole())) {
             jButtonQuotes.setVisible(true);
         } else if ("Purchaser".equals(Session.getRole())) {
@@ -67,8 +72,43 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        // Connect the Design-view button without changing NetBeans' generated layout.
+        jButtonMyRequests.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                showMyRequests();
+            }
+        });
+
         // Open this window in the middle of the screen.
         setLocationRelativeTo(null);
+    }
+
+    // Display submitted requests in the same content area used by the request form.
+    private void showMyRequests() {
+        // Check access here too, rather than relying only on a hidden button.
+        if (Session.getUserId() <= 0 || !"Requester".equals(Session.getRole())) {
+            return;
+        }
+
+        if (myRequestsPanel == null) {
+            // The constructor loads the list when we create this panel for the first time.
+            myRequestsPanel = new MyRequestsPanel();
+        } else {
+            // Read MySQL again to include requests submitted since the last visit.
+            myRequestsPanel.loadRequests();
+        }
+
+        // Replace the visible content without discarding the cached request-entry panel.
+        // This keeps unfinished item entries available when the user returns to Requests.
+        jPanelContent.removeAll();
+        jPanelContent.setLayout(new java.awt.BorderLayout());
+        javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane(myRequestsPanel);
+        jPanelContent.add(scrollPane, java.awt.BorderLayout.CENTER);
+
+        // Recalculate component positions and redraw the new screen.
+        jPanelContent.revalidate();
+        jPanelContent.repaint();
     }
 
     // Forget the signed-in user and return to the login window.
@@ -100,6 +140,7 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonDeliveries = new javax.swing.JButton();
         jButtonQuotes = new javax.swing.JButton();
         jButtonRequests = new javax.swing.JButton();
+        jButtonMyRequests = new javax.swing.JButton();
         jPanelContent = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -120,6 +161,8 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonRequests.setText("Requests");
         jButtonRequests.addActionListener(this::jButtonRequestsActionPerformed);
 
+        jButtonMyRequests.setText("My Requests");
+
         javax.swing.GroupLayout jPanelSidebarLayout = new javax.swing.GroupLayout(jPanelSidebar);
         jPanelSidebar.setLayout(jPanelSidebarLayout);
         jPanelSidebarLayout.setHorizontalGroup(
@@ -132,7 +175,8 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jButtonDeliveries, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonLogout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabelRole, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabelWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabelWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonMyRequests, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(95, Short.MAX_VALUE))
         );
         jPanelSidebarLayout.setVerticalGroup(
@@ -142,8 +186,10 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabelWelcome)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabelRole)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                .addGap(39, 39, 39)
                 .addComponent(jButtonRequests)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addComponent(jButtonMyRequests)
                 .addGap(18, 18, 18)
                 .addComponent(jButtonQuotes)
                 .addGap(18, 18, 18)
@@ -262,6 +308,7 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonDeliveries;
     private javax.swing.JButton jButtonLogout;
+    private javax.swing.JButton jButtonMyRequests;
     private javax.swing.JButton jButtonQuotes;
     private javax.swing.JButton jButtonRequests;
     private javax.swing.JLabel jLabelRole;
