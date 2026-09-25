@@ -51,6 +51,20 @@ public class QuotationPanel extends javax.swing.JPanel {
         // Read supplier names after the dropdown has been created.
         loadVendors();
         loadRequests();
+        jButtonSaveQuotation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) { saveQuotation(); }
+        });
+        jButtonClear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                // Confirm before discarding prices the purchaser has entered.
+                if (JOptionPane.showConfirmDialog(QuotationPanel.this, "Clear this quotation?",
+                        "Clear Quotation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    clearQuotation();
+                }
+            }
+        });
         jTableQuotationItems.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         // Keep event code outside the generated layout so Design view stays usable.
         jButtonLoadItems.addActionListener(new ActionListener() {
@@ -66,6 +80,39 @@ public class QuotationPanel extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent event) { resetItems(); }
         });
+    }
+
+    // Reset only the form; saved database records are not deleted.
+    private void clearQuotation() {
+        resetItems();
+        jComboBoxRequest.setSelectedIndex(0);
+        jComboBoxVendor.setSelectedIndex(0);
+        jTextAreaSpecs.setText("");
+    }
+
+    // Pass the loaded request ID and item objects to the transaction in the DAO.
+    private void saveQuotation() {
+        int vendorIndex = jComboBoxVendor.getSelectedIndex() - 1;
+        if (loadedRequestId <= 0 || vendorIndex < 0 || vendorIndex >= vendors.size()) {
+            JOptionPane.showMessageDialog(this, "Load a request and select a vendor first.");
+            return;
+        }
+        jButtonSaveQuotation.setEnabled(false);
+        try {
+            int id = new QuotationDAO().saveQuotation(loadedRequestId,
+                    vendors.get(vendorIndex).getVendorId(), jTextAreaSpecs.getText().trim(), quotationItems);
+            // Clear only after commit succeeds, so a failed attempt keeps the user's work.
+            clearQuotation();
+            JOptionPane.showMessageDialog(this, "Quotation #" + id + " saved. Request status: Quoted.");
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Could not confirm the save. Check the database and saved quotations before retrying. "
+                    + "Your entered values have been kept.");
+        } finally {
+            jButtonSaveQuotation.setEnabled(true);
+        }
     }
 
     // Fill the dropdown with request numbers that still accept quotations.
