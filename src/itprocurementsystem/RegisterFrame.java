@@ -30,7 +30,16 @@ public class RegisterFrame extends javax.swing.JFrame {
         // These unused designer controls are hidden; they are not registration inputs.
         jTextField6.setVisible(false);
         jLabel7.setVisible(false);
+        // Always start with an instruction, never an automatically chosen account type.
+        jComboBoxAccountType.setModel(new javax.swing.DefaultComboBoxModel<String>(
+                new String[] {"Select account type", "Individual customer", "Organisation user"}));
+        jLabelRoleInfo.setText("Create an account to request IT equipment and services.");
         loadDepartments();
+        jComboBoxAccountType.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent event) { updateAccountFields(); }
+        });
+        updateAccountFields();
         jButtonCreateAccount.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent event) { createAccount(); }
@@ -50,20 +59,35 @@ public class RegisterFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
 
+    // Organisation details are used only when the user explicitly chooses that type.
+    private void updateAccountFields() {
+        boolean organisation = jComboBoxAccountType.getSelectedIndex() == 2;
+        jTextFieldOrgaisationName.setEnabled(organisation);
+        jLabelOrganisationName.setEnabled(organisation);
+        jLabelOrganisationName.setText("Organisation name" + (organisation ? " *" : ""));
+        jComboBoxDepartment.setEnabled(organisation && departments != null && !departments.isEmpty());
+        jLabelDepartment.setEnabled(organisation);
+        if (!organisation) {
+            // Clear stale organisation values when switching to an individual account.
+            jTextFieldOrgaisationName.setText("");
+            jComboBoxDepartment.setSelectedIndex(0);
+        }
+        // The instruction at index zero is not a valid registration choice.
+        jButtonCreateAccount.setEnabled(jComboBoxAccountType.getSelectedIndex() > 0);
+    }
+
     // Load the department choices from MySQL and keep registration disabled on failure.
     private void loadDepartments() {
         jComboBoxDepartment.removeAllItems();
-        jComboBoxDepartment.addItem("Select department");
+        jComboBoxDepartment.addItem("No department (optional)");
         jButtonCreateAccount.setEnabled(false);
         try {
             departments = new RegistrationDAO().getDepartments();
             for (int i = 0; i < departments.size(); i++) {
                 jComboBoxDepartment.addItem(departments.get(i).getName());
             }
-            jButtonCreateAccount.setEnabled(!departments.isEmpty());
-            if (departments.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "No departments are available yet.");
-            }
+
+            // An empty list is allowed: departments are optional for all customers.
         } catch (java.sql.SQLException ex) {
             javax.swing.JOptionPane.showMessageDialog(this,
                     "Could not load departments. Start MySQL, return to login and reopen Create Account.");
@@ -72,6 +96,13 @@ public class RegisterFrame extends javax.swing.JFrame {
 
     // The form reads the controls; the DAO validates and saves the account.
     private void createAccount() {
+        int accountIndex = jComboBoxAccountType.getSelectedIndex();
+        // Check again here even though the button is disabled for the initial prompt.
+        if (accountIndex != 1 && accountIndex != 2) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please select an account type.");
+            return;
+        }
+        String accountType = accountIndex == 1 ? "Individual" : "Organisation";
         int index = jComboBoxDepartment.getSelectedIndex() - 1;
         int departmentId = index >= 0 && departments != null && index < departments.size()
                 ? departments.get(index).getId() : 0;
@@ -80,7 +111,8 @@ public class RegisterFrame extends javax.swing.JFrame {
         jButtonCreateAccount.setEnabled(false);
         try {
             new RegistrationDAO().register(jTextFieldFullName.getText(), jTextFieldUsername.getText(),
-                    jTextFieldEmail.getText(), departmentId, new String(password), new String(confirmation));
+                    jTextFieldEmail.getText(), departmentId, new String(password), new String(confirmation),
+                    accountType, jTextFieldOrgaisationName.getText());
             javax.swing.JOptionPane.showMessageDialog(this, "Account created. You can now log in.");
             backToLogin();
         } catch (IllegalArgumentException ex) {
@@ -94,7 +126,7 @@ public class RegisterFrame extends javax.swing.JFrame {
             java.util.Arrays.fill(confirmation, '\0');
             jPasswordFieldPassword.setText("");
             jPasswordFieldConfirm.setText("");
-            jButtonCreateAccount.setEnabled(departments != null && !departments.isEmpty());
+            updateAccountFields();
         }
     }
 
@@ -131,6 +163,10 @@ public class RegisterFrame extends javax.swing.JFrame {
         jTextFieldEmail = new javax.swing.JTextField();
         jPasswordFieldPassword = new javax.swing.JPasswordField();
         jPasswordFieldConfirm = new javax.swing.JPasswordField();
+        jLabelAccountType = new javax.swing.JLabel();
+        jComboBoxAccountType = new javax.swing.JComboBox<>();
+        jLabelOrganisationName = new javax.swing.JLabel();
+        jTextFieldOrgaisationName = new javax.swing.JTextField();
 
         jLabel7.setText("jLabel7");
 
@@ -152,7 +188,7 @@ public class RegisterFrame extends javax.swing.JFrame {
 
         JLabelConfirmPassword.setText("Confirm Password");
 
-        jLabelRoleInfo.setText("New accounts are registered as Requesters.");
+        jLabelRoleInfo.setText("Create an account to request IT equipment and services.");
 
         jButtonBackToLogin.setText("Back to Login");
 
@@ -169,81 +205,109 @@ public class RegisterFrame extends javax.swing.JFrame {
 
         jPasswordFieldConfirm.addActionListener(this::jPasswordFieldConfirmActionPerformed);
 
+        jLabelAccountType.setText("Account Type:");
+
+        jComboBoxAccountType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Individual customer", "Organisation user" }));
+
+        jLabelOrganisationName.setText("Organisation Name");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(122, 122, 122))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
+                        .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabelRoleInfo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButtonBackToLogin)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonCreateAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(136, 136, 136))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(JLabelConfirmPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                                    .addGap(284, 284, 284))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(0, 0, Short.MAX_VALUE)
+                                    .addComponent(jButtonBackToLogin)
+                                    .addGap(51, 51, 51)
+                                    .addComponent(jButtonCreateAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelUserName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelFullName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelEmail, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelDepartment, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelPassword, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(JLabelConfirmPassword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBoxDepartment, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextFieldFullName, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
-                            .addComponent(jTextFieldUsername)
-                            .addComponent(jTextFieldEmail)
-                            .addComponent(jPasswordFieldConfirm)
-                            .addComponent(jPasswordFieldPassword))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelOrganisationName, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(50, 50, 50)
+                                .addComponent(jTextFieldOrgaisationName))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelUserName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabelDepartment, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabelPassword, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabelFullName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabelEmail, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabelAccountType)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jComboBoxDepartment, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jTextFieldFullName, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                                        .addComponent(jTextFieldUsername)
+                                        .addComponent(jPasswordFieldPassword)
+                                        .addComponent(jComboBoxAccountType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jPasswordFieldConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addGap(29, 29, 29))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabelRoleInfo)
+                .addGap(39, 39, 39))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabelTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelFullName)
                     .addComponent(jTextFieldFullName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelUserName)
-                    .addComponent(jTextFieldUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelEmail)
-                    .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelDepartment)
-                    .addComponent(jComboBoxDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelPassword)
-                    .addComponent(jPasswordFieldPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelUserName)
+                    .addComponent(jTextFieldUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelEmail)
+                    .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxAccountType, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelAccountType))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelOrganisationName)
+                    .addComponent(jTextFieldOrgaisationName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelDepartment))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(JLabelConfirmPassword)
-                    .addComponent(jPasswordFieldConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jPasswordFieldPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelPassword))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jPasswordFieldConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JLabelConfirmPassword))
+                .addGap(25, 25, 25)
                 .addComponent(jLabelRoleInfo)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonBackToLogin)
-                    .addComponent(jButtonCreateAccount))
-                .addGap(0, 6, Short.MAX_VALUE))
+                    .addComponent(jButtonCreateAccount)
+                    .addComponent(jButtonBackToLogin))
+                .addGap(36, 36, 36))
         );
 
         pack();
@@ -294,11 +358,14 @@ public class RegisterFrame extends javax.swing.JFrame {
     private javax.swing.JLabel JLabelConfirmPassword;
     private javax.swing.JButton jButtonBackToLogin;
     private javax.swing.JButton jButtonCreateAccount;
+    private javax.swing.JComboBox<String> jComboBoxAccountType;
     private javax.swing.JComboBox<String> jComboBoxDepartment;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelAccountType;
     private javax.swing.JLabel jLabelDepartment;
     private javax.swing.JLabel jLabelEmail;
     private javax.swing.JLabel jLabelFullName;
+    private javax.swing.JLabel jLabelOrganisationName;
     private javax.swing.JLabel jLabelPassword;
     private javax.swing.JLabel jLabelRoleInfo;
     private javax.swing.JLabel jLabelTitle;
@@ -308,6 +375,7 @@ public class RegisterFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextFieldEmail;
     private javax.swing.JTextField jTextFieldFullName;
+    private javax.swing.JTextField jTextFieldOrgaisationName;
     private javax.swing.JTextField jTextFieldUsername;
     // End of variables declaration//GEN-END:variables
 }
