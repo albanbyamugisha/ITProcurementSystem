@@ -66,7 +66,7 @@ public class RequestDAO {
             // Turning off auto-commit prevents each INSERT from being saved separately.
             connection.setAutoCommit(false);
             try {
-                int departmentId;
+                Integer departmentId;
                 // Read the department and role from MySQL, not from user-entered fields.
                 String userSql = "SELECT department_id, role FROM users WHERE user_id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(userSql)) {
@@ -76,6 +76,8 @@ public class RequestDAO {
                             throw new SQLException("A requester account is required.");
                         }
                         departmentId = result.getInt("department_id");
+                        // getInt returns zero for SQL NULL, so preserve the missing value explicitly.
+                        if (result.wasNull()) { departmentId = null; }
                     }
                 }
 
@@ -87,7 +89,8 @@ public class RequestDAO {
                         requestSql, Statement.RETURN_GENERATED_KEYS)) {
                     // Place values in the question-mark placeholders safely.
                     statement.setInt(1, requesterId);
-                    statement.setInt(2, departmentId);
+                    if (departmentId == null) { statement.setNull(2, java.sql.Types.INTEGER); }
+                    else { statement.setInt(2, departmentId); }
                     statement.setString(3, notes == null ? "" : notes.trim());
                     statement.executeUpdate();
                     // AUTO_INCREMENT creates an ID. Use it to link every item below.

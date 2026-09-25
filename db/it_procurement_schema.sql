@@ -29,7 +29,10 @@ CREATE TABLE IF NOT EXISTS departments (
 -- password_hash stores the result of password hashing, not the actual password.
 CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    department_id INT NOT NULL,
+    department_id INT NULL,
+    -- Individuals need no department; organisations may omit it too.
+    account_type VARCHAR(20) NOT NULL DEFAULT 'Organisation',
+    organisation_name VARCHAR(150),
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
@@ -70,7 +73,7 @@ CREATE TABLE IF NOT EXISTS vendors (
 CREATE TABLE IF NOT EXISTS requests (
     request_id INT AUTO_INCREMENT PRIMARY KEY,
     requester_id INT NOT NULL,
-    department_id INT NOT NULL,
+    department_id INT NULL,
     request_status VARCHAR(20) NOT NULL DEFAULT 'Pending',
     date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     notes TEXT,

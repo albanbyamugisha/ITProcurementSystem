@@ -33,6 +33,23 @@ public class RegistrationDAO {
     // Validate here too so other callers cannot skip the form's input checks.
     public void register(String fullName, String username, String email, int departmentId,
             String password, String confirmation) throws SQLException {
+        // Do not guess the customer type while the form's new controls are pending.
+        throw new IllegalArgumentException("Registration is being updated. The account type controls must be added first.");
+    }
+
+    // Account type describes the customer; role still controls staff permissions.
+    public void register(String fullName, String username, String email, int departmentId,
+            String password, String confirmation, String accountType, String organisationName)
+            throws SQLException {
+        if (!"Individual".equals(accountType) && !"Organisation".equals(accountType)) {
+            throw new IllegalArgumentException("Select an account type.");
+        }
+        if ("Organisation".equals(accountType) && (organisationName == null
+                || organisationName.trim().isEmpty() || organisationName.trim().length() > 150)) {
+            throw new IllegalArgumentException("Enter an organisation name of 1 to 150 characters.");
+        }
+        // Individuals never inherit a department or organisation from stale form values.
+        if ("Individual".equals(accountType)) { departmentId = 0; organisationName = null; }
         if (fullName == null || fullName.trim().isEmpty() || fullName.trim().length() > 100) {
             throw new IllegalArgumentException("Enter a full name of 1 to 100 characters.");
         }
@@ -44,7 +61,7 @@ public class RegistrationDAO {
                 || !email.trim().matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+")) {
             throw new IllegalArgumentException("Enter a valid email address.");
         }
-        if (departmentId <= 0) { throw new IllegalArgumentException("Select a department."); }
+        if (departmentId < 0) { throw new IllegalArgumentException("Invalid department."); }
         if (password == null || password.length() < 8 || password.length() > 128) {
             throw new IllegalArgumentException("Use a password of 8 to 128 characters.");
         }
@@ -57,12 +74,16 @@ public class RegistrationDAO {
         try (Connection c = DBConnection.getConnection()) {
             checkDuplicates(c, username, email);
             try (PreparedStatement s = c.prepareStatement(
-                    "INSERT INTO users (department_id,username,password_hash,full_name,email,role) VALUES (?,?,?,?,?,'Requester')")) {
-                s.setInt(1, departmentId);
+                    "INSERT INTO users (department_id,username,password_hash,full_name,email,role,account_type,organisation_name) VALUES (?,?,?,?,?,'Requester',?,?)")) {
+                // SQL NULL means no department, rather than an invalid department ID of zero.
+                if (departmentId == 0) { s.setNull(1, java.sql.Types.INTEGER); }
+                else { s.setInt(1, departmentId); }
                 s.setString(2, username);
                 s.setString(3, PasswordUtil.hashPassword(password));
                 s.setString(4, fullName.trim());
                 s.setString(5, email);
+                s.setString(6, accountType);
+                s.setString(7, organisationName == null ? null : organisationName.trim());
                 // The role is fixed in SQL: registration cannot create privileged accounts.
                 s.executeUpdate();
             } catch (SQLException ex) {
