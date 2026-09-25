@@ -4,6 +4,11 @@
  */
 package itprocurementsystem;
 
+// These classes hold supplier objects and let us explain database errors to the user.
+import java.util.ArrayList;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  * We use a JPanel because quotation entry belongs inside the main window.
  * It groups the request, vendor and price controls into one screen.
@@ -14,12 +19,56 @@ package itprocurementsystem;
  */
 public class QuotationPanel extends javax.swing.JPanel {
 
+    // Keep the IDs with the displayed names so we can save the correct supplier later.
+    private ArrayList<Vendor> vendors = new ArrayList<Vendor>();
+
     /**
      * Creates new form QuotationPanel
      */
     public QuotationPanel() {
         // Create the controls and layout arranged in NetBeans Design view.
         initComponents();
+
+        // The total will be calculated from item prices; users should not type it.
+        jTextFieldQuotationTotal.setEditable(false);
+        // Wrap long notes at word boundaries so they remain readable.
+        jTextAreaSpecs.setLineWrap(true);
+        jTextAreaSpecs.setWrapStyleWord(true);
+        // Correct the visible caption without changing the Design-view layout.
+        jLabel1.setText("Quotation total:");
+
+        // Read supplier names after the dropdown has been created.
+        loadVendors();
+    }
+
+    // Fill the vendor dropdown using the supplier records stored in MySQL.
+    private void loadVendors() {
+        vendors.clear();
+        jComboBoxVendor.removeAllItems();
+        // This first entry is an instruction, not a supplier we can save.
+        jComboBoxVendor.addItem("Select vendor");
+        jComboBoxVendor.setEnabled(false);
+        try {
+            VendorDAO vendorDAO = new VendorDAO();
+            vendors = vendorDAO.getAllVendors();
+            // Keep the names in the same order as the objects containing their IDs.
+            // Dropdown index 1 corresponds to list index 0 because of the first entry.
+            for (int i = 0; i < vendors.size(); i++) {
+                jComboBoxVendor.addItem(vendors.get(i).getVendorName());
+            }
+            if (vendors.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "No suppliers are saved yet. Add suppliers before recording a quotation.",
+                        "Vendors", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                jComboBoxVendor.setEnabled(true);
+            }
+        } catch (SQLException ex) {
+            // A disabled dropdown prevents using an incomplete supplier list.
+            JOptionPane.showMessageDialog(this,
+                    "Could not load suppliers. Check that MySQL is running and reopen the screen.",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -31,19 +80,181 @@ public class QuotationPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabelTitle = new javax.swing.JLabel();
+        jLabelRequest = new javax.swing.JLabel();
+        jLabelVendor = new javax.swing.JLabel();
+        jComboBoxRequest = new javax.swing.JComboBox<>();
+        jComboBoxVendor = new javax.swing.JComboBox<>();
+        jButtonLoadItems = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableQuotationItems = new javax.swing.JTable();
+        jLabelUnitPrice = new javax.swing.JLabel();
+        jTextFieldUnitPrice = new javax.swing.JTextField();
+        jButtonSetPrice = new javax.swing.JButton();
+        jLabelSpecs = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextAreaSpecs = new javax.swing.JTextArea();
+        jButtonClear = new javax.swing.JButton();
+        jButtonSaveQuotation = new javax.swing.JButton();
+        jTextFieldQuotationTotal = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+
+        jLabelTitle.setText("Record Quotation");
+
+        jLabelRequest.setText("Request");
+
+        jLabelVendor.setText("Vendor");
+
+        jComboBoxRequest.setModel(new javax.swing.DefaultComboBoxModel<String>(
+            new String[] {"Select request"}
+        ));
+
+        jComboBoxVendor.setModel(new javax.swing.DefaultComboBoxModel<String>(
+            new String[] {"Select vendor"}
+        ));
+
+        jButtonLoadItems.setText("Load Items");
+
+        jTableQuotationItems.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Item Description", "Quantity", "Unit Price", "Line Total"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTableQuotationItems);
+
+        jLabelUnitPrice.setText("Unit Price of Selected Item");
+
+        jTextFieldUnitPrice.setText("0.00");
+
+        jButtonSetPrice.setText("Set Price");
+
+        jLabelSpecs.setText("Specifications / notes (optional)");
+
+        jTextAreaSpecs.setColumns(20);
+        jTextAreaSpecs.setRows(5);
+        jScrollPane2.setViewportView(jTextAreaSpecs);
+
+        jButtonClear.setText("Clear");
+
+        jButtonSaveQuotation.setText("Save Quotation");
+
+        jTextFieldQuotationTotal.setText("0.00");
+
+        jLabel1.setText("QoutationTotal:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(132, 132, 132)
+                        .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelSpecs)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelUnitPrice)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldUnitPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonSetPrice)
+                                .addGap(30, 30, 30)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jTextFieldQuotationTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabelVendor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabelRequest, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jComboBoxVendor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jComboBoxRequest, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addComponent(jButtonLoadItems))
+                            .addComponent(jScrollPane2)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButtonClear)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonSaveQuotation)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelRequest)
+                    .addComponent(jComboBoxRequest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonLoadItems))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelVendor)
+                    .addComponent(jComboBoxVendor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelUnitPrice)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextFieldUnitPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonSetPrice)
+                        .addComponent(jTextFieldQuotationTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelSpecs)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonClear)
+                    .addComponent(jButtonSaveQuotation))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonClear;
+    private javax.swing.JButton jButtonLoadItems;
+    private javax.swing.JButton jButtonSaveQuotation;
+    private javax.swing.JButton jButtonSetPrice;
+    private javax.swing.JComboBox<String> jComboBoxRequest;
+    private javax.swing.JComboBox<String> jComboBoxVendor;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabelRequest;
+    private javax.swing.JLabel jLabelSpecs;
+    private javax.swing.JLabel jLabelTitle;
+    private javax.swing.JLabel jLabelUnitPrice;
+    private javax.swing.JLabel jLabelVendor;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTableQuotationItems;
+    private javax.swing.JTextArea jTextAreaSpecs;
+    private javax.swing.JTextField jTextFieldQuotationTotal;
+    private javax.swing.JTextField jTextFieldUnitPrice;
     // End of variables declaration//GEN-END:variables
 }
