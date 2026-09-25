@@ -12,6 +12,7 @@ USE it_procurement_db;
 -- A foreign key connects a record to a record in another table.
 -- NOT NULL means we must provide a value.
 -- We create the parent tables first because other tables refer to them.
+-- Uses InnoDb engine for transaction support and foreign key constraints.
 
 
 -- 1. Departments
@@ -32,7 +33,8 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
+    -- Each registered email must belong to only one account.
+    email VARCHAR(100) UNIQUE,
     role VARCHAR(20) NOT NULL,
 
     FOREIGN KEY (department_id) REFERENCES departments(department_id)
