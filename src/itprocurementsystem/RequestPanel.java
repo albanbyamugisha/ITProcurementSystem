@@ -83,6 +83,10 @@ public class RequestPanel extends javax.swing.JPanel {
 
     // Save the complete request only when its items have been added to the table.
     private void submitRequest() {
+        if (jComboBoxRequestType.getSelectedIndex() <= 0) {
+            JOptionPane.showMessageDialog(this, "Select a request type first.");
+            return;
+        }
         // A logged-out user must log in again before submitting a request.
         if (Session.getUserId() == 0 || !"Requester".equals(Session.getRole())) {
             JOptionPane.showMessageDialog(this, "Please log in as a requester first.");
@@ -107,7 +111,8 @@ public class RequestPanel extends javax.swing.JPanel {
         try {
             RequestDAO requestDAO = new RequestDAO();
             int requestId = requestDAO.saveRequest(Session.getUserId(),
-                    jTextAreaNotes.getText(), requestItems);
+                    jTextAreaNotes.getText(), requestItems,
+                    (String) jComboBoxRequestType.getSelectedItem());
             // Clear only after saving succeeds. Failed attempts keep the entered data.
             clearRequest();
             JOptionPane.showMessageDialog(this,
@@ -139,6 +144,7 @@ public class RequestPanel extends javax.swing.JPanel {
         // Convert the displayed row number to its data position if sorting is used later.
         int itemIndex = jTableItems.convertRowIndexToModel(selectedRow);
         requestItems.remove(itemIndex);
+        jComboBoxRequestType.setEnabled(requestItems.isEmpty());
         DefaultTableModel model = (DefaultTableModel) jTableItems.getModel();
         model.removeRow(itemIndex);
         updateTotal();
@@ -147,6 +153,8 @@ public class RequestPanel extends javax.swing.JPanel {
     // Reset the unsaved request. This method does not delete anything from MySQL.
     private void clearRequest() {
         requestItems.clear();
+        jComboBoxRequestType.setEnabled(true);
+        jComboBoxRequestType.setSelectedIndex(0);
         // Setting the row count to zero removes every visible item row.
         DefaultTableModel model = (DefaultTableModel) jTableItems.getModel();
         model.setRowCount(0);
@@ -163,6 +171,11 @@ public class RequestPanel extends javax.swing.JPanel {
 
     // Validate the fields before adding anything to the list or table.
     private void addItem() {
+        // One request uses one type. Services use quantity as the number of service units.
+        if (jComboBoxRequestType.getSelectedIndex() <= 0) {
+            JOptionPane.showMessageDialog(this, "Select Equipment or Service first.");
+            return;
+        }
         int selectedIndex = jComboBoxCategory.getSelectedIndex();
         // Index zero is the instruction, not a category from the database.
         if (selectedIndex <= 0 || selectedIndex > categories.size()) {
@@ -183,6 +196,8 @@ public class RequestPanel extends javax.swing.JPanel {
 
             // Keep the object for later saving, then show its values in a new table row.
             requestItems.add(item);
+            // Keep the type fixed while items exist to avoid relabelling a filled request.
+            jComboBoxRequestType.setEnabled(false);
             DefaultTableModel model = (DefaultTableModel) jTableItems.getModel();
             model.addRow(new Object[] {category.getCategoryName(), item.getDescription(),
                 item.getQuantity(), item.getUnitCost(), item.getLineTotal()});
@@ -282,6 +297,8 @@ public class RequestPanel extends javax.swing.JPanel {
         jTextAreaNotes = new javax.swing.JTextArea();
         jButtonClear = new javax.swing.JButton();
         jButtonSubmit = new javax.swing.JButton();
+        jLabelRequestType = new javax.swing.JLabel();
+        jComboBoxRequestType = new javax.swing.JComboBox<>();
 
         jLabelTitle.setText("New Procurement Request");
 
@@ -341,40 +358,14 @@ public class RequestPanel extends javax.swing.JPanel {
 
         jButtonSubmit.setText("Submit Request");
 
+        jLabelRequestType.setText("Request type");
+
+        jComboBoxRequestType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select request type", "Equipment", "Service" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabelQuantity, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelDescription, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelCategory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBoxCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextFieldDescription)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextFieldQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButtonAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabelUnitCost, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jTextFieldUnitCost, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(23, 23, 23)
-                                        .addComponent(jButtonRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 0, Short.MAX_VALUE)))))
-                        .addGap(15, 15, 15))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabelTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -386,7 +377,7 @@ public class RequestPanel extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(343, 343, 343)
                         .addComponent(jButtonClear, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(22, 22, 22)
@@ -397,13 +388,48 @@ public class RequestPanel extends javax.swing.JPanel {
                             .addComponent(jScrollPane2)))
                     .addComponent(jScrollPane1))
                 .addGap(15, 15, 15))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelQuantity, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabelDescription, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabelCategory, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelRequestType, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jComboBoxCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextFieldDescription)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonAddItem, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabelUnitCost, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jTextFieldUnitCost, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(23, 23, 23)
+                                .addComponent(jButtonRemoveItem, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addComponent(jComboBoxRequestType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(15, 15, 15))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabelTitle)
-                .addGap(28, 28, 28)
+                .addGap(1, 1, 1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelRequestType)
+                    .addComponent(jComboBoxRequestType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBoxCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelCategory))
@@ -431,7 +457,7 @@ public class RequestPanel extends javax.swing.JPanel {
                 .addComponent(jLabelNotes)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonClear)
                     .addComponent(jButtonSubmit))
@@ -450,10 +476,12 @@ public class RequestPanel extends javax.swing.JPanel {
     private javax.swing.JButton jButtonRemoveItem;
     private javax.swing.JButton jButtonSubmit;
     private javax.swing.JComboBox<String> jComboBoxCategory;
+    private javax.swing.JComboBox<String> jComboBoxRequestType;
     private javax.swing.JLabel jLabelCategory;
     private javax.swing.JLabel jLabelDescription;
     private javax.swing.JLabel jLabelNotes;
     private javax.swing.JLabel jLabelQuantity;
+    private javax.swing.JLabel jLabelRequestType;
     private javax.swing.JLabel jLabelTitle;
     private javax.swing.JLabel jLabelTotal;
     private javax.swing.JLabel jLabelUnitCost;

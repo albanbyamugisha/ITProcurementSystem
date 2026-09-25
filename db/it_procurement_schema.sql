@@ -74,6 +74,8 @@ CREATE TABLE IF NOT EXISTS requests (
     request_id INT AUTO_INCREMENT PRIMARY KEY,
     requester_id INT NOT NULL,
     department_id INT NULL,
+    -- A request contains equipment OR services; use separate requests for each type.
+    request_type VARCHAR(20) NOT NULL DEFAULT 'Equipment',
     request_status VARCHAR(20) NOT NULL DEFAULT 'Pending',
     date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     notes TEXT,

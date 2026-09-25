@@ -48,8 +48,12 @@ public class RequestDAO {
 
 
     // Return the new request ID only after all its items have been saved.
-    public int saveRequest(int requesterId, String notes, ArrayList<RequestItem> items)
-            throws SQLException {
+    public int saveRequest(int requesterId, String notes, ArrayList<RequestItem> items,
+            String requestType) throws SQLException {
+        // The prompt is not a type. Validate here as well as in the form.
+        if (!"Equipment".equals(requestType) && !"Service".equals(requestType)) {
+            throw new IllegalArgumentException("Select Equipment or Service.");
+        }
         // Check the essential values even if another screen calls this method later.
         if (requesterId <= 0 || items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Log in and add at least one item first.");
@@ -84,7 +88,7 @@ public class RequestDAO {
                 int requestId;
                 // MySQL supplies the creation time. Every new request starts as Pending.
                 String requestSql = "INSERT INTO requests "
-                        + "(requester_id, department_id, request_status, notes) VALUES (?, ?, 'Pending', ?)";
+                        + "(requester_id, department_id, request_status, notes, request_type) VALUES (?, ?, 'Pending', ?, ?)";
                 try (PreparedStatement statement = connection.prepareStatement(
                         requestSql, Statement.RETURN_GENERATED_KEYS)) {
                     // Place values in the question-mark placeholders safely.
@@ -92,6 +96,7 @@ public class RequestDAO {
                     if (departmentId == null) { statement.setNull(2, java.sql.Types.INTEGER); }
                     else { statement.setInt(2, departmentId); }
                     statement.setString(3, notes == null ? "" : notes.trim());
+                    statement.setString(4, requestType);
                     statement.executeUpdate();
                     // AUTO_INCREMENT creates an ID. Use it to link every item below.
                     try (ResultSet keys = statement.getGeneratedKeys()) {
