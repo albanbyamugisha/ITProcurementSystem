@@ -31,8 +31,6 @@ public class ApprovalPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
         jButton5 = new javax.swing.JButton();
         jLabelTitle = new javax.swing.JLabel();
         jLabelRequest = new javax.swing.JLabel();
@@ -56,19 +54,6 @@ public class ApprovalPanel extends javax.swing.JPanel {
         jLabelHistory = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
         jTableApprovalHistory = new javax.swing.JTable();
-
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane3.setViewportView(jTable2);
 
         jButton5.setText("jButton5");
 
@@ -127,7 +112,7 @@ public class ApprovalPanel extends javax.swing.JPanel {
         });
         jScrollPane4.setViewportView(jTableQuotationItems);
 
-        jLabelComments.setText("Review Commments");
+        jLabelComments.setText("Review Comments");
 
         jTextAreaComments.setColumns(20);
         jTextAreaComments.setRows(5);
@@ -137,7 +122,7 @@ public class ApprovalPanel extends javax.swing.JPanel {
 
         jButtonReject.setText("Reject Request");
 
-        jButtonApprove.setText("Aprove Selected Quotation");
+        jButtonApprove.setText("Approve Selected Quotation");
 
         jLabelHistory.setText("Approval history");
 
@@ -166,15 +151,6 @@ public class ApprovalPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabelRequestDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabelTitle)))
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabelReviewInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -199,6 +175,8 @@ public class ApprovalPanel extends javax.swing.JPanel {
                             .addComponent(jScrollPane6)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelRequestDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelTitle)
                                     .addComponent(jLabelComments)
                                     .addComponent(jLabelItems, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabelHistory))
@@ -260,11 +238,9 @@ public class ApprovalPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabelTitle;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JTable jTable2;
     private javax.swing.JTable jTableApprovalHistory;
     private javax.swing.JTable jTableQuotationItems;
     private javax.swing.JTable jTableQuotations;
