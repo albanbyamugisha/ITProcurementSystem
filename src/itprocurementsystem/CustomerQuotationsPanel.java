@@ -26,19 +26,180 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabelTitle = new javax.swing.JLabel();
+        jLabelRequest = new javax.swing.JLabel();
+        jButtonLoadQuotations = new javax.swing.JButton();
+        jButtonRefresh = new javax.swing.JButton();
+        jComboBoxRequest = new javax.swing.JComboBox<>();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableQuotations = new javax.swing.JTable();
+        jLabelItems = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTableQuotationItems = new javax.swing.JTable();
+        jLabelDetails = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextAreaDetails = new javax.swing.JTextArea();
+        jLabelComments = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTextAreaComments = new javax.swing.JTextArea();
+        jLabelDecision = new javax.swing.JLabel();
+        jButtonAccept = new javax.swing.JButton();
+        jButtonDecline = new javax.swing.JButton();
+
+        jLabelTitle.setText("My Quotations");
+
+        jLabelRequest.setText("My request");
+
+        jButtonLoadQuotations.setText("Load Quotations");
+
+        jButtonRefresh.setText("Refresh");
+
+        jComboBoxRequest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select request" }));
+
+        jTableQuotations.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Quotation ID", "Vendor", "Total", "Status"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTableQuotations);
+
+        jLabelItems.setText("Selected quotation items");
+
+        jTableQuotationItems.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Description", "Quantity", "Unit Price", "Line Total"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(jTableQuotationItems);
+
+        jLabelDetails.setText("Quotation details");
+
+        jTextAreaDetails.setColumns(20);
+        jTextAreaDetails.setRows(5);
+        jTextAreaDetails.setText("Select a quotation to view its details.");
+        jScrollPane3.setViewportView(jTextAreaDetails);
+
+        jLabelComments.setText("Your comments (optional)");
+
+        jTextAreaComments.setColumns(20);
+        jTextAreaComments.setRows(5);
+        jScrollPane4.setViewportView(jTextAreaComments);
+
+        jLabelDecision.setText("Decision: No quotation selected");
+
+        jButtonAccept.setText("Accept Quotation");
+
+        jButtonDecline.setText("Decline Quotation");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabelTitle)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelRequest)
+                                .addGap(18, 18, 18)
+                                .addComponent(jComboBoxRequest, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 168, Short.MAX_VALUE)
+                                .addComponent(jButtonLoadQuotations)
+                                .addGap(46, 46, 46)
+                                .addComponent(jButtonRefresh))
+                            .addComponent(jScrollPane1)
+                            .addComponent(jLabelItems)
+                            .addComponent(jLabelDetails)
+                            .addComponent(jLabelComments)
+                            .addComponent(jScrollPane2))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabelDecision)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonDecline)
+                        .addGap(32, 32, 32)
+                        .addComponent(jButtonAccept))
+                    .addComponent(jScrollPane3)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabelTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelRequest)
+                    .addComponent(jButtonLoadQuotations)
+                    .addComponent(jButtonRefresh)
+                    .addComponent(jComboBoxRequest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelItems)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelDetails)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelComments)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelDecision)
+                    .addComponent(jButtonAccept)
+                    .addComponent(jButtonDecline))
+                .addGap(7, 7, 7))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonAccept;
+    private javax.swing.JButton jButtonDecline;
+    private javax.swing.JButton jButtonLoadQuotations;
+    private javax.swing.JButton jButtonRefresh;
+    private javax.swing.JComboBox<String> jComboBoxRequest;
+    private javax.swing.JLabel jLabelComments;
+    private javax.swing.JLabel jLabelDecision;
+    private javax.swing.JLabel jLabelDetails;
+    private javax.swing.JLabel jLabelItems;
+    private javax.swing.JLabel jLabelRequest;
+    private javax.swing.JLabel jLabelTitle;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTable jTableQuotationItems;
+    private javax.swing.JTable jTableQuotations;
+    private javax.swing.JTextArea jTextAreaComments;
+    private javax.swing.JTextArea jTextAreaDetails;
     // End of variables declaration//GEN-END:variables
 }
