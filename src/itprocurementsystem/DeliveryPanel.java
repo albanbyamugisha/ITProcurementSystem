@@ -45,7 +45,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
         jButtonRemoveUnit = new javax.swing.JButton();
         jLabelHint = new javax.swing.JLabel();
         jButtonClear = new javax.swing.JButton();
-        jButtonSaveProgress = new javax.swing.JButton();
+        jButtonSaveDelivery = new javax.swing.JButton();
 
         jButton3.setText("jButton3");
 
@@ -90,7 +90,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Item ID", "Description", "Serisl Number"
+                "Item ID", "Description", "Serial Number"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -109,7 +109,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
 
         jButtonClear.setText("Clear");
 
-        jButtonSaveProgress.setText("Save Deliverly");
+        jButtonSaveDelivery.setText("Save Deliverly");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -158,7 +158,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
                                 .addGap(27, 27, 27)
                                 .addComponent(jButtonClear)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButtonSaveProgress)))
+                                .addComponent(jButtonSaveDelivery)))
                         .addGap(0, 37, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -194,7 +194,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
                     .addComponent(jLabelHint)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButtonClear)
-                        .addComponent(jButtonSaveProgress)))
+                        .addComponent(jButtonSaveDelivery)))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -207,7 +207,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
     private javax.swing.JButton jButtonLoadItems;
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonRemoveUnit;
-    private javax.swing.JButton jButtonSaveProgress;
+    private javax.swing.JButton jButtonSaveDelivery;
     private javax.swing.JComboBox<String> jComboBoxRequest;
     private javax.swing.JLabel jLabelDeliveryDate;
     private javax.swing.JLabel jLabelHint;

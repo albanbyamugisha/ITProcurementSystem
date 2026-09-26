@@ -55,7 +55,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jTextField1" max="32767" attributes="0"/>
+                                  <Component id="jTextFieldEmail" max="32767" attributes="0"/>
                                   <Component id="jScrollPane2" pref="317" max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -106,7 +106,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabelVendorName" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabelEmail" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextFieldEmail" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jTextFieldVendorName" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <Group type="103" groupAlignment="0" attributes="0">
@@ -129,11 +129,13 @@
                   </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jButtonAddVendor" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonUpdateVendor" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jButtonRefresh" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonClear" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jButtonAddVendor" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonUpdateVendor" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonClear" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="136" max="-2" attributes="0"/>
@@ -223,7 +225,7 @@
         <Property name="text" type="java.lang.String" value="Vendors: 0"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField1">
+    <Component class="javax.swing.JTextField" name="jTextFieldEmail">
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldVendorName">
       <Events>

@@ -26,7 +26,7 @@
           <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabelSelectedEquipment" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelEquipmentUnits" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabelCount" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
@@ -53,7 +53,7 @@
               <EmptySpace pref="29" max="32767" attributes="0"/>
               <Component id="jButtonAssign" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-              <Component id="jLabelCount" min="-2" max="-2" attributes="0"/>
+              <Component id="jButtonUnassign" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="158" max="-2" attributes="0"/>
           </Group>
           <Group type="102" alignment="1" attributes="0">
@@ -89,10 +89,10 @@
                   <Component id="jLabelAssignTo" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jComboBoxAssignedTo" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButtonAssign" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabelCount" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButtonUnassign" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jLabelEquipmentUnits" min="-2" max="-2" attributes="0"/>
+              <Component id="jLabelCount" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="15" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -181,12 +181,12 @@
         <Property name="text" type="java.lang.String" value="Assign Selected"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jLabelCount">
+    <Component class="javax.swing.JButton" name="jButtonUnassign">
       <Properties>
         <Property name="text" type="java.lang.String" value="Unassign Selected"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabelEquipmentUnits">
+    <Component class="javax.swing.JLabel" name="jLabelCount">
       <Properties>
         <Property name="text" type="java.lang.String" value="Equipment units: 0"/>
       </Properties>

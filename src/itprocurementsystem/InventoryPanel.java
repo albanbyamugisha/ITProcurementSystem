@@ -39,8 +39,8 @@ public class InventoryPanel extends javax.swing.JPanel {
         jLabelAssignTo = new javax.swing.JLabel();
         jComboBoxAssignedTo = new javax.swing.JComboBox<>();
         jButtonAssign = new javax.swing.JButton();
-        jLabelCount = new javax.swing.JButton();
-        jLabelEquipmentUnits = new javax.swing.JLabel();
+        jButtonUnassign = new javax.swing.JButton();
+        jLabelCount = new javax.swing.JLabel();
 
         jButton4.setText("jButton4");
 
@@ -82,9 +82,9 @@ public class InventoryPanel extends javax.swing.JPanel {
 
         jButtonAssign.setText("Assign Selected");
 
-        jLabelCount.setText("Unassign Selected");
+        jButtonUnassign.setText("Unassign Selected");
 
-        jLabelEquipmentUnits.setText("Equipment units: 0");
+        jLabelCount.setText("Equipment units: 0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -93,7 +93,7 @@ public class InventoryPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabelSelectedEquipment)
-                    .addComponent(jLabelEquipmentUnits))
+                    .addComponent(jLabelCount))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jScrollPane1)
@@ -116,7 +116,7 @@ public class InventoryPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addComponent(jButtonAssign)
                 .addGap(28, 28, 28)
-                .addComponent(jLabelCount)
+                .addComponent(jButtonUnassign)
                 .addGap(158, 158, 158))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -146,9 +146,9 @@ public class InventoryPanel extends javax.swing.JPanel {
                     .addComponent(jLabelAssignTo)
                     .addComponent(jComboBoxAssignedTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButtonAssign)
-                    .addComponent(jLabelCount))
+                    .addComponent(jButtonUnassign))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabelEquipmentUnits)
+                .addComponent(jLabelCount)
                 .addContainerGap(15, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -164,10 +164,10 @@ public class InventoryPanel extends javax.swing.JPanel {
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonSearch;
     private javax.swing.JButton jButtonShowAll;
+    private javax.swing.JButton jButtonUnassign;
     private javax.swing.JComboBox<String> jComboBoxAssignedTo;
     private javax.swing.JLabel jLabelAssignTo;
-    private javax.swing.JButton jLabelCount;
-    private javax.swing.JLabel jLabelEquipmentUnits;
+    private javax.swing.JLabel jLabelCount;
     private javax.swing.JLabel jLabelSearch;
     private javax.swing.JLabel jLabelSelectedEquipment;
     private javax.swing.JLabel jLabelTitle;

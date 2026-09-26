@@ -76,7 +76,7 @@
                               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                               <Component id="jButtonClear" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="jButtonSaveProgress" min="-2" max="-2" attributes="0"/>
+                              <Component id="jButtonSaveDelivery" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="0" pref="37" max="32767" attributes="0"/>
@@ -121,7 +121,7 @@
                   <Component id="jLabelHint" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jButtonClear" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jButtonSaveProgress" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonSaveDelivery" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace pref="14" max="32767" attributes="0"/>
@@ -221,7 +221,7 @@
               <Table columnCount="3" rowCount="0">
                 <Column editable="false" title="Item ID" type="java.lang.Object"/>
                 <Column editable="false" title="Description" type="java.lang.Object"/>
-                <Column editable="false" title="Serisl Number" type="java.lang.Object"/>
+                <Column editable="false" title="Serial Number" type="java.lang.Object"/>
               </Table>
             </Property>
           </Properties>
@@ -243,7 +243,7 @@
         <Property name="text" type="java.lang.String" value="Clear"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButtonSaveProgress">
+    <Component class="javax.swing.JButton" name="jButtonSaveDelivery">
       <Properties>
         <Property name="text" type="java.lang.String" value="Save Deliverly"/>
       </Properties>

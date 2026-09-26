@@ -42,7 +42,7 @@ public class VendorPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableVendors = new javax.swing.JTable();
         jLabelCount = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        jTextFieldEmail = new javax.swing.JTextField();
         jTextFieldVendorName = new javax.swing.JTextField();
         jTextFieldContactPerson = new javax.swing.JTextField();
         jTextFieldPhone = new javax.swing.JTextField();
@@ -123,7 +123,7 @@ public class VendorPanel extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(54, 54, 54)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField1)
+                                    .addComponent(jTextFieldEmail)
                                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(11, 11, 11)
@@ -160,7 +160,7 @@ public class VendorPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelVendorName)
                     .addComponent(jLabelEmail)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextFieldVendorName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -177,11 +177,12 @@ public class VendorPanel extends javax.swing.JPanel {
                         .addGap(6, 6, 6)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonAddVendor)
-                    .addComponent(jButtonUpdateVendor)
-                    .addComponent(jButtonRefresh)
-                    .addComponent(jButtonClear))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonRefresh, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButtonAddVendor)
+                        .addComponent(jButtonUpdateVendor)
+                        .addComponent(jButtonClear)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -212,10 +213,10 @@ public class VendorPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableVendors;
     private javax.swing.JTextArea jTextAreaAddress;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextFieldContactPerson;
+    private javax.swing.JTextField jTextFieldEmail;
     private javax.swing.JTextField jTextFieldPhone;
     private javax.swing.JTextField jTextFieldVendorName;
     // End of variables declaration//GEN-END:variables

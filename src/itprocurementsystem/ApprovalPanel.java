@@ -51,8 +51,8 @@ public class ApprovalPanel extends javax.swing.JPanel {
         jScrollPane5 = new javax.swing.JScrollPane();
         jTextAreaComments = new javax.swing.JTextArea();
         jLabelReviewInfo = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jButtonReject = new javax.swing.JButton();
+        jButtonApprove = new javax.swing.JButton();
         jLabelHistory = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
         jTableApprovalHistory = new javax.swing.JTable();
@@ -135,9 +135,9 @@ public class ApprovalPanel extends javax.swing.JPanel {
 
         jLabelReviewInfo.setText("Staff review is separate from customer acceptance.");
 
-        jButton3.setText("Reject Request");
+        jButtonReject.setText("Reject Request");
 
-        jButton4.setText("Aprove Selected Quotation");
+        jButtonApprove.setText("Aprove Selected Quotation");
 
         jLabelHistory.setText("Approval history");
 
@@ -179,9 +179,9 @@ public class ApprovalPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabelReviewInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3)
+                        .addComponent(jButtonReject)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton4)
+                        .addComponent(jButtonApprove)
                         .addGap(24, 24, 24))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -233,8 +233,8 @@ public class ApprovalPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelReviewInfo)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(jButtonReject)
+                    .addComponent(jButtonApprove))
                 .addGap(18, 18, 18)
                 .addComponent(jLabelHistory)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -245,11 +245,11 @@ public class ApprovalPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButtonApprove;
     private javax.swing.JButton jButtonLoadQuotations;
     private javax.swing.JButton jButtonRefresh;
+    private javax.swing.JButton jButtonReject;
     private javax.swing.JComboBox<String> jComboBoxRequest;
     private javax.swing.JLabel jLabelComments;
     private javax.swing.JLabel jLabelHistory;
