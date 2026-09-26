@@ -162,6 +162,7 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonRequests = new javax.swing.JButton();
         jButtonMyRequests = new javax.swing.JButton();
         jButtonQuotes = new javax.swing.JButton();
+        jButtonInventory = new javax.swing.JButton();
         jPanelContent = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -184,6 +185,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         jButtonQuotes.setText("Quotations & Approvals");
 
+        jButtonInventory.setText("Inventory");
+
         javax.swing.GroupLayout jPanelSidebarLayout = new javax.swing.GroupLayout(jPanelSidebar);
         jPanelSidebar.setLayout(jPanelSidebarLayout);
         jPanelSidebarLayout.setHorizontalGroup(
@@ -203,6 +206,10 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jButtonMyRequests, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonDeliveries, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(jPanelSidebarLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(jButtonInventory)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelSidebarLayout.setVerticalGroup(
             jPanelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,7 +218,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabelWelcome)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelRole)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
                 .addComponent(jButtonRequests)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonMyRequests)
@@ -219,7 +226,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jButtonQuotes)
                 .addGap(21, 21, 21)
                 .addComponent(jButtonDeliveries)
-                .addGap(83, 83, 83)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonInventory)
+                .addGap(53, 53, 53)
                 .addComponent(jButtonLogout)
                 .addContainerGap())
         );
@@ -242,7 +251,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanelSidebar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
                 .addComponent(jPanelContent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -334,6 +343,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonDeliveries;
+    private javax.swing.JButton jButtonInventory;
     private javax.swing.JButton jButtonLogout;
     private javax.swing.JButton jButtonMyRequests;
     private javax.swing.JButton jButtonQuotes;

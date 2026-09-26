@@ -26,19 +26,200 @@ public class DeliveryPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButton3 = new javax.swing.JButton();
+        jLabelTitle = new javax.swing.JLabel();
+        jComboBoxRequest = new javax.swing.JComboBox<>();
+        jLabelRequest = new javax.swing.JLabel();
+        jButtonLoadItems = new javax.swing.JButton();
+        jButtonRefresh = new javax.swing.JButton();
+        jLabelSupplier = new javax.swing.JLabel();
+        jLabelDeliveryDate = new javax.swing.JLabel();
+        jTextFieldDeliveryDate = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableRequestItems = new javax.swing.JTable();
+        jLabelSelectedItemSerialNumber = new javax.swing.JLabel();
+        jTextFieldSerialNumber = new javax.swing.JTextField();
+        jButtonAddUnit = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTableReceivedUnits = new javax.swing.JTable();
+        jButtonRemoveUnit = new javax.swing.JButton();
+        jLabelHint = new javax.swing.JLabel();
+        jButtonClear = new javax.swing.JButton();
+        jButtonSaveProgress = new javax.swing.JButton();
+
+        jButton3.setText("jButton3");
+
+        jLabelTitle.setText("Equipment Deliveries");
+
+        jComboBoxRequest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Request" }));
+
+        jLabelRequest.setText("Request");
+
+        jButtonLoadItems.setText("Load Items");
+
+        jButtonRefresh.setText("Refresh");
+
+        jLabelSupplier.setText("Supplier: Select a request");
+
+        jLabelDeliveryDate.setText("Delivery date (YYYY-MM-DD)");
+
+        jTableRequestItems.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Item ID", "Description", "Ordered Qty", "Received Qty", "Remaining Qty"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTableRequestItems);
+
+        jLabelSelectedItemSerialNumber.setText("Selected Item Serial Number");
+
+        jButtonAddUnit.setText("Add Unit");
+
+        jTableReceivedUnits.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Item ID", "Description", "Serisl Number"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(jTableReceivedUnits);
+
+        jButtonRemoveUnit.setText("Remove Selected Unit");
+
+        jLabelHint.setText("Enter one serial number for each equipment unit received.");
+
+        jButtonClear.setText("Clear");
+
+        jButtonSaveProgress.setText("Save Deliverly");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelSelectedItemSerialNumber)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldSerialNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(34, 34, 34)
+                                .addComponent(jButtonAddUnit)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabelTitle)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabelRequest, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jComboBoxRequest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jLabelSupplier))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(39, 39, 39)
+                                        .addComponent(jButtonLoadItems)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jButtonRefresh)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelDeliveryDate)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jTextFieldDeliveryDate))))))
+                    .addComponent(jScrollPane2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonRemoveUnit)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelHint)
+                                .addGap(27, 27, 27)
+                                .addComponent(jButtonClear)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButtonSaveProgress)))
+                        .addGap(0, 37, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxRequest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelRequest)
+                    .addComponent(jButtonLoadItems)
+                    .addComponent(jButtonRefresh))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelSupplier)
+                    .addComponent(jLabelDeliveryDate)
+                    .addComponent(jTextFieldDeliveryDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelSelectedItemSerialNumber)
+                    .addComponent(jTextFieldSerialNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonAddUnit))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonRemoveUnit)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelHint)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButtonClear)
+                        .addComponent(jButtonSaveProgress)))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButtonAddUnit;
+    private javax.swing.JButton jButtonClear;
+    private javax.swing.JButton jButtonLoadItems;
+    private javax.swing.JButton jButtonRefresh;
+    private javax.swing.JButton jButtonRemoveUnit;
+    private javax.swing.JButton jButtonSaveProgress;
+    private javax.swing.JComboBox<String> jComboBoxRequest;
+    private javax.swing.JLabel jLabelDeliveryDate;
+    private javax.swing.JLabel jLabelHint;
+    private javax.swing.JLabel jLabelRequest;
+    private javax.swing.JLabel jLabelSelectedItemSerialNumber;
+    private javax.swing.JLabel jLabelSupplier;
+    private javax.swing.JLabel jLabelTitle;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTableReceivedUnits;
+    private javax.swing.JTable jTableRequestItems;
+    private javax.swing.JTextField jTextFieldDeliveryDate;
+    private javax.swing.JTextField jTextFieldSerialNumber;
     // End of variables declaration//GEN-END:variables
 }
