@@ -19,3 +19,6 @@
 !.env.example
 .DS_Store
 *~
+
+# Keep the local staff test-account script private.
+/db/test_purchaser.sql

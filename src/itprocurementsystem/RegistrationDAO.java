@@ -33,8 +33,8 @@ public class RegistrationDAO {
     // Validate here too so other callers cannot skip the form's input checks.
     public void register(String fullName, String username, String email, int departmentId,
             String password, String confirmation) throws SQLException {
-        // Do not guess the customer type while the form's new controls are pending.
-        throw new IllegalArgumentException("Registration is being updated. The account type controls must be added first.");
+        // Older callers must supply the account type using the overload below.
+        throw new IllegalArgumentException("An account type is required. Use the registration method with account type and organisation name.");
     }
 
     // Account type describes the customer; role still controls staff permissions.

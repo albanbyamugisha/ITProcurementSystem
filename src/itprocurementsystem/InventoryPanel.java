@@ -211,7 +211,7 @@ public class InventoryPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextFieldSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldSearchActionPerformed
-        // TODO add your handling code here:
+        // No extra action is needed here; the form connects its buttons in the constructor.
     }//GEN-LAST:event_jTextFieldSearchActionPerformed
 
 

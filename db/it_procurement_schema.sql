@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS departments (
 
 
 -- 2. Users
--- Each user belongs to one department.
+-- An organisation user may belong to a department; individuals need none.
 -- The role will be Requester, Manager or Purchaser.
 -- password_hash stores the result of password hashing, not the actual password.
 CREATE TABLE IF NOT EXISTS users (
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS vendors (
 -- This table stores the main details of each request.
 -- requester_id tells us which user submitted it.
 -- department_id records the department making the request.
--- Status can be Pending, Quoted, Approved, Rejected or Delivered.
+-- Status can be Pending, Quoted, CustomerAccepted, Approved, Rejected, Delivered or Completed.
 CREATE TABLE IF NOT EXISTS requests (
     request_id INT AUTO_INCREMENT PRIMARY KEY,
     requester_id INT NOT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS request_items (
 -- A vendor gives a quotation for a request.
 -- One request can receive quotations from different vendors.
 -- quoted_amount is the total price of all items in that quotation.
--- Status can be Submitted, Accepted or Rejected.
+-- Status can be Submitted, Accepted, Declined or Not Selected.
 CREATE TABLE IF NOT EXISTS quotations (
     quotation_id INT AUTO_INCREMENT PRIMARY KEY,
     request_id INT NOT NULL,
@@ -280,8 +280,46 @@ CREATE TABLE IF NOT EXISTS attachments (
 -- InnoDB lets MySQL enforce the foreign-key relationships above.
 -- CURRENT_TIMESTAMP fills in the current date and time when a row is added.
 -- We will check positive quantities, prices, roles and statuses in Java later.
--- For now, we are creating the structure only. Sample data will come later.
+-- This script creates structure only. Sample categories have a separate seed script.
 -- IF NOT EXISTS skips existing tables; it does not update their structure.
+
+-- 17-19. Customer decisions, chosen quotations and service progress.
+-- These extra tables keep customer choices separate from staff approval.
+-- Safe to run more than once: existing tables and data are kept.
+
+
+-- Each customer decision belongs to one quotation and records their comments.
+CREATE TABLE IF NOT EXISTS customer_decisions (
+    quotation_id INT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    decision VARCHAR(20) NOT NULL,
+    comments TEXT,
+    decision_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (quotation_id) REFERENCES quotations(quotation_id),
+    FOREIGN KEY (customer_id) REFERENCES users(user_id)
+) ENGINE=InnoDB;
+
+-- One request can have only one chosen quotation. The choice is final for this request.
+-- Staff approvals already identify the request, so joining this table identifies
+-- the exact quotation being approved. Customer acceptance alone is not staff approval.
+CREATE TABLE IF NOT EXISTS request_selections (
+    request_id INT PRIMARY KEY,
+    quotation_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (request_id) REFERENCES requests(request_id),
+    FOREIGN KEY (quotation_id) REFERENCES quotations(quotation_id)
+) ENGINE=InnoDB;
+
+-- Services have progress notes and a completion date, rather than serial numbers.
+CREATE TABLE IF NOT EXISTS service_progress (
+    request_id INT PRIMARY KEY,
+    work_status VARCHAR(20) NOT NULL DEFAULT 'Not Started',
+    work_notes TEXT,
+    completion_date DATE,
+    updated_by INT NOT NULL,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES requests(request_id),
+    FOREIGN KEY (updated_by) REFERENCES users(user_id)
+) ENGINE=InnoDB;
 
 -- Show the tables so we can confirm that they were created.
 SHOW TABLES;

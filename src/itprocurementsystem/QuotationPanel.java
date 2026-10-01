@@ -39,6 +39,11 @@ public class QuotationPanel extends javax.swing.JPanel {
     public QuotationPanel() {
         // Create the controls and layout arranged in NetBeans Design view.
         initComponents();
+        // Right-click the request control to view its saved supporting documents.
+        AttachmentDAO.addMenu(jComboBoxRequest, new AttachmentDAO.RequestChoice() {
+            public int requestId() { return loadedRequestId; }
+        });
+
 
         // The total will be calculated from item prices; users should not type it.
         jTextFieldQuotationTotal.setEditable(false);
@@ -82,12 +87,21 @@ public class QuotationPanel extends javax.swing.JPanel {
         });
     }
 
+    // New requests and vendors become available when returning to an empty form.
+    // An unfinished quotation is preserved until the user saves or clears it.
+    public void refreshChoicesIfEmpty() {
+        if (quotationItems.isEmpty() && jTextAreaSpecs.getText().trim().isEmpty()) {
+            loadRequests(); loadVendors();
+        }
+    }
+
     // Reset only the form; saved database records are not deleted.
     private void clearQuotation() {
         resetItems();
         jComboBoxRequest.setSelectedIndex(0);
         jComboBoxVendor.setSelectedIndex(0);
         jTextAreaSpecs.setText("");
+        loadRequests(); loadVendors();
     }
 
     // Pass the loaded request ID and item objects to the transaction in the DAO.

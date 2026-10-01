@@ -48,6 +48,11 @@ public class WorkflowTest {
         login(manager,"Manager"); dao.changeRole(other,"Requester");
         testDecisions();
         testFulfilment();
+        testAttachments();
+        testRegistration();
+        testPanels();
+        testDeclineAndRejection();
+        testConcurrentSelection();
         System.out.println("Passed " + checks + " checks.");
     }
     // Build a real request and supplier quote using the application DAOs.
@@ -139,6 +144,131 @@ public class WorkflowTest {
         login(customer,"Requester"); refused=false;
         try { dao.assign(inventory,customer); } catch (IllegalArgumentException ex) { refused=true; }
         check(refused,"Customer cannot assign inventory");
+    }
+
+    private static void testAttachments() throws Exception {
+        java.nio.file.Path root = java.nio.file.Files.createTempDirectory("procurement-attachments-test-");
+        java.nio.file.Path source = root.resolve("source.txt");
+        java.nio.file.Files.write(source,"A test supporting document".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        java.nio.file.Path store = root.resolve("stored");
+        System.setProperty("procurement.attachments.dir",store.toString());
+        int category;
+        try (Connection c = DBConnection.getConnection()) { category = Database.id(Database.one(c,"SELECT category_id FROM categories LIMIT 1")[0]); }
+        ArrayList<RequestItem> items = new ArrayList<RequestItem>();
+        items.add(new RequestItem(new Category(category,"Test"),"Attachment item",1,new java.math.BigDecimal("2.00")));
+        ArrayList<java.io.File> files = new ArrayList<java.io.File>(); files.add(source.toFile());
+        login(customer,"Requester");
+        int request = new RequestDAO().saveRequest(customer,"Attachment test",items,"Equipment",files);
+        ArrayList<Object[]> saved = new AttachmentDAO().forRequest(request);
+        check(saved.size()==1,"Attachment metadata saved");
+        java.nio.file.Path copy = java.nio.file.Paths.get(saved.get(0)[1].toString());
+        check(java.nio.file.Files.exists(copy) && !copy.equals(source),"Document copied to managed storage");
+        login(other,"Requester"); boolean refused=false;
+        try { new AttachmentDAO().forRequest(request); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Another customer cannot view attachments");
+        login(customer,"Requester"); refused=false;
+        try { new RequestDAO().saveRequest(other,"",items,"Equipment"); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Cannot submit as another user");
+        int before;
+        try (Connection c = DBConnection.getConnection()) {
+            before = Database.id(Database.one(c,"SELECT COUNT(*) FROM requests")[0]);
+            // Force a late failure after copying a file to exercise cleanup, not just validation.
+            Database.update(c,"CREATE TRIGGER fail_attachment BEFORE INSERT ON attachments FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Test rollback'");
+        }
+        refused=false;
+        try { new RequestDAO().saveRequest(customer,"",items,"Equipment",files); } catch (SQLException ex) { refused=true; }
+        finally { try (Connection c = DBConnection.getConnection()) { Database.update(c,"DROP TRIGGER fail_attachment"); } }
+        check(refused,"Late attachment failure reported");
+        try (Connection c = DBConnection.getConnection()) { check(before==Database.id(Database.one(c,"SELECT COUNT(*) FROM requests")[0]),"Failed attachment rolls back request"); }
+        try (java.util.stream.Stream<java.nio.file.Path> stored = java.nio.file.Files.list(store)) { check(stored.count()==1,"Failed attachment copy cleaned up"); }
+        java.nio.file.Files.delete(copy); java.nio.file.Files.delete(source); java.nio.file.Files.delete(store); java.nio.file.Files.delete(root);
+    }
+    private static void testRegistration() throws Exception {
+        RegistrationDAO dao = new RegistrationDAO();
+        // Generate a throwaway test password at runtime rather than publishing credentials.
+        String password = java.util.UUID.randomUUID().toString();
+        dao.register("New Customer","new_customer","new@example.invalid",0,password,password,"Individual",null);
+        boolean refused=false;
+        try { dao.register("Duplicate","new_customer","different@example.invalid",0,password,password,"Individual",null); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Duplicate username refused");
+        refused=false;
+        try { dao.register("Duplicate","different_user","NEW@example.invalid",0,password,password,"Individual",null); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Duplicate email refused");
+        refused=false;
+        try { dao.register("No Type","no_type","no_type@example.invalid",0,password,password,"",null); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Account type required");
+        check(new UserDAO().checkLogin("new_customer",password),"New account can log in");
+        check("Requester".equals(Session.getRole()),"Public registration cannot create staff");
+    }
+    // Real JPanel constructors can run without a desktop; JFrame windows still need a display.
+    private static void testPanels() throws Exception {
+        javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+            public void run() {
+                login(customer,"Requester");
+                new RequestPanel(); new MyRequestsPanel(); new CustomerQuotationsPanel(); new NotificationsPanel();
+                login(manager,"Manager");
+                new ApprovalPanel(); new DepartmentPanel(); new UserManagementPanel();
+                login(purchaser,"Purchaser");
+                new QuotationPanel(); new DeliveryPanel(); new ServiceCompletionPanel(); new InventoryPanel(); new VendorPanel();
+                check(true,"All 12 actual JPanel constructors load successfully");
+            }
+        });
+    }
+
+    private static void testDeclineAndRejection() throws Exception {
+        int[] ids = quotedRequest("Service",1);
+        DecisionDAO decisions = new DecisionDAO();
+        login(customer,"Requester"); decisions.customerDecision(ids[0],ids[1],false,"Too expensive");
+        check("Declined".equals(decisions.quotations(ids[0],false).get(0)[3]),"Customer decline persists");
+        login(manager,"Manager"); boolean refused=false;
+        try { decisions.review(ids[0],ids[1],true,""); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Declined quote cannot be approved");
+        int[] rejected = quotedRequest("Equipment",1);
+        login(customer,"Requester"); decisions.customerDecision(rejected[0],rejected[1],true,"");
+        login(manager,"Manager"); refused=false;
+        try { decisions.review(rejected[0],rejected[1],false,""); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Rejection needs a reason");
+        decisions.review(rejected[0],rejected[1],false,"Unable to fulfil");
+        check("Rejected".equals(decisions.history(rejected[0]).get(0)[2]),"Rejection history persists");
+        login(purchaser,"Purchaser"); refused=false;
+        try { new FulfilmentDAO().equipmentItems(rejected[0]); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Rejected request cannot be delivered");
+        login(manager,"Manager"); new ManagementDAO().changeRole(other,"Requester");
+        login(other,"Purchaser"); refused=false;
+        try { new QuotationDAO().getOpenRequestIds(); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Stale purchaser session cannot read all requests");
+    }
+    // Two simultaneous connections must still produce only one selected quotation.
+    private static void testConcurrentSelection() throws Exception {
+        final int[] first = quotedRequest("Equipment",1);
+        int vendor;
+        try (Connection c = DBConnection.getConnection()) { vendor = Database.id(Database.one(c,"SELECT vendor_id FROM vendors LIMIT 1")[0]); }
+        QuotationDAO quotes = new QuotationDAO();
+        ArrayList<QuotationItem> prices = quotes.getRequestItems(first[0]);
+        for (QuotationItem item : prices) { item.setUnitPrice(new java.math.BigDecimal("11.00")); }
+        final int second = quotes.saveQuotation(first[0],vendor,"Alternative",prices);
+        login(customer,"Requester");
+        final java.util.concurrent.CountDownLatch start = new java.util.concurrent.CountDownLatch(1);
+        final java.util.concurrent.atomic.AtomicInteger saved = new java.util.concurrent.atomic.AtomicInteger();
+        final java.util.ArrayList<Throwable> unexpected = new java.util.ArrayList<Throwable>();
+        Thread[] threads = new Thread[2];
+        for (int i=0;i<2;i++) {
+            final int quote = i==0 ? first[1] : second;
+            threads[i] = new Thread(new Runnable() {
+                public void run() {
+                    try { start.await(); new DecisionDAO().customerDecision(first[0],quote,true,""); saved.incrementAndGet(); }
+                    catch (IllegalArgumentException expected) { /* The second decision must be refused. */ }
+                    catch (Throwable ex) { synchronized(unexpected) { unexpected.add(ex); } }
+                }
+            });
+            threads[i].start();
+        }
+        start.countDown();
+        for (Thread thread : threads) { thread.join(); }
+        check(unexpected.isEmpty() && saved.get()==1,"Concurrent decisions produce one winner");
+        try (Connection c = DBConnection.getConnection()) {
+            check(Database.id(Database.one(c,"SELECT COUNT(*) FROM request_selections WHERE request_id=?",first[0])[0])==1,"One selected quotation stored");
+        }
     }
 
 }

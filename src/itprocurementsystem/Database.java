@@ -6,6 +6,8 @@ import java.util.ArrayList;
 // These small helpers avoid repeating JDBC setup in every data access class.
 // They are package-private: forms use the DAO classes, which check access first.
 final class Database {
+    // Object... means callers may pass several values, such as an ID and a name.
+    // Java gathers those values into an array for this method.
     // Put values into ? placeholders. Values are never joined into SQL text.
     private static void bind(PreparedStatement statement, Object... values) throws SQLException {
         for (int i = 0; i < values.length; i++) { statement.setObject(i + 1, values[i]); }

@@ -23,6 +23,8 @@ import javax.swing.table.DefaultTableModel;
  * @author alban-byamugisha
  */
 public class RequestPanel extends javax.swing.JPanel {
+    // Files remain pending until the complete request is saved.
+    private final ArrayList<java.io.File> attachments = new ArrayList<java.io.File>();
 
     // Keep the category IDs as well as the names displayed by our String combo box.
     private ArrayList<Category> categories = new ArrayList<Category>();
@@ -36,6 +38,21 @@ public class RequestPanel extends javax.swing.JPanel {
     public RequestPanel() {
         // Create the controls and layout arranged in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonChooseFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { chooseFile(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonRemoveFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { removeFile(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+
 
         // Fill the dropdown from MySQL after NetBeans has created its controls.
         loadCategories();
@@ -81,6 +98,26 @@ public class RequestPanel extends javax.swing.JPanel {
         });
     }
 
+    // Let the user choose supporting documents without changing the original files.
+    private void chooseFile() {
+        if (attachments.size() >= 10) { throw new IllegalArgumentException("Choose at most 10 attachments."); }
+        javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Supporting documents", "pdf", "png", "jpg", "jpeg", "txt", "docx", "xlsx"));
+        if (chooser.showOpenDialog(this) != javax.swing.JFileChooser.APPROVE_OPTION) { return; }
+        java.io.File file = chooser.getSelectedFile().getAbsoluteFile();
+        AttachmentDAO.validate(file);
+        if (attachments.contains(file)) { throw new IllegalArgumentException("That file has already been added."); }
+        attachments.add(file);
+        ((DefaultTableModel) jTableAttachments.getModel()).addRow(new Object[] {file.getName(),file.getAbsolutePath()});
+    }
+    private void removeFile() {
+        int row = jTableAttachments.getSelectedRow();
+        if (row < 0) { throw new IllegalArgumentException("Select a file first."); }
+        row = jTableAttachments.convertRowIndexToModel(row);
+        attachments.remove(row);
+        ((DefaultTableModel) jTableAttachments.getModel()).removeRow(row);
+    }
+
     // Save the complete request only when its items have been added to the table.
     private void submitRequest() {
         if (jComboBoxRequestType.getSelectedIndex() <= 0) {
@@ -112,7 +149,7 @@ public class RequestPanel extends javax.swing.JPanel {
             RequestDAO requestDAO = new RequestDAO();
             int requestId = requestDAO.saveRequest(Session.getUserId(),
                     jTextAreaNotes.getText(), requestItems,
-                    (String) jComboBoxRequestType.getSelectedItem());
+                    (String) jComboBoxRequestType.getSelectedItem(), attachments);
             // Clear only after saving succeeds. Failed attempts keep the entered data.
             clearRequest();
             JOptionPane.showMessageDialog(this,
@@ -152,6 +189,8 @@ public class RequestPanel extends javax.swing.JPanel {
 
     // Reset the unsaved request. This method does not delete anything from MySQL.
     private void clearRequest() {
+        attachments.clear();
+        ((DefaultTableModel) jTableAttachments.getModel()).setRowCount(0);
         requestItems.clear();
         jComboBoxRequestType.setEnabled(true);
         jComboBoxRequestType.setSelectedIndex(0);
@@ -518,7 +557,7 @@ public class RequestPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextFieldQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldQuantityActionPerformed
-        // TODO add your handling code here:
+        // No extra action is needed here; the form connects its buttons in the constructor.
     }//GEN-LAST:event_jTextFieldQuantityActionPerformed
 
 

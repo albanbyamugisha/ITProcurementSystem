@@ -22,6 +22,11 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
     public CustomerQuotationsPanel() {
         // Build the controls and layout saved in NetBeans Design view.
         initComponents();
+        // Right-click the request control to view its saved supporting documents.
+        AttachmentDAO.addMenu(jComboBoxRequest, new AttachmentDAO.RequestChoice() {
+            public int requestId() { return FormSupport.choice(jComboBoxRequest); }
+        });
+
         // Run this action when the user clicks the button.
         jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent event) {

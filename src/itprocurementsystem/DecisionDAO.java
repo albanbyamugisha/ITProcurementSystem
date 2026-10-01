@@ -39,6 +39,11 @@ public class DecisionDAO {
             if (quote > 0) {
                 Object[] q = Database.one(c,"SELECT specs FROM quotations WHERE quotation_id=? AND request_id=?",quote,id);
                 text += "\nQuotation notes: " + (q[0] == null ? "" : q[0]);
+                ArrayList<Object[]> decision = Database.rows(c,"SELECT decision,comments FROM customer_decisions WHERE quotation_id=?",quote);
+                if (!decision.isEmpty()) {
+                    text += "\nCustomer decision: " + decision.get(0)[0];
+                    text += "\nCustomer comments: " + (decision.get(0)[1] == null ? "" : decision.get(0)[1]);
+                }
             }
             ArrayList<Object[]> selected = Database.rows(c,"SELECT quotation_id FROM request_selections WHERE request_id=?",id);
             if (!selected.isEmpty()) { text += "\nCustomer chose quotation #" + selected.get(0)[0]; }

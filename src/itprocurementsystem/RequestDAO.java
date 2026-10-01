@@ -50,6 +50,19 @@ public class RequestDAO {
     // Return the new request ID only after all its items have been saved.
     public int saveRequest(int requesterId, String notes, ArrayList<RequestItem> items,
             String requestType) throws SQLException {
+        // Older callers can submit without attachments using this simpler overload.
+        return saveRequest(requesterId, notes, items, requestType, new ArrayList<java.io.File>());
+    }
+
+    // Save document copies and their records in the same request operation.
+    public int saveRequest(int requesterId, String notes, ArrayList<RequestItem> items,
+            String requestType, ArrayList<java.io.File> attachments) throws SQLException {
+        if (requesterId != Session.getUserId() || requesterId <= 0) { throw new IllegalArgumentException("You can submit only your own request."); }
+        if (attachments == null || attachments.size() > 10) { throw new IllegalArgumentException("Choose at most 10 attachments."); }
+        for (java.io.File file : attachments) { AttachmentDAO.validate(file); }
+        notes = Database.text(notes,"Request notes",4000,false);
+        // Keep copied paths so a failed database save can remove just its own copies.
+        ArrayList<java.nio.file.Path> copied = new ArrayList<java.nio.file.Path>();
         // The prompt is not a type. Validate here as well as in the form.
         if (!"Equipment".equals(requestType) && !"Service".equals(requestType)) {
             throw new IllegalArgumentException("Select Equipment or Service.");
@@ -124,6 +137,28 @@ public class RequestDAO {
                     }
                 }
 
+                // A unique prefix prevents two requests with the same filename overwriting each other.
+                java.nio.file.Path folder = java.nio.file.Paths.get(System.getProperty("procurement.attachments.dir",
+                        System.getProperty("user.home") + "/.it-procurement/attachments"));
+                for (java.io.File file : attachments) {
+                    try {
+                        java.nio.file.Files.createDirectories(folder);
+                        java.nio.file.Path target = folder.resolve(java.util.UUID.randomUUID().toString() + "-" + file.getName());
+                        Database.text(target.toAbsolutePath().toString(),"Stored file path",500,true);
+                        java.nio.file.Files.copy(file.toPath(),target);
+                        copied.add(target);
+                        // Check the copied size too, in case the original changed while being copied.
+                        if (java.nio.file.Files.size(target) > 10 * 1024 * 1024) { throw new IllegalArgumentException("The copied attachment exceeds 10 MB."); }
+                        Database.update(connection,"INSERT INTO attachments(request_id,file_name,file_path,uploaded_by) VALUES (?,?,?,?)",
+                                requestId,file.getName(),target.toAbsolutePath().toString(),requesterId);
+                    } catch (java.io.IOException ex) { throw new SQLException("Could not copy an attachment. The request was not saved.",ex); }
+                }
+                Database.audit(connection,"Submitted " + requestType + " request","requests",requestId);
+                Database.notify(connection,requesterId,"Request #" + requestId + " submitted successfully.");
+                for (Object[] purchaser : Database.rows(connection,"SELECT user_id FROM users WHERE role='Purchaser'")) {
+                    Database.notify(connection,Database.id(purchaser[0]),"New " + requestType + " request #" + requestId + " needs quotations.");
+                }
+
                 // Save everything together only after every INSERT succeeds.
                 connection.commit();
                 return requestId;
@@ -134,6 +169,11 @@ public class RequestDAO {
                 } catch (SQLException rollbackError) {
                     // Keep the original error while recording a rollback failure too.
                     ex.addSuppressed(rollbackError);
+                }
+                // Filesystem copies are outside MySQL, so clean them up explicitly on failure.
+                for (java.nio.file.Path path : copied) {
+                    try { java.nio.file.Files.deleteIfExists(path); }
+                    catch (java.io.IOException cleanupError) { ex.addSuppressed(cleanupError); }
                 }
                 throw ex;
             }

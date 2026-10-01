@@ -103,6 +103,9 @@ public class QuotationDAO {
                     st.setInt(1, requestId);
                     st.executeUpdate();
                 }
+                int customer = Database.id(Database.one(c,"SELECT requester_id FROM requests WHERE request_id=?",requestId)[0]);
+                Database.notify(c,customer,"A new quotation is available for request #" + requestId + ". Open My Quotations to review it.");
+                Database.audit(c,"Recorded quotation for request #" + requestId,"quotations",quotationId);
                 c.commit();
                 return quotationId;
             } catch (SQLException | RuntimeException ex) {
@@ -117,12 +120,13 @@ public class QuotationDAO {
     public ArrayList<Integer> getOpenRequestIds() throws SQLException {
         checkPurchaser();
         ArrayList<Integer> ids = new ArrayList<Integer>();
-        String sql = "SELECT request_id FROM requests WHERE request_status IN ('Pending', 'Quoted') ORDER BY request_id DESC";
-        // Resources close automatically after all rows have been read.
-        try (Connection connection = DBConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql);
-                ResultSet result = statement.executeQuery()) {
-            while (result.next()) { ids.add(result.getInt("request_id")); }
+        try (Connection connection = DBConnection.getConnection()) {
+            // Check the saved role as well as the remembered session role.
+            Database.require(connection,"Purchaser");
+            for (Object[] row : Database.rows(connection,
+                    "SELECT request_id FROM requests WHERE request_status IN ('Pending','Quoted') ORDER BY request_id DESC")) {
+                ids.add(Database.id(row[0]));
+            }
         }
         return ids;
     }
@@ -131,18 +135,13 @@ public class QuotationDAO {
     public ArrayList<QuotationItem> getRequestItems(int requestId) throws SQLException {
         checkPurchaser();
         ArrayList<QuotationItem> items = new ArrayList<QuotationItem>();
-        // Check the status again because it may have changed since the dropdown loaded.
-        String sql = "SELECT i.request_item_id, i.item_description, i.quantity "
-                + "FROM request_items i JOIN requests r ON r.request_id=i.request_id "
-                + "WHERE r.request_id=? AND r.request_status IN ('Pending', 'Quoted') ORDER BY i.request_item_id";
-        try (Connection connection = DBConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, requestId);
-            try (ResultSet result = statement.executeQuery()) {
-                while (result.next()) {
-                    items.add(new QuotationItem(result.getInt("request_item_id"),
-                            result.getString("item_description"), result.getInt("quantity")));
-                }
+        try (Connection connection = DBConnection.getConnection()) {
+            Database.require(connection,"Purchaser");
+            String sql = "SELECT i.request_item_id,i.item_description,i.quantity "
+                    + "FROM request_items i JOIN requests r ON r.request_id=i.request_id "
+                    + "WHERE r.request_id=? AND r.request_status IN ('Pending','Quoted') ORDER BY i.request_item_id";
+            for (Object[] row : Database.rows(connection,sql,requestId)) {
+                items.add(new QuotationItem(Database.id(row[0]),row[1].toString(),Database.id(row[2])));
             }
         }
         return items;

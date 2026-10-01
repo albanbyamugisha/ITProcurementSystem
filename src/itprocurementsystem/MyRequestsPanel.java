@@ -28,6 +28,11 @@ public class MyRequestsPanel extends javax.swing.JPanel {
     public MyRequestsPanel() {
         // Create the controls and layout arranged in NetBeans Design view.
         initComponents();
+        // Right-click the request control to view its saved supporting documents.
+        AttachmentDAO.addMenu(jTableRequests, new AttachmentDAO.RequestChoice() {
+            public int requestId() { return FormSupport.selectedId(jTableRequests); }
+        });
+
 
         // Connect Refresh outside the layout code maintained by NetBeans.
         jButtonRefresh.addActionListener(new ActionListener() {

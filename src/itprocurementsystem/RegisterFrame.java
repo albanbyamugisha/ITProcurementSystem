@@ -307,19 +307,19 @@ public class RegisterFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextFieldEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEmailActionPerformed
-        // TODO add your handling code here:
+        // No extra action is needed here; the form connects its buttons in the constructor.
     }//GEN-LAST:event_jTextFieldEmailActionPerformed
 
     private void jComboBoxDepartmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxDepartmentActionPerformed
-        // TODO add your handling code here:
+        // No extra action is needed here; the form connects its buttons in the constructor.
     }//GEN-LAST:event_jComboBoxDepartmentActionPerformed
 
     private void jPasswordFieldConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordFieldConfirmActionPerformed
-        // TODO add your handling code here:
+        // No extra action is needed here; the form connects its buttons in the constructor.
     }//GEN-LAST:event_jPasswordFieldConfirmActionPerformed
 
     private void jPasswordFieldPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordFieldPasswordActionPerformed
-        // TODO add your handling code here:
+        // No extra action is needed here; the form connects its buttons in the constructor.
     }//GEN-LAST:event_jPasswordFieldPasswordActionPerformed
 
     /**

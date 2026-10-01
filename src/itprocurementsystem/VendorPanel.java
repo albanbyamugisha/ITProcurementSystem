@@ -249,7 +249,7 @@ public class VendorPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextFieldVendorNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldVendorNameActionPerformed
-        // TODO add your handling code here:
+        // No extra action is needed here; the form connects its buttons in the constructor.
     }//GEN-LAST:event_jTextFieldVendorNameActionPerformed
 
 

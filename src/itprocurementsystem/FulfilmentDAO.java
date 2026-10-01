@@ -66,8 +66,8 @@ public class FulfilmentDAO {
                     int deliveredItem = Database.insert(c,"INSERT INTO delivery_items(delivery_id,request_item_id,item_description,serial_number,quantity) VALUES (?,?,?,?,1)",delivery,unit.getItemId(),item[0],unit.getSerialNumber());
                     Database.update(c,"INSERT INTO inventory(delivery_item_id,item_description,serial_number,category_id) VALUES (?,?,?,?)",deliveredItem,item[0],unit.getSerialNumber(),item[2]);
                 }
-                int ordered = Database.id(Database.one(c,"SELECT SUM(quantity) FROM request_items WHERE request_id=?",request)[0]);
-                int arrived = Database.id(Database.one(c,"SELECT COALESCE(SUM(d.quantity),0) FROM delivery_items d JOIN request_items i ON i.request_item_id=d.request_item_id WHERE i.request_id=?",request)[0]);
+                long ordered = ((Number) Database.one(c,"SELECT SUM(quantity) FROM request_items WHERE request_id=?",request)[0]).longValue();
+                long arrived = ((Number) Database.one(c,"SELECT COALESCE(SUM(d.quantity),0) FROM delivery_items d JOIN request_items i ON i.request_item_id=d.request_item_id WHERE i.request_id=?",request)[0]).longValue();
                 if (arrived == ordered) { Database.update(c,"UPDATE requests SET request_status='Delivered' WHERE request_id=?",request); }
                 Database.notify(c,Database.id(r[2]),"Request #" + request + ": received " + arrived + " of " + ordered + " equipment units.");
                 Database.audit(c,"Recorded delivery for request #" + request,"deliveries",delivery);

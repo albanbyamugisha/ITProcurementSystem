@@ -17,6 +17,16 @@ import java.awt.event.ActionListener;
  * @author alban-byamugisha
  */
 public class MainFrame extends javax.swing.JFrame {
+    // Reuse panels so leaving a screen does not discard unfinished entries.
+    private CustomerQuotationsPanel customerQuotationsPanel;
+    private ApprovalPanel approvalPanel;
+    private DeliveryPanel deliveryPanel;
+    private ServiceCompletionPanel serviceCompletionPanel;
+    private InventoryPanel inventoryPanel;
+    private VendorPanel vendorPanel;
+    private UserManagementPanel userManagementPanel;
+    private DepartmentPanel departmentPanel;
+    private NotificationsPanel notificationsPanel;
     // Keep one request panel so clicking Requests again preserves unfinished entries.
     // null means we have not created the panel yet.
     private RequestPanel requestPanel;
@@ -71,36 +81,80 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jButtonQuotes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if ("Manager".equals(Session.getRole())) { showPanel(new ApprovalPanel()); }
+                if ("Manager".equals(Session.getRole())) {
+                    if (approvalPanel == null) { approvalPanel = new ApprovalPanel(); }
+                    showPanel(approvalPanel);
+                }
                 else if ("Purchaser".equals(Session.getRole())) {
                     if (quotationPanel == null) { quotationPanel = new QuotationPanel(); }
+                    quotationPanel.refreshChoicesIfEmpty();
                     showPanel(quotationPanel);
                 }
             }
         });
         jButtonMyQuotations.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) { showPanel(new CustomerQuotationsPanel()); }
+            public void actionPerformed(ActionEvent event) {
+                if (customerQuotationsPanel == null) {
+                    customerQuotationsPanel = new CustomerQuotationsPanel();
+                }
+                showPanel(customerQuotationsPanel);
+            }
         });
         jButtonDeliveries.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) { showPanel(new DeliveryPanel()); }
+            public void actionPerformed(ActionEvent event) {
+                if (deliveryPanel == null) {
+                    deliveryPanel = new DeliveryPanel();
+                }
+                showPanel(deliveryPanel);
+            }
         });
         jButtonServices.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) { showPanel(new ServiceCompletionPanel()); }
+            public void actionPerformed(ActionEvent event) {
+                if (serviceCompletionPanel == null) {
+                    serviceCompletionPanel = new ServiceCompletionPanel();
+                }
+                showPanel(serviceCompletionPanel);
+            }
         });
         jButtonInventory.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) { showPanel(new InventoryPanel()); }
+            public void actionPerformed(ActionEvent event) {
+                if (inventoryPanel == null) {
+                    inventoryPanel = new InventoryPanel();
+                }
+                showPanel(inventoryPanel);
+            }
         });
         jButtonVendors.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) { showPanel(new VendorPanel()); }
+            public void actionPerformed(ActionEvent event) {
+                if (vendorPanel == null) {
+                    vendorPanel = new VendorPanel();
+                }
+                showPanel(vendorPanel);
+            }
         });
         jButtonUsers.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) { showPanel(new UserManagementPanel()); }
+            public void actionPerformed(ActionEvent event) {
+                if (userManagementPanel == null) {
+                    userManagementPanel = new UserManagementPanel();
+                }
+                showPanel(userManagementPanel);
+            }
         });
         jButtonDepartments.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) { showPanel(new DepartmentPanel()); }
+            public void actionPerformed(ActionEvent event) {
+                if (departmentPanel == null) {
+                    departmentPanel = new DepartmentPanel();
+                }
+                showPanel(departmentPanel);
+            }
         });
         jButtonNotifications.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) { showPanel(new NotificationsPanel()); }
+            public void actionPerformed(ActionEvent event) {
+                if (notificationsPanel == null) {
+                    notificationsPanel = new NotificationsPanel();
+                }
+                showPanel(notificationsPanel);
+            }
         });
         // Make room for large panels, while keeping scrollbars on smaller screens.
         java.awt.Dimension screen = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
@@ -349,7 +403,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonRequestsActionPerformed
 
     private void jButtonLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogoutActionPerformed
-        // TODO add your handling code here:
+        // No extra action is needed here; the form connects its buttons in the constructor.
     }//GEN-LAST:event_jButtonLogoutActionPerformed
 
     /**

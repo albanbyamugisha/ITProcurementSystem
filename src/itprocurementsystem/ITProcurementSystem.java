@@ -31,11 +31,12 @@ public class ITProcurementSystem {
         } catch (SQLException ex) {
             // Show useful checks instead of displaying a technical stack trace.
             JOptionPane.showMessageDialog(null,
-                    "Could not connect to the database.\n"
+                    "Could not prepare the database.\n"
                     + "Check that XAMPP MySQL is running on port 3306,\n"
                     + "the it_procurement_db database exists, and\n"
                     + "MySQL Connector/J is added to this project's Libraries.\n"
-                    + "Our database username is root and the password is empty.",
+                    + "Our database username is root and the password is empty.\n"
+                    + "Details: " + ex.getMessage(),
                     "Connection Test",
                     JOptionPane.ERROR_MESSAGE);
 
