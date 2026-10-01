@@ -5,6 +5,9 @@
 package itprocurementsystem;
 
 /**
+ * We use a JPanel because notification viewing belongs inside MainFrame.
+ * It groups the related controls without opening another window.
+ * MainFrame provides the title bar and navigation for this panel.
  *
  * @author alban-byamugisha
  */
@@ -14,6 +17,7 @@ public class NotificationsPanel extends javax.swing.JPanel {
      * Creates new form NotificationsPanel
      */
     public NotificationsPanel() {
+        // Build the controls and layout saved in NetBeans Design view.
         initComponents();
     }
 
@@ -67,6 +71,9 @@ public class NotificationsPanel extends javax.swing.JPanel {
 
         jLabelMessage.setText("Selected message");
 
+        jTextAreaMessage.setWrapStyleWord(true);
+        jTextAreaMessage.setLineWrap(true);
+        jTextAreaMessage.setEditable(false);
         jTextAreaMessage.setColumns(20);
         jTextAreaMessage.setRows(5);
         jScrollPane2.setViewportView(jTextAreaMessage);

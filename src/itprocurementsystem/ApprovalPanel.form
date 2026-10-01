@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
-  <NonVisualComponents>
-    <Component class="javax.swing.JButton" name="jButton5">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jButton5"/>
-      </Properties>
-    </Component>
-  </NonVisualComponents>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -158,7 +151,10 @@
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
             <Property name="text" type="java.lang.String" value="Select a request to view its details."/>
-          </Properties>
+          <Property name="editable" type="boolean" value="false"/>
+          <Property name="lineWrap" type="boolean" value="true"/>
+          <Property name="wrapStyleWord" type="boolean" value="true"/>
+        </Properties>
         </Component>
       </SubComponents>
     </Container>
@@ -225,7 +221,9 @@
           <Properties>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
-          </Properties>
+          <Property name="lineWrap" type="boolean" value="true"/>
+          <Property name="wrapStyleWord" type="boolean" value="true"/>
+        </Properties>
         </Component>
       </SubComponents>
     </Container>

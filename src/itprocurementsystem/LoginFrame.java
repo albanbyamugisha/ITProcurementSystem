@@ -73,7 +73,7 @@ public class LoginFrame extends javax.swing.JFrame {
         jButtonLogin.setText("Login");
         jButtonLogin.addActionListener(this::jButtonLoginActionPerformed);
 
-        jPasswordFieldPassword.setText("jPasswordField1");
+        jPasswordFieldPassword.setText("");
 
         jButtonRegister.setText("Create Account");
 

@@ -5,6 +5,9 @@
 package itprocurementsystem;
 
 /**
+ * We use a JPanel because department management belongs inside MainFrame.
+ * It groups the related controls without opening another window.
+ * MainFrame provides the title bar and navigation for this panel.
  *
  * @author alban-byamugisha
  */
@@ -14,6 +17,7 @@ public class DepartmentPanel extends javax.swing.JPanel {
      * Creates new form DepartmentPanel
      */
     public DepartmentPanel() {
+        // Build the controls and layout saved in NetBeans Design view.
         initComponents();
     }
 
@@ -26,8 +30,6 @@ public class DepartmentPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton5 = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
         jLabelTitle = new javax.swing.JLabel();
         jLabelDepartmentName = new javax.swing.JLabel();
         jTextFieldDepartmentName = new javax.swing.JTextField();
@@ -40,9 +42,7 @@ public class DepartmentPanel extends javax.swing.JPanel {
         jLabelSelectedDepartment = new javax.swing.JLabel();
         jLabelCount = new javax.swing.JLabel();
 
-        jButton5.setText("jButton5");
 
-        jLabel5.setText("jLabel5");
 
         jLabelTitle.setText("Department Management");
 
@@ -136,12 +136,10 @@ public class DepartmentPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButtonAddDepartment;
     private javax.swing.JButton jButtonClear;
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonUpdateDepartment;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabelCount;
     private javax.swing.JLabel jLabelDepartmentName;
     private javax.swing.JLabel jLabelSelectedDepartment;

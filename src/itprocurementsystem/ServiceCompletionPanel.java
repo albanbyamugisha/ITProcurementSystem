@@ -5,6 +5,9 @@
 package itprocurementsystem;
 
 /**
+ * We use a JPanel because service progress entry belongs inside MainFrame.
+ * It groups the related controls without opening another window.
+ * MainFrame provides the title bar and navigation for this panel.
  *
  * @author alban-byamugisha
  */
@@ -14,6 +17,7 @@ public class ServiceCompletionPanel extends javax.swing.JPanel {
      * Creates new form ServiceCompletionPanel
      */
     public ServiceCompletionPanel() {
+        // Build the controls and layout saved in NetBeans Design view.
         initComponents();
     }
 
@@ -26,7 +30,6 @@ public class ServiceCompletionPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton3 = new javax.swing.JButton();
         jLabelTitle = new javax.swing.JLabel();
         jLabelSelectReqeust = new javax.swing.JLabel();
         jComboBoxRequest = new javax.swing.JComboBox<>();
@@ -47,7 +50,6 @@ public class ServiceCompletionPanel extends javax.swing.JPanel {
         jButtonSaveProgress = new javax.swing.JButton();
         jLabelHint = new javax.swing.JLabel();
 
-        jButton3.setText("jButton3");
 
         jLabelTitle.setText("Service Completion");
 
@@ -89,6 +91,8 @@ public class ServiceCompletionPanel extends javax.swing.JPanel {
 
         jLabel1.setText("Work notes:");
 
+        jTextAreaWorkNotes.setWrapStyleWord(true);
+        jTextAreaWorkNotes.setLineWrap(true);
         jTextAreaWorkNotes.setColumns(20);
         jTextAreaWorkNotes.setRows(5);
         jScrollPane2.setViewportView(jTextAreaWorkNotes);
@@ -181,7 +185,6 @@ public class ServiceCompletionPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButtonClear;
     private javax.swing.JButton jButtonLoadDetails;
     private javax.swing.JButton jButtonRefresh;

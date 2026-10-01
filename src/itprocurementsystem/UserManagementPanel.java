@@ -5,6 +5,9 @@
 package itprocurementsystem;
 
 /**
+ * We use a JPanel because user management belongs inside MainFrame.
+ * It groups the related controls without opening another window.
+ * MainFrame provides the title bar and navigation for this panel.
  *
  * @author alban-byamugisha
  */
@@ -14,6 +17,7 @@ public class UserManagementPanel extends javax.swing.JPanel {
      * Creates new form UserManagementPanel
      */
     public UserManagementPanel() {
+        // Build the controls and layout saved in NetBeans Design view.
         initComponents();
     }
 

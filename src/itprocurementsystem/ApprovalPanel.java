@@ -31,7 +31,6 @@ public class ApprovalPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton5 = new javax.swing.JButton();
         jLabelTitle = new javax.swing.JLabel();
         jLabelRequest = new javax.swing.JLabel();
         jComboBoxRequest = new javax.swing.JComboBox<>();
@@ -55,7 +54,6 @@ public class ApprovalPanel extends javax.swing.JPanel {
         jScrollPane6 = new javax.swing.JScrollPane();
         jTableApprovalHistory = new javax.swing.JTable();
 
-        jButton5.setText("jButton5");
 
         jLabelTitle.setText("Review Quotations");
 
@@ -69,6 +67,9 @@ public class ApprovalPanel extends javax.swing.JPanel {
 
         jLabelRequestDetails.setText("Request Details");
 
+        jTextAreaRequestDetails.setWrapStyleWord(true);
+        jTextAreaRequestDetails.setLineWrap(true);
+        jTextAreaRequestDetails.setEditable(false);
         jTextAreaRequestDetails.setColumns(20);
         jTextAreaRequestDetails.setRows(5);
         jTextAreaRequestDetails.setText("Select a request to view its details.");
@@ -114,6 +115,8 @@ public class ApprovalPanel extends javax.swing.JPanel {
 
         jLabelComments.setText("Review Comments");
 
+        jTextAreaComments.setWrapStyleWord(true);
+        jTextAreaComments.setLineWrap(true);
         jTextAreaComments.setColumns(20);
         jTextAreaComments.setRows(5);
         jScrollPane5.setViewportView(jTextAreaComments);
@@ -131,7 +134,7 @@ public class ApprovalPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "History ID", "Previous Status", "New Status", "Changed By ", "Date"
+                "History ID", "Previous Status", "New Status", "Changed By", "Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -223,7 +226,6 @@ public class ApprovalPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButtonApprove;
     private javax.swing.JButton jButtonLoadQuotations;
     private javax.swing.JButton jButtonRefresh;

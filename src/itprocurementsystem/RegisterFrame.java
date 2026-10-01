@@ -27,9 +27,6 @@ public class RegisterFrame extends javax.swing.JFrame {
         // Remove designer sample passwords before the user starts typing.
         jPasswordFieldPassword.setText("");
         jPasswordFieldConfirm.setText("");
-        // These unused designer controls are hidden; they are not registration inputs.
-        jTextField6.setVisible(false);
-        jLabel7.setVisible(false);
         // Always start with an instruction, never an automatically chosen account type.
         jComboBoxAccountType.setModel(new javax.swing.DefaultComboBoxModel<String>(
                 new String[] {"Select account type", "Individual customer", "Organisation user"}));
@@ -145,8 +142,6 @@ public class RegisterFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel7 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
         jLabelTitle = new javax.swing.JLabel();
         jLabelFullName = new javax.swing.JLabel();
         jLabelUserName = new javax.swing.JLabel();
@@ -168,9 +163,7 @@ public class RegisterFrame extends javax.swing.JFrame {
         jLabelOrganisationName = new javax.swing.JLabel();
         jTextFieldOrgaisationName = new javax.swing.JTextField();
 
-        jLabel7.setText("jLabel7");
 
-        jTextField6.setText("jTextField6");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -195,7 +188,7 @@ public class RegisterFrame extends javax.swing.JFrame {
         jButtonCreateAccount.setText("Create Account");
 
         jComboBoxDepartment.setModel(new javax.swing.DefaultComboBoxModel<String>(
-            new String[] {"Select department"}
+            new String[] {"No department (optional)"}
         ));
         jComboBoxDepartment.addActionListener(this::jComboBoxDepartmentActionPerformed);
 
@@ -207,7 +200,7 @@ public class RegisterFrame extends javax.swing.JFrame {
 
         jLabelAccountType.setText("Account Type:");
 
-        jComboBoxAccountType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Individual customer", "Organisation user" }));
+        jComboBoxAccountType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select account type", "Individual customer", "Organisation user" }));
 
         jLabelOrganisationName.setText("Organisation Name");
 
@@ -360,7 +353,6 @@ public class RegisterFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCreateAccount;
     private javax.swing.JComboBox<String> jComboBoxAccountType;
     private javax.swing.JComboBox<String> jComboBoxDepartment;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabelAccountType;
     private javax.swing.JLabel jLabelDepartment;
     private javax.swing.JLabel jLabelEmail;
@@ -372,7 +364,6 @@ public class RegisterFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelUserName;
     private javax.swing.JPasswordField jPasswordFieldConfirm;
     private javax.swing.JPasswordField jPasswordFieldPassword;
-    private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextFieldEmail;
     private javax.swing.JTextField jTextFieldFullName;
     private javax.swing.JTextField jTextFieldOrgaisationName;

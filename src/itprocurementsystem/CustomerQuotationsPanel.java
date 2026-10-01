@@ -5,6 +5,9 @@
 package itprocurementsystem;
 
 /**
+ * We use a JPanel because customer quotation review belongs inside MainFrame.
+ * It groups the related controls without opening another window.
+ * MainFrame provides the title bar and navigation for this panel.
  *
  * @author alban-byamugisha
  */
@@ -14,6 +17,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
      * Creates new form CustomerQuotationsPanel
      */
     public CustomerQuotationsPanel() {
+        // Build the controls and layout saved in NetBeans Design view.
         initComponents();
     }
 
@@ -96,6 +100,9 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
 
         jLabelDetails.setText("Quotation details");
 
+        jTextAreaDetails.setWrapStyleWord(true);
+        jTextAreaDetails.setLineWrap(true);
+        jTextAreaDetails.setEditable(false);
         jTextAreaDetails.setColumns(20);
         jTextAreaDetails.setRows(5);
         jTextAreaDetails.setText("Select a quotation to view its details.");
@@ -103,6 +110,8 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
 
         jLabelComments.setText("Your comments (optional)");
 
+        jTextAreaComments.setWrapStyleWord(true);
+        jTextAreaComments.setLineWrap(true);
         jTextAreaComments.setColumns(20);
         jTextAreaComments.setRows(5);
         jScrollPane4.setViewportView(jTextAreaComments);

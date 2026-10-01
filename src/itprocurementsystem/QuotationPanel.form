@@ -208,7 +208,9 @@
           <Properties>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
-          </Properties>
+          <Property name="lineWrap" type="boolean" value="true"/>
+          <Property name="wrapStyleWord" type="boolean" value="true"/>
+        </Properties>
         </Component>
       </SubComponents>
     </Container>
@@ -225,11 +227,12 @@
     <Component class="javax.swing.JTextField" name="jTextFieldQuotationTotal">
       <Properties>
         <Property name="text" type="java.lang.String" value="0.00"/>
-      </Properties>
+          <Property name="editable" type="boolean" value="false"/>
+        </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="QoutationTotal:"/>
+        <Property name="text" type="java.lang.String" value="Quotation total:"/>
       </Properties>
     </Component>
   </SubComponents>

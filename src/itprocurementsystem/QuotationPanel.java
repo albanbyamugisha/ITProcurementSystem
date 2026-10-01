@@ -291,6 +291,8 @@ public class QuotationPanel extends javax.swing.JPanel {
 
         jLabelSpecs.setText("Specifications / notes (optional)");
 
+        jTextAreaSpecs.setWrapStyleWord(true);
+        jTextAreaSpecs.setLineWrap(true);
         jTextAreaSpecs.setColumns(20);
         jTextAreaSpecs.setRows(5);
         jScrollPane2.setViewportView(jTextAreaSpecs);
@@ -299,9 +301,10 @@ public class QuotationPanel extends javax.swing.JPanel {
 
         jButtonSaveQuotation.setText("Save Quotation");
 
+        jTextFieldQuotationTotal.setEditable(false);
         jTextFieldQuotationTotal.setText("0.00");
 
-        jLabel1.setText("QoutationTotal:");
+        jLabel1.setText("Quotation total:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

@@ -26,12 +26,12 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanelSidebar" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="90" max="32767" attributes="0"/>
-              <Component id="jPanelContent" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="jPanelContent" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="385" max="32767" attributes="0"/>
               <Component id="jLabelTitle" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="224" max="-2" attributes="0"/>
           </Group>
@@ -68,49 +68,61 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jLabelWelcome" alignment="0" min="-2" pref="186" max="-2" attributes="0"/>
-                      <Component id="jLabelRole" alignment="0" min="-2" pref="186" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-              </Group>
-              <Group type="102" attributes="0">
-                  <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="jButtonLogout" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonRequests" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButtonQuotes" max="32767" attributes="0"/>
-                      </Group>
                       <Component id="jButtonMyRequests" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonQuotes" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonDeliveries" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonInventory" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonMyQuotations" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonVendors" alignment="1" max="32767" attributes="0"/>
+                      <Component id="jButtonServices" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonUsers" alignment="1" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jLabelWelcome" alignment="0" min="-2" pref="186" max="-2" attributes="0"/>
+                              <Component id="jLabelRole" alignment="0" min="-2" pref="186" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      </Group>
+                      <Component id="jButtonDepartments" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonNotifications" alignment="1" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-              </Group>
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                  <Component id="jButtonInventory" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabelWelcome" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabelRole" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="102" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonRequests" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonMyRequests" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonQuotes" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonDeliveries" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonInventory" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonMyQuotations" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonVendors" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonServices" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonUsers" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonDepartments" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonNotifications" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="41" max="32767" attributes="0"/>
                   <Component id="jButtonLogout" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -164,6 +176,36 @@
             <Property name="text" type="java.lang.String" value="Inventory"/>
           </Properties>
         </Component>
+        <Component class="javax.swing.JButton" name="jButtonMyQuotations">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="My Quotations"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonVendors">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Vendors"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonServices">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Services"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonUsers">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Users"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonDepartments">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Departments"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonNotifications">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Notifications"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="jPanelContent">
@@ -171,7 +213,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="504" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">

@@ -5,6 +5,9 @@
 package itprocurementsystem;
 
 /**
+ * We use a JPanel because equipment inventory belongs inside MainFrame.
+ * It groups the related controls without opening another window.
+ * MainFrame provides the title bar and navigation for this panel.
  *
  * @author alban-byamugisha
  */
@@ -14,6 +17,7 @@ public class InventoryPanel extends javax.swing.JPanel {
      * Creates new form InventoryPanel
      */
     public InventoryPanel() {
+        // Build the controls and layout saved in NetBeans Design view.
         initComponents();
     }
 
@@ -26,7 +30,6 @@ public class InventoryPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton4 = new javax.swing.JButton();
         jLabelTitle = new javax.swing.JLabel();
         jLabelSearch = new javax.swing.JLabel();
         jTextFieldSearch = new javax.swing.JTextField();
@@ -42,7 +45,6 @@ public class InventoryPanel extends javax.swing.JPanel {
         jButtonUnassign = new javax.swing.JButton();
         jLabelCount = new javax.swing.JLabel();
 
-        jButton4.setText("jButton4");
 
         jLabelTitle.setText("Equipment Inventory");
 
@@ -61,11 +63,11 @@ public class InventoryPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Inventory ID", "Description", "Serial Number", "Category", "Assigned To", "Date Added", "Date Added", "Request ID"
+                "Inventory ID", "Description", "Serial Number", "Category", "Assigned To", "Date Added", "Request ID"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -159,7 +161,6 @@ public class InventoryPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButtonAssign;
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonSearch;

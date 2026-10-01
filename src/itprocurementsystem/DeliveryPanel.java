@@ -5,6 +5,9 @@
 package itprocurementsystem;
 
 /**
+ * We use a JPanel because equipment delivery entry belongs inside MainFrame.
+ * It groups the related controls without opening another window.
+ * MainFrame provides the title bar and navigation for this panel.
  *
  * @author alban-byamugisha
  */
@@ -14,6 +17,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
      * Creates new form DeliveryPanel
      */
     public DeliveryPanel() {
+        // Build the controls and layout saved in NetBeans Design view.
         initComponents();
     }
 
@@ -26,7 +30,6 @@ public class DeliveryPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton3 = new javax.swing.JButton();
         jLabelTitle = new javax.swing.JLabel();
         jComboBoxRequest = new javax.swing.JComboBox<>();
         jLabelRequest = new javax.swing.JLabel();
@@ -47,7 +50,6 @@ public class DeliveryPanel extends javax.swing.JPanel {
         jButtonClear = new javax.swing.JButton();
         jButtonSaveDelivery = new javax.swing.JButton();
 
-        jButton3.setText("jButton3");
 
         jLabelTitle.setText("Equipment Deliveries");
 
@@ -109,7 +111,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
 
         jButtonClear.setText("Clear");
 
-        jButtonSaveDelivery.setText("Save Deliverly");
+        jButtonSaveDelivery.setText("Save Delivery");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -159,7 +161,7 @@ public class DeliveryPanel extends javax.swing.JPanel {
                                 .addComponent(jButtonClear)
                                 .addGap(18, 18, 18)
                                 .addComponent(jButtonSaveDelivery)))
-                        .addGap(0, 37, Short.MAX_VALUE)))
+                        .addGap(0, 40, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -201,7 +203,6 @@ public class DeliveryPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButtonAddUnit;
     private javax.swing.JButton jButtonClear;
     private javax.swing.JButton jButtonLoadItems;

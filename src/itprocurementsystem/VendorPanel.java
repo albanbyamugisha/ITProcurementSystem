@@ -5,6 +5,9 @@
 package itprocurementsystem;
 
 /**
+ * We use a JPanel because vendor management belongs inside MainFrame.
+ * It groups the related controls without opening another window.
+ * MainFrame provides the title bar and navigation for this panel.
  *
  * @author alban-byamugisha
  */
@@ -14,6 +17,7 @@ public class VendorPanel extends javax.swing.JPanel {
      * Creates new form VendorPanel
      */
     public VendorPanel() {
+        // Build the controls and layout saved in NetBeans Design view.
         initComponents();
     }
 
@@ -26,9 +30,6 @@ public class VendorPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton5 = new javax.swing.JButton();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
         jLabelTitle = new javax.swing.JLabel();
         jLabelVendorName = new javax.swing.JLabel();
         jLabelContactName = new javax.swing.JLabel();
@@ -49,11 +50,8 @@ public class VendorPanel extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaAddress = new javax.swing.JTextArea();
 
-        jButton5.setText("jButton5");
 
-        jTextField5.setText("jTextField5");
 
-        jTextField6.setText("jTextField6");
 
         jLabelTitle.setText("Vendor Management");
 
@@ -97,6 +95,8 @@ public class VendorPanel extends javax.swing.JPanel {
 
         jTextFieldVendorName.addActionListener(this::jTextFieldVendorNameActionPerformed);
 
+        jTextAreaAddress.setWrapStyleWord(true);
+        jTextAreaAddress.setLineWrap(true);
         jTextAreaAddress.setColumns(20);
         jTextAreaAddress.setRows(5);
         jScrollPane2.setViewportView(jTextAreaAddress);
@@ -197,7 +197,6 @@ public class VendorPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButtonAddVendor;
     private javax.swing.JButton jButtonClear;
     private javax.swing.JButton jButtonRefresh;
@@ -213,8 +212,6 @@ public class VendorPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableVendors;
     private javax.swing.JTextArea jTextAreaAddress;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextFieldContactPerson;
     private javax.swing.JTextField jTextFieldEmail;
     private javax.swing.JTextField jTextFieldPhone;
