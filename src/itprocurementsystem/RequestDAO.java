@@ -137,13 +137,14 @@ public class RequestDAO {
                     }
                 }
 
-                // A unique prefix prevents two requests with the same filename overwriting each other.
+                // A short unique storage name avoids overwrites and filesystem filename limits.
                 java.nio.file.Path folder = java.nio.file.Paths.get(System.getProperty("procurement.attachments.dir",
                         System.getProperty("user.home") + "/.it-procurement/attachments"));
                 for (java.io.File file : attachments) {
                     try {
                         java.nio.file.Files.createDirectories(folder);
-                        java.nio.file.Path target = folder.resolve(java.util.UUID.randomUUID().toString() + "-" + file.getName());
+                        String extension = file.getName().substring(file.getName().lastIndexOf('.'));
+                        java.nio.file.Path target = folder.resolve(java.util.UUID.randomUUID().toString() + extension);
                         Database.text(target.toAbsolutePath().toString(),"Stored file path",500,true);
                         java.nio.file.Files.copy(file.toPath(),target);
                         copied.add(target);

@@ -1,23 +1,17 @@
-# Agreed work order
+# Current status
 
-## Design stage complete
+The design stage and planned application implementation are complete in code.
 
-All 15 planned forms are designed and reviewed. See [design review](design/design-review.md).
-No further manual dragging is currently required. Keep the NetBeans .form and Java files together.
+Implemented: navigation, registration, requests, attachments, quotations, customer decisions, staff review, deliveries, inventory, services, supporting-record management and private notifications.
 
-## Already implemented
+Validation: Java compilation passes and the isolated MariaDB suite passes 49 checks, including all 12 actual JPanel constructors. The three JFrame windows and real desktop interactions still need a live run in NetBeans.
 
-- Registration with unique usernames/emails and required customer account type.
-- Individuals have no department; organisations provide a name and may omit department.
-- Equipment and Service request types are saved. Each request uses one type.
-- Request lists and quotation entry; earlier live quotation checks passed for both request types.
+## Local handoff
 
-## Next: implementation, one step at a time
+- Start MySQL in XAMPP. Automatic startup was blocked because sudo requires the user's administrator password.
+- Run Project. The main class creates the three new workflow tables without deleting data.
+- If no Manager exists, register the intended staff member, then appoint them using `db/promote_staff.sql`. Only a trusted local administrator should do this.
+- Follow the workflow in README.md with Requester, Purchaser and Manager accounts.
+- Refresh the earlier Workbench ER model from the updated database; it predates the three new workflow tables.
 
-1. Connect the remaining navigation and decide which staff can access management screens.
-2. Implement customer quotation decisions and staff approval as separate actions. Store the selected quotation. Being an organisation must not automatically force an internal approval process.
-3. Implement equipment deliveries and inventory, and service progress separately. Services must not require serial numbers or inventory entries.
-4. Implement vendor, department and user management, notifications and request attachments.
-5. Test the complete workflows, permissions, validation and panel sizing with realistic data.
-
-Use beginner-friendly Java with comments explaining each new part. Commit and push every completed step. Keep local credential scripts out of Git.
+Keep code beginner-friendly, explain new parts in comments, and commit and push each completed future change. Do not publish local credential scripts.

@@ -19,7 +19,7 @@ public class WorkflowTest {
     }
     public static void main(String[] args) throws Exception {
         String url = System.getProperty("procurement.test.url", "");
-        if (!url.contains("/procurement_test")) { throw new IllegalStateException("Use a disposable procurement_test database."); }
+        if (!url.matches("jdbc:mysql://(127\\.0\\.0\\.1|localhost):[0-9]+/procurement_test(\\?.*)?")) { throw new IllegalStateException("Use a disposable procurement_test database."); }
         try (Connection c = DBConnection.getConnection()) {
             manager = user(c,"test_manager","Manager"); purchaser = user(c,"test_purchaser","Purchaser");
             customer = user(c,"test_customer","Requester"); other = user(c,"test_other","Requester");
@@ -53,6 +53,7 @@ public class WorkflowTest {
         testPanels();
         testDeclineAndRejection();
         testConcurrentSelection();
+        testConcurrentDeliveries();
         System.out.println("Passed " + checks + " checks.");
     }
     // Build a real request and supplier quote using the application DAOs.
@@ -269,6 +270,35 @@ public class WorkflowTest {
         try (Connection c = DBConnection.getConnection()) {
             check(Database.id(Database.one(c,"SELECT COUNT(*) FROM request_selections WHERE request_id=?",first[0])[0])==1,"One selected quotation stored");
         }
+    }
+
+    private static void testConcurrentDeliveries() throws Exception {
+        final int[] ids = approvedRequest("Equipment",3);
+        final java.util.concurrent.CountDownLatch start = new java.util.concurrent.CountDownLatch(1);
+        final java.util.concurrent.atomic.AtomicInteger saved = new java.util.concurrent.atomic.AtomicInteger();
+        final java.util.ArrayList<Throwable> unexpected = new java.util.ArrayList<Throwable>();
+        Thread[] threads = new Thread[2];
+        for (int i=0;i<2;i++) {
+            final int batch = i;
+            threads[i] = new Thread(new Runnable() {
+                public void run() {
+                    ArrayList<DeliveryUnit> units = new ArrayList<DeliveryUnit>();
+                    units.add(new DeliveryUnit(ids[2],"RACE-"+batch+"-A"));
+                    units.add(new DeliveryUnit(ids[2],"RACE-"+batch+"-B"));
+                    try {
+                        start.await();
+                        new FulfilmentDAO().saveDelivery(ids[0],java.time.LocalDate.now().toString(),units);
+                        saved.incrementAndGet();
+                    } catch (IllegalArgumentException expected) { /* Only one batch of two fits an order for three. */ }
+                    catch (Throwable ex) { synchronized(unexpected) { unexpected.add(ex); } }
+                }
+            });
+            threads[i].start();
+        }
+        start.countDown();
+        for (Thread thread : threads) { thread.join(); }
+        check(unexpected.isEmpty() && saved.get()==1,"Concurrent partial deliveries cannot exceed ordered quantity");
+        check(new FulfilmentDAO().inventory("RACE-").size()==2,"Losing concurrent delivery creates no inventory");
     }
 
 }

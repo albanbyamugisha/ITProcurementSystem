@@ -1,81 +1,78 @@
 # IT Procurement Request System
 
-An individual Object Oriented Programming II project for Year 2, Semester 1 of the B.Sc. Software Engineering programme.
+A beginner-friendly Java Swing and MySQL project for Year 2, Semester 1 OOP II. NetBeans `.form` files remain editable in Design view. Comments explain the forms, event handlers, data objects and database operations.
 
-The project is being built step by step using Java, JDBC, MySQL and NetBeans. Code comments explain what each part does in simple language.
+## Implemented
 
-## Current progress
+- Registration for individuals and organisations, with required account type and unique usernames/emails.
+- Login, logout and role-based navigation.
+- Equipment and service requests, item validation, exact decimal totals and supporting documents.
+- Supplier quotations, customer acceptance/decline and separate staff approval/rejection.
+- Partial equipment deliveries, unique serial numbers, inventory and assignment.
+- Service progress and completion dates, without inventory or serial numbers.
+- Vendor, department and user-role management.
+- Private notifications and audit entries for workflow decisions.
 
-- Database schema and reverse-engineered ER diagram.
-- Database login, session tracking, role-based navigation and logout.
-- Request entry with database categories, input validation and exact money totals.
-- Add Item, Remove Selected and Clear controls.
-- Submit Request saves the request and its items in one transaction with Pending status.
-- My Requests data query is ready; its NetBeans panel is the next design step.
+All 15 planned forms are designed and connected. The final automated run passed **49 checks** against a separate MariaDB test database, including transaction rollback, ownership, duplicate registration, concurrent decisions/deliveries and all 12 JPanel constructors. Full desktop window interaction on the user's normal database still needs a live run; automated panel tests do not replace that check.
 
-## Tools
+## Run in NetBeans
 
-- Apache NetBeans IDE 31
-- JDK 26 (current project configuration)
-- XAMPP MySQL/MariaDB server
-- MySQL Connector/J 26.7.0
-- MySQL Workbench for the ER model
+1. Start MySQL using the XAMPP control panel. The application uses `localhost:3306`, database `it_procurement_db`, user `root` and an empty database password.
+2. For a new database, run `db/it_procurement_schema.sql` and `db/sample_categories.sql`. Existing installations keep their data. The main application adds the three workflow tables automatically; `db/add_workflow_tables.sql` is the equivalent manual script.
+3. Put MySQL Connector/J in `lib/` and check Project Properties → Libraries. The configured filename is `mysql-connector-j-26.7.0.jar`.
+4. Run the **ITProcurementSystem** main class using Run Project. Create an account or use an existing application account.
+5. Public registration always creates a Requester. To appoint the first trusted staff member, register that person normally, then use `db/promote_staff.sql` with their exact username and chosen staff role. Subsequent role changes can be made by a manager in Users. Log out and back in after a role change.
 
-## Project files
+The project currently targets JDK 26 in NetBeans. Source compilation was also checked with `javac --release 8`.
 
-- `src/itprocurementsystem/`: commented Java source code.
-- `db/it_procurement_schema.sql`: database creation script.
-- `db/test_user.sql`: repeatable setup for an IT department and requester test account.
-- `db/it_procurement_er.mwb`: editable ER model.
-- `db/it_procurement_er.png`: exported ER diagram.
-- `db/`: PDF and SVG copies of the diagram.
-- `nbproject/` and `build.xml`: NetBeans project configuration.
+## Who uses each screen?
 
-## Run the application
+| Role | Screens |
+| --- | --- |
+| Requester | Requests, My Requests, My Quotations, Notifications |
+| Purchaser | Quotations, Deliveries, Services, Inventory, Vendors, Notifications |
+| Manager | Quotation review, Inventory, Vendors, Users, Departments, Notifications |
 
-1. Open this project in NetBeans.
-2. Start MySQL in XAMPP.
-3. Execute `db/it_procurement_schema.sql` using your MySQL connection.
-4. Download MySQL Connector/J 26.7.0 and put its JAR in a `lib` folder in this project. The driver is not included in Git.
-5. Check Project Properties → Libraries. If necessary, add the JAR using Add JAR/Folder.
-6. Run `ITProcurementSystem` to open the login window.
+A role controls staff access. An account type describes an individual or organisation customer. Selecting Organisation does not create a staff account or impose an organisation department approval process. Individuals have no department; organisations supply a name and may leave department empty.
 
-The local connection uses database `it_procurement_db`, server `localhost`, port `3306`, username `root` and an empty password. These are the local assignment settings; use appropriate credentials and connection security for any deployed system.
+## Try the complete workflow
 
-## Planned features
+1. **Requester:** add items and submit an Equipment or Service request. Each request uses one type.
+2. **Purchaser:** open Quotations, load the request, select a vendor, price every item and save. Add vendors in Vendors when needed.
+3. **Requester:** in My Quotations, select the request and load quotations. Select a quotation to inspect its items, then accept or decline. Acceptance chooses one final quotation for the request.
+4. **Manager:** load the customer-accepted request, select that same quotation and approve or reject it. Rejection requires a reason. This is the procurement system's staff authorisation to fulfil, separate from the customer's decision.
+5. **Purchaser, equipment:** load the approved request in Deliveries. Select an item and add one serial number per received unit. Save with the actual delivery date. Partial deliveries keep the request open; the final units mark it Delivered. Inventory records are created in the same transaction.
+6. **Purchaser, service:** load the approved request in Services. Save work status and notes; Completed requires a real completion date and marks the request Completed.
+7. **Requester:** refresh My Requests and Notifications to see updates.
 
-- Display submitted requests and their statuses.
-- Vendor quotations and manager approvals.
-- Delivery tracking and inventory records.
+Saved decisions are final for that request. A rejected request requires a new request. A declined quotation stays declined, but the purchaser may offer another quotation while the request is still Quoted. The application does not take payments.
 
-We will build the Swing screens using NetBeans Design view and commit progress as each step is completed.
+Panels preserve unfinished entries when navigating. Use Refresh on list screens to read recent database changes. Returning to an empty Quotation screen refreshes requests and vendors; Clear also reloads those choices.
 
-## ER diagram
+## Supporting files
 
-![IT procurement ER diagram](db/it_procurement_er.png)
+Requests accept up to ten documents, each at most 10 MB: PDF, PNG, JPG/JPEG, TXT, DOCX and XLSX. Choose File and Remove File work on the pending list. Submitting copies documents into `~/.it-procurement/attachments`; the originals are unchanged. Failed saves remove their new copies.
 
-## Try database login
+To open saved documents, select a request and right-click the request table in My Requests, or the request dropdown in quotation/review screens, then choose **View request attachments**. Purchasers must load the request first. A customer can view only their own request's documents. This is a local desktop assignment: another computer needs access to the stored files as well as the database.
 
-1. For a fresh database, run `db/it_procurement_schema.sql`, then `db/test_user.sql` and `db/sample_categories.sql`.
-2. Choose **Run Project** in NetBeans.
-3. Sign in with username **requester** and password **Requester123!**.
+## Code map
 
-The test account is an application user. It is separate from the MySQL root account, whose password is still empty. The seed script stores the SHA-256 hash and leaves any existing requester account unchanged. These are public demonstration credentials for this local assignment. SHA-256 follows the original brief; it is not a substitute for salted password hashing in a deployed application.
+- `Session`, `UserDAO`, `RegistrationDAO`: authentication, registration and remembered login.
+- `RequestItem`, `QuotationItem`, `DeliveryUnit`: data objects with validation.
+- `RequestDAO`, `QuotationDAO`, `DecisionDAO`, `FulfilmentDAO`, `ManagementDAO`, `AttachmentDAO`: SQL and business rules.
+- `Database`: small JDBC helpers for parameters, rows, access checks, audit and notification records.
+- `FormSupport`: shared table, dropdown and error-dialog code.
+- `DatabaseSetup`: creates only the new workflow tables if missing.
+- `*Frame`: independent windows. `*Panel`: screens displayed inside MainFrame.
 
-- Empty username, including spaces only: asks for a username.
-- Empty password: asks for a password.
-- Incorrect username or password: displays one generic failure message.
-- Correct test credentials: displays a welcome message with the user's full name and role. The main window opens with the buttons allowed for that role.
-- Database unavailable: displays a database error instead of saying the credentials are wrong.
+## Database and ER model
 
-The password field is cleared after each database login attempt. Passwords are compared exactly, including case and spaces.
+The schema now has 19 tables. `customer_decisions` records accept/decline comments, `request_selections` identifies the one quotation chosen for a request, and `service_progress` stores service work. Joining approvals to request selections identifies the precise quotation reviewed.
 
-## Checks for this step
+The earlier Workbench `.mwb`, PNG, PDF and SVG files in `db/` are snapshots from before those three tables were added. Reverse-engineer the updated database to refresh that editable Workbench model. The current added relationships are documented in `docs/workflow.md`.
 
-All Java sources compiled with Java 8-compatible syntax and APIs. Eleven direct checks against the local database passed, covering correct credentials, username trimming, incorrect password, password case and spaces, missing user, SQL input, blank/missing values and hash length. Running the seed script twice left one IT department and one requester account. The Login button uses the same tested UserDAO method; the updated graphical flow should also be tried in NetBeans.
+## Tests
 
-## Remembering the signed-in user
+`test/itprocurementsystem/WorkflowTest.java` exercises real DAO transactions and panel construction. Use `bash test/run-tests.sh` with a separate local MySQL/MariaDB instance on port **3307**. The runner resets only the database named `procurement_test` on that test instance. It refuses port 3306. The JDBC JAR must be present in `lib/`.
 
-`Session.java` keeps the user ID, username, full name and role in private static fields. Simple getters let screens read those details. `UserDAO` fills them only after checking the password, and clears them before every new login attempt and on database errors. The Logout button calls `Session.clear()` before returning to login. Passwords are not stored in the session.
-
-`static` makes these details shared within this one desktop application. `private` keeps other classes from assigning the fields directly. Closing the program loses the session; it does not change the database.
+The tests use fictional users and generate a registration password at runtime. The local staff credential script is ignored by Git. Database test data never goes into the user's normal `it_procurement_db`.

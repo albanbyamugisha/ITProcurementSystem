@@ -58,6 +58,9 @@ public class ManagementDAO {
         try (Connection c = DBConnection.getConnection()) {
             c.setAutoCommit(false);
             try {
+                // Lock managers in a consistent order before changing a role. Two managers
+                // cannot simultaneously remove each other's access and leave no manager.
+                Database.rows(c, "SELECT user_id FROM users WHERE role='Manager' ORDER BY user_id FOR UPDATE");
                 Database.require(c, "Manager");
                 if (Database.update(c, "UPDATE users SET role=? WHERE user_id=?", role,user) != 1) { throw new IllegalArgumentException("User not found."); }
                 Database.audit(c, "Changed role to " + role, "users", user);

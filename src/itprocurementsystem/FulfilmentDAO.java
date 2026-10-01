@@ -53,6 +53,9 @@ public class FulfilmentDAO {
             if (unit == null || !serials.add(unit.getSerialNumber().toLowerCase(java.util.Locale.ROOT))) { throw new IllegalArgumentException("Each received unit needs a different serial number."); }
         }
         try (Connection c = DBConnection.getConnection()) {
+            // Read newly committed quantities after waiting for another purchaser's lock.
+            // Otherwise MySQL's older snapshot could miss a just-saved partial delivery.
+            c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             c.setAutoCommit(false);
             try {
                 Object[] r = approved(c,request,"Equipment",true);
@@ -94,6 +97,9 @@ public class FulfilmentDAO {
         java.sql.Date completion = date(completionDate,"Completed".equals(status));
         if (!"Completed".equals(status) && completion != null) { throw new IllegalArgumentException("Enter a completion date only for completed work."); }
         try (Connection c = DBConnection.getConnection()) {
+            // Read newly committed quantities after waiting for another purchaser's lock.
+            // Otherwise MySQL's older snapshot could miss a just-saved partial delivery.
+            c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             c.setAutoCommit(false);
             try {
                 Object[] r = approved(c,request,"Service",true);
@@ -121,6 +127,9 @@ public class FulfilmentDAO {
     }
     public void assign(int inventory, Integer user) throws SQLException {
         try (Connection c = DBConnection.getConnection()) {
+            // Read newly committed quantities after waiting for another purchaser's lock.
+            // Otherwise MySQL's older snapshot could miss a just-saved partial delivery.
+            c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             c.setAutoCommit(false);
             try {
                 Database.require(c,"Manager","Purchaser");
