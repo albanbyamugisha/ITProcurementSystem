@@ -12,6 +12,9 @@ package itprocurementsystem;
  * @author alban-byamugisha
  */
 public class VendorPanel extends javax.swing.JPanel {
+    // The DAO handles validation and SQL; the form handles display.
+    private final ManagementDAO management = new ManagementDAO();
+
 
     /**
      * Creates new form VendorPanel
@@ -19,6 +22,60 @@ public class VendorPanel extends javax.swing.JPanel {
     public VendorPanel() {
         // Build the controls and layout saved in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { clearFields(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonAddVendor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { saveVendor(0); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonUpdateVendor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { saveVendor(FormSupport.selectedId(jTableVendors)); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Show the selected row in the editing fields.
+        jTableVendors.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) { jTextFieldVendorName.setText(FormSupport.cell(jTableVendors, 1).toString()); jTextFieldContactPerson.setText(FormSupport.cell(jTableVendors, 2).toString()); jTextFieldPhone.setText(FormSupport.cell(jTableVendors, 3).toString()); jTextFieldEmail.setText(FormSupport.cell(jTableVendors, 4).toString()); jTextAreaAddress.setText(FormSupport.cell(jTableVendors, 5).toString()); }
+            }
+        });
+        reload();
+
+    }
+
+    // Reload saved rows after an add or update.
+    private void reload() {
+        try { FormSupport.fill(jTableVendors, management.vendors()); jLabelCount.setText("Vendors: " + jTableVendors.getRowCount()); }
+        catch (Exception ex) { FormSupport.error(this, ex); }
+    }
+    private void clearFields() {
+        jTableVendors.clearSelection();
+        jTextFieldVendorName.setText("");
+        jTextFieldContactPerson.setText("");
+        jTextFieldPhone.setText("");
+        jTextFieldEmail.setText("");
+        jTextAreaAddress.setText("");
+    }
+    private void saveVendor(int id) throws java.sql.SQLException {
+        management.saveVendor(id, jTextFieldVendorName.getText(), jTextFieldContactPerson.getText(), jTextFieldPhone.getText(), jTextFieldEmail.getText(), jTextAreaAddress.getText());
+        reload(); clearFields();
     }
 
     /**

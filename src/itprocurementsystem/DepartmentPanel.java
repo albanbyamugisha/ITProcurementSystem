@@ -12,6 +12,9 @@ package itprocurementsystem;
  * @author alban-byamugisha
  */
 public class DepartmentPanel extends javax.swing.JPanel {
+    // The DAO handles validation and SQL; the form handles display.
+    private final ManagementDAO management = new ManagementDAO();
+
 
     /**
      * Creates new form DepartmentPanel
@@ -19,6 +22,51 @@ public class DepartmentPanel extends javax.swing.JPanel {
     public DepartmentPanel() {
         // Build the controls and layout saved in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { jTableDepartments.clearSelection(); jTextFieldDepartmentName.setText(""); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonAddDepartment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { saveDepartment(0); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonUpdateDepartment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { saveDepartment(FormSupport.selectedId(jTableDepartments)); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Show the selected row in the editing fields.
+        jTableDepartments.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) { jTextFieldDepartmentName.setText(FormSupport.cell(jTableDepartments,1).toString()); jLabelSelectedDepartment.setText("Selected department: " + FormSupport.cell(jTableDepartments,1)); }
+            }
+        });
+        reload();
+
+    }
+
+    // Refresh the table so it reflects the database, not an unsaved field.
+    private void reload() {
+        try { FormSupport.fill(jTableDepartments, management.departments()); jLabelCount.setText("Departments: " + jTableDepartments.getRowCount()); }
+        catch (Exception ex) { FormSupport.error(this, ex); }
+    }
+    private void saveDepartment(int id) throws java.sql.SQLException {
+        management.saveDepartment(id, jTextFieldDepartmentName.getText()); reload(); jTextFieldDepartmentName.setText("");
     }
 
     /**

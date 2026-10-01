@@ -12,6 +12,9 @@ package itprocurementsystem;
  * @author alban-byamugisha
  */
 public class NotificationsPanel extends javax.swing.JPanel {
+    // The DAO handles validation and SQL; the form handles display.
+    private final ManagementDAO management = new ManagementDAO();
+
 
     /**
      * Creates new form NotificationsPanel
@@ -19,6 +22,48 @@ public class NotificationsPanel extends javax.swing.JPanel {
     public NotificationsPanel() {
         // Build the controls and layout saved in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonMarkRead.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { management.markRead(FormSupport.selectedId(jTableNotifications)); reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonMarkAllRead.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { management.markRead(0); reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Show the selected row in the editing fields.
+        jTableNotifications.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) { jTextAreaMessage.setText(FormSupport.cell(jTableNotifications,2).toString()); }
+            }
+        });
+        // Changing the filter reloads only this user's messages.
+        jComboBoxFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) { reload(); }
+        });
+        reload();
+
+    }
+
+    // Read the unread total separately because a filter may hide some messages.
+    private void reload() {
+        try {
+            FormSupport.fill(jTableNotifications, management.notifications(jComboBoxFilter.getSelectedItem().toString()));
+            jLabelUnreadCount.setText("Unread: " + management.unreadCount());
+            jTextAreaMessage.setText("");
+        } catch (Exception ex) { FormSupport.error(this, ex); }
     }
 
     /**

@@ -12,6 +12,9 @@ package itprocurementsystem;
  * @author alban-byamugisha
  */
 public class UserManagementPanel extends javax.swing.JPanel {
+    // The DAO handles validation and SQL; the form handles display.
+    private final ManagementDAO management = new ManagementDAO();
+
 
     /**
      * Creates new form UserManagementPanel
@@ -19,6 +22,48 @@ public class UserManagementPanel extends javax.swing.JPanel {
     public UserManagementPanel() {
         // Build the controls and layout saved in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonShowAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { jTextFieldSearch.setText(""); reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonUpdateRole.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { management.changeRole(FormSupport.selectedId(jTableUsers), jComboBoxRole.getSelectedItem().toString()); reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Show the selected row in the editing fields.
+        jTableUsers.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) { jLabelSelectedUser.setText("Selected user: " + FormSupport.cell(jTableUsers,1)); jComboBoxRole.setSelectedItem(FormSupport.cell(jTableUsers,6)); }
+            }
+        });
+        reload();
+
+    }
+
+    // Search only public account details; password hashes never enter this table.
+    private void reload() {
+        try { FormSupport.fill(jTableUsers, management.users(jTextFieldSearch.getText())); jLabelCount.setText("Users: " + jTableUsers.getRowCount()); }
+        catch (Exception ex) { FormSupport.error(this, ex); }
     }
 
     /**

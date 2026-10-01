@@ -29,7 +29,9 @@ public class DBConnection {
     // This method opens a new connection and returns it to the calling class.
     // If the connection fails, SQLException lets that class handle the problem.
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        // Tests can choose a separate database without changing our normal local setup.
+        String databaseUrl = System.getProperty("procurement.test.url", URL);
+        return DriverManager.getConnection(databaseUrl, USERNAME, PASSWORD);
     }
 
     // The calling class should close its connection when it finishes using it.
