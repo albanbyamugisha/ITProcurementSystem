@@ -45,7 +45,9 @@ public class WorkflowTest {
         refused=false;
         try { dao.saveDepartment(0,"Forbidden"); } catch (IllegalArgumentException ex) { refused=true; }
         check(refused,"Customer cannot manage departments");
+        login(manager,"Manager"); dao.changeRole(other,"Requester");
         testDecisions();
+        testFulfilment();
         System.out.println("Passed " + checks + " checks.");
     }
     // Build a real request and supplier quote using the application DAOs.
@@ -87,6 +89,56 @@ public class WorkflowTest {
         refused=false;
         try { decisions.review(ids[0],ids[1],true,""); } catch (IllegalArgumentException ex) { refused=true; }
         check(refused,"Repeated staff approval refused");
+    }
+
+    private static int[] approvedRequest(String type, int quantity) throws Exception {
+        int[] ids = quotedRequest(type,quantity);
+        login(customer,"Requester"); new DecisionDAO().customerDecision(ids[0],ids[1],true,"");
+        login(manager,"Manager"); new DecisionDAO().review(ids[0],ids[1],true,"");
+        login(purchaser,"Purchaser"); return ids;
+    }
+    private static void testFulfilment() throws Exception {
+        FulfilmentDAO dao = new FulfilmentDAO();
+        String today = java.time.LocalDate.now().toString();
+        int[] equipment = approvedRequest("Equipment",2);
+        ArrayList<DeliveryUnit> units = new ArrayList<DeliveryUnit>();
+        units.add(new DeliveryUnit(equipment[2],"TEST-SERIAL-1"));
+        dao.saveDelivery(equipment[0],today,units);
+        check(((Number)dao.equipmentItems(equipment[0]).get(0)[4]).intValue()==1,"Partial delivery leaves one unit");
+        boolean refused=false;
+        try { dao.saveDelivery(equipment[0],today,units); } catch (SQLException ex) { refused=true; }
+        check(refused,"Duplicate serial rejected by database");
+        check(dao.inventory("TEST-SERIAL").size()==1,"Duplicate failure rolls back inventory");
+        units.clear(); units.add(new DeliveryUnit(equipment[2],"TEST-SERIAL-2")); units.add(new DeliveryUnit(equipment[2],"TEST-SERIAL-3"));
+        refused=false;
+        try { dao.saveDelivery(equipment[0],today,units); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Overdelivery rejected");
+        check(dao.inventory("TEST-SERIAL").size()==1,"Overdelivery rolls back all staged units");
+        units.remove(1); dao.saveDelivery(equipment[0],today,units);
+        check(dao.inventory("TEST-SERIAL").size()==2,"Final delivery creates exact inventory count");
+        int inventory = Database.id(dao.inventory("TEST-SERIAL-1").get(0)[0]);
+        dao.assign(inventory,customer);
+        check("test_customer".equals(dao.inventory("TEST-SERIAL-1").get(0)[4]),"Inventory assignment");
+        dao.assign(inventory,null);
+        check(dao.inventory("TEST-SERIAL-1").get(0)[4]==null,"Inventory unassignment");
+        int[] service = approvedRequest("Service",1);
+        refused=false;
+        try { dao.saveDelivery(service[0],today,units); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Service cannot create equipment delivery");
+        refused=false;
+        try { dao.saveProgress(service[0],"Completed","Done",""); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Completion date required");
+        dao.saveProgress(service[0],"In Progress","Working","");
+        check("In Progress".equals(dao.progress(service[0])[0]),"Service progress persists");
+        dao.saveProgress(service[0],"Completed","Done",today);
+        try (Connection c = DBConnection.getConnection()) {
+            check("Completed".equals(Database.one(c,"SELECT request_status FROM requests WHERE request_id=?",service[0])[0]),"Service completes request");
+            check("Delivered".equals(Database.one(c,"SELECT request_status FROM requests WHERE request_id=?",equipment[0])[0]),"Equipment completes request");
+        }
+        check(dao.inventory("TEST-SERIAL").size()==2,"Service creates no inventory rows");
+        login(customer,"Requester"); refused=false;
+        try { dao.assign(inventory,customer); } catch (IllegalArgumentException ex) { refused=true; }
+        check(refused,"Customer cannot assign inventory");
     }
 
 }

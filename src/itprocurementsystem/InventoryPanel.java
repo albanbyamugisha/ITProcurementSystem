@@ -12,6 +12,9 @@ package itprocurementsystem;
  * @author alban-byamugisha
  */
 public class InventoryPanel extends javax.swing.JPanel {
+    // Keep fulfilment SQL and validation separate from the displayed controls.
+    private final FulfilmentDAO fulfilment = new FulfilmentDAO();
+
 
     /**
      * Creates new form InventoryPanel
@@ -19,6 +22,58 @@ public class InventoryPanel extends javax.swing.JPanel {
     public InventoryPanel() {
         // Build the controls and layout saved in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonShowAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { jTextFieldSearch.setText(""); reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonAssign.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { fulfilment.assign(FormSupport.selectedId(jTableInventory),FormSupport.choice(jComboBoxAssignedTo)); reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonUnassign.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { fulfilment.assign(FormSupport.selectedId(jTableInventory),null); reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Show the selected row in the editing fields.
+        jTableInventory.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) { jLabelSelectedEquipment.setText("Selected equipment: " + FormSupport.cell(jTableInventory,1)); }
+            }
+        });
+        reload();
+
+    }
+
+    // Refresh users as well as equipment so newly registered accounts can be selected.
+    private void reload() {
+        try {
+            FormSupport.fill(jTableInventory, fulfilment.inventory(jTextFieldSearch.getText()));
+            FormSupport.choices(jComboBoxAssignedTo, fulfilment.assignees(), "Select user");
+            jLabelCount.setText("Equipment units: " + jTableInventory.getRowCount());
+        } catch (Exception ex) { FormSupport.error(this, ex); }
     }
 
     /**

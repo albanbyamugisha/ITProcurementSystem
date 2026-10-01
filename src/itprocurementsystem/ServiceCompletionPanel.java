@@ -12,6 +12,9 @@ package itprocurementsystem;
  * @author alban-byamugisha
  */
 public class ServiceCompletionPanel extends javax.swing.JPanel {
+    // Keep fulfilment SQL and validation separate from the displayed controls.
+    private final FulfilmentDAO fulfilment = new FulfilmentDAO();
+
 
     /**
      * Creates new form ServiceCompletionPanel
@@ -19,6 +22,59 @@ public class ServiceCompletionPanel extends javax.swing.JPanel {
     public ServiceCompletionPanel() {
         // Build the controls and layout saved in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonLoadDetails.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { loadDetails(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { clearProgress(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonSaveProgress.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { fulfilment.saveProgress(FormSupport.choice(jComboBoxRequest), jComboBoxWorkStatus.getSelectedItem().toString(), jTextAreaWorkNotes.getText(), jTextFieldCompletionDate.getText()); reload(); javax.swing.JOptionPane.showMessageDialog(null,"Service progress saved."); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        jComboBoxRequest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) { clearProgress(); }
+        });
+        reload();
+
+    }
+
+    // Services use notes and a date, never inventory or serial numbers.
+    private void reload() {
+        try { FormSupport.choices(jComboBoxRequest, fulfilment.requests("Service"), "Select request"); clearProgress(); }
+        catch (Exception ex) { FormSupport.error(this, ex); }
+    }
+    private void clearProgress() {
+        FormSupport.fill(jTableServiceItems, new java.util.ArrayList<Object[]>());
+        jTextAreaWorkNotes.setText(""); jTextFieldCompletionDate.setText("");
+        jComboBoxWorkStatus.setSelectedIndex(0); jLabelProvider.setText("Provider: Select a request");
+    }
+    private void loadDetails() throws java.sql.SQLException {
+        int request = FormSupport.choice(jComboBoxRequest);
+        FormSupport.fill(jTableServiceItems, fulfilment.serviceItems(request));
+        jLabelProvider.setText("Provider: " + fulfilment.supplier(request,"Service"));
+        Object[] progress = fulfilment.progress(request);
+        jComboBoxWorkStatus.setSelectedItem(progress[0]);
+        jTextAreaWorkNotes.setText(progress[1] == null ? "" : progress[1].toString());
+        jTextFieldCompletionDate.setText(progress[2] == null ? "" : progress[2].toString());
     }
 
     /**

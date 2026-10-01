@@ -12,6 +12,10 @@ package itprocurementsystem;
  * @author alban-byamugisha
  */
 public class DeliveryPanel extends javax.swing.JPanel {
+    // Keep fulfilment SQL and validation separate from the displayed controls.
+    private final FulfilmentDAO fulfilment = new FulfilmentDAO();
+    private final java.util.ArrayList<DeliveryUnit> units = new java.util.ArrayList<DeliveryUnit>();
+
 
     /**
      * Creates new form DeliveryPanel
@@ -19,6 +23,99 @@ public class DeliveryPanel extends javax.swing.JPanel {
     public DeliveryPanel() {
         // Build the controls and layout saved in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonLoadItems.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { loadItems(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonAddUnit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { addUnit(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonRemoveUnit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { removeUnit(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { clearDelivery(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonSaveDelivery.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { saveDelivery(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // A different request starts a fresh, unsaved delivery list.
+        jComboBoxRequest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) { clearDelivery(); }
+        });
+        reload();
+
+    }
+
+    // Only approved equipment requests appear in this dropdown.
+    private void reload() {
+        try { FormSupport.choices(jComboBoxRequest, fulfilment.requests("Equipment"), "Select request"); clearDelivery(); }
+        catch (Exception ex) { FormSupport.error(this, ex); }
+    }
+    private void clearDelivery() {
+        units.clear();
+        FormSupport.fill(jTableReceivedUnits, new java.util.ArrayList<Object[]>());
+        FormSupport.fill(jTableRequestItems, new java.util.ArrayList<Object[]>());
+        jTextFieldSerialNumber.setText(""); jTextFieldDeliveryDate.setText("");
+        jLabelSupplier.setText("Supplier: Select a request");
+    }
+    private void loadItems() throws java.sql.SQLException {
+        int request = FormSupport.choice(jComboBoxRequest);
+        FormSupport.fill(jTableRequestItems, fulfilment.equipmentItems(request));
+        jLabelSupplier.setText("Supplier: " + fulfilment.supplier(request,"Equipment"));
+    }
+    // Each unit needs its own serial number even when several units share an item ID.
+    private void addUnit() {
+        int item = FormSupport.selectedId(jTableRequestItems);
+        DeliveryUnit unit = new DeliveryUnit(item, jTextFieldSerialNumber.getText());
+        int staged = 0;
+        for (DeliveryUnit existing : units) {
+            if (existing.getSerialNumber().equalsIgnoreCase(unit.getSerialNumber())) { throw new IllegalArgumentException("That serial number is already in the list."); }
+            if (existing.getItemId() == item) { staged++; }
+        }
+        int remaining = ((Number) FormSupport.cell(jTableRequestItems,4)).intValue();
+        if (staged >= remaining) { throw new IllegalArgumentException("All remaining units for this item are already in the list."); }
+        units.add(unit);
+        ((javax.swing.table.DefaultTableModel) jTableReceivedUnits.getModel()).addRow(new Object[] {item,FormSupport.cell(jTableRequestItems,1),unit.getSerialNumber()});
+        jTextFieldSerialNumber.setText("");
+    }
+    private void removeUnit() {
+        int row = jTableReceivedUnits.getSelectedRow();
+        if (row < 0) { throw new IllegalArgumentException("Select a received unit first."); }
+        row = jTableReceivedUnits.convertRowIndexToModel(row);
+        units.remove(row);
+        ((javax.swing.table.DefaultTableModel) jTableReceivedUnits.getModel()).removeRow(row);
+    }
+    private void saveDelivery() throws java.sql.SQLException {
+        fulfilment.saveDelivery(FormSupport.choice(jComboBoxRequest), jTextFieldDeliveryDate.getText(), units);
+        reload();
+        javax.swing.JOptionPane.showMessageDialog(this,"Delivery and inventory saved.");
     }
 
     /**
