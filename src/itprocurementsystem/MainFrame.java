@@ -45,64 +45,78 @@ public class MainFrame extends javax.swing.JFrame {
         jLabelWelcome.setText("Welcome, " + Session.getFullName());
         jLabelRole.setText("Role: " + Session.getRole());
 
-        // Begin with all navigation buttons hidden, then show the ones for this role.
-        jButtonRequests.setVisible(false);
-        jButtonMyRequests.setVisible(false);
-        jButtonQuotes.setVisible(false);
-        jButtonDeliveries.setVisible(false);
+        // Customers use request screens; managers maintain records and review decisions.
+        // Purchasers arrange quotations, equipment deliveries and service completion.
+        boolean customer = "Requester".equals(Session.getRole());
+        boolean manager = "Manager".equals(Session.getRole());
+        boolean purchaser = "Purchaser".equals(Session.getRole());
+        jButtonRequests.setVisible(customer);
+        jButtonMyRequests.setVisible(customer);
+        jButtonMyQuotations.setVisible(customer);
+        jButtonQuotes.setVisible(manager || purchaser);
+        jButtonDeliveries.setVisible(purchaser);
+        jButtonServices.setVisible(purchaser);
+        jButtonInventory.setVisible(manager || purchaser);
+        jButtonVendors.setVisible(manager || purchaser);
+        jButtonUsers.setVisible(manager);
+        jButtonDepartments.setVisible(manager);
+        jButtonNotifications.setVisible(true);
 
-        // A requester submits requests; a manager reviews quotations and approvals.
-        if ("Requester".equals(Session.getRole())) {
-            jButtonRequests.setVisible(true);
-            jButtonMyRequests.setVisible(true);
-        } else if ("Manager".equals(Session.getRole())) {
-            jButtonQuotes.setVisible(true);
-        } else if ("Purchaser".equals(Session.getRole())) {
-            // A purchaser works with both quotations and deliveries.
-            jButtonQuotes.setVisible(true);
-            jButtonDeliveries.setVisible(true);
-        }
-
-        // A listener waits for a button click and runs actionPerformed when it happens.
-        // We connect it here because no Logout handler was created in Design view.
-        // The code stays outside NetBeans' generated layout block.
+        // Each listener opens one panel. SQL methods also check access before saving.
         jButtonLogout.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                // Keep the logout steps in a separate method so they are easy to read.
-                logout();
-            }
+            public void actionPerformed(ActionEvent event) { logout(); }
         });
-
-        // Connect the Design-view button without changing NetBeans' generated layout.
         jButtonMyRequests.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                showMyRequests();
-            }
+            public void actionPerformed(ActionEvent event) { showMyRequests(); }
         });
-
-        // Purchasers record quotations; the manager's approval screen comes later.
         jButtonQuotes.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent event) {
-                if (!"Purchaser".equals(Session.getRole())) {
-                    javax.swing.JOptionPane.showMessageDialog(MainFrame.this,
-                            "The manager approval screen will be added in the next stage.");
-                    return;
+                if ("Manager".equals(Session.getRole())) { showPanel(new ApprovalPanel()); }
+                else if ("Purchaser".equals(Session.getRole())) {
+                    if (quotationPanel == null) { quotationPanel = new QuotationPanel(); }
+                    showPanel(quotationPanel);
                 }
-                if (quotationPanel == null) { quotationPanel = new QuotationPanel(); }
-                // Replace the content area while keeping the sidebar visible.
-                jPanelContent.removeAll();
-                jPanelContent.setLayout(new java.awt.BorderLayout());
-                jPanelContent.add(new javax.swing.JScrollPane(quotationPanel), java.awt.BorderLayout.CENTER);
-                jPanelContent.revalidate();
-                jPanelContent.repaint();
             }
         });
+        jButtonMyQuotations.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new CustomerQuotationsPanel()); }
+        });
+        jButtonDeliveries.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new DeliveryPanel()); }
+        });
+        jButtonServices.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new ServiceCompletionPanel()); }
+        });
+        jButtonInventory.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new InventoryPanel()); }
+        });
+        jButtonVendors.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new VendorPanel()); }
+        });
+        jButtonUsers.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new UserManagementPanel()); }
+        });
+        jButtonDepartments.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new DepartmentPanel()); }
+        });
+        jButtonNotifications.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new NotificationsPanel()); }
+        });
+        // Make room for large panels, while keeping scrollbars on smaller screens.
+        java.awt.Dimension screen = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        setSize(Math.min(1200, screen.width - 60), Math.min(850, screen.height - 80));
 
         // Open this window in the middle of the screen.
         setLocationRelativeTo(null);
+    }
+
+    // A scroll pane keeps every control reachable when a panel is taller than the window.
+    private void showPanel(javax.swing.JPanel panel) {
+        jPanelContent.removeAll();
+        jPanelContent.setLayout(new java.awt.BorderLayout());
+        jPanelContent.add(new javax.swing.JScrollPane(panel), java.awt.BorderLayout.CENTER);
+        jPanelContent.revalidate();
+        jPanelContent.repaint();
     }
 
     // Display submitted requests in the same content area used by the request form.
