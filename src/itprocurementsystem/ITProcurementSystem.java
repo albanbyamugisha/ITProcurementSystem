@@ -20,6 +20,9 @@ public class ITProcurementSystem {
         // when this block finishes, even if an error occurs.
         try (Connection connection = DBConnection.getConnection()) {
 
+            // Create the new workflow tables if this is the first run after updating.
+            DatabaseSetup.ensureWorkflowTables(connection);
+
             // Check that the connection responds within three seconds.
             if (!connection.isValid(3)) {
                 throw new SQLException("The database connection did not respond.");

@@ -13,6 +13,9 @@ package itprocurementsystem;
  * @author alban-byamugisha
  */
 public class ApprovalPanel extends javax.swing.JPanel {
+    // This DAO checks ownership, roles and decision status before saving.
+    private final DecisionDAO decisions = new DecisionDAO();
+
 
     /**
      * Creates new form ApprovalPanel
@@ -20,6 +23,83 @@ public class ApprovalPanel extends javax.swing.JPanel {
     public ApprovalPanel() {
         // Create the controls and layout arranged in NetBeans Design view.
         initComponents();
+        // Run this action when the user clicks the button.
+        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { reload(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonLoadQuotations.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { loadQuotations(); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonApprove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { saveDecision(true); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Run this action when the user clicks the button.
+        jButtonReject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { saveDecision(false); }
+                catch (Exception ex) { FormSupport.error(null, ex); }
+            }
+        });
+        // Show the selected row in the editing fields.
+        jTableQuotations.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) { showQuote(); }
+            }
+        });
+        // Changing the request clears the old rows so they cannot be used accidentally.
+        jComboBoxRequest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) { clearDetails(); }
+        });
+        reload();
+
+    }
+
+    // Populate the choices with records that this user is allowed to view.
+    private void reload() {
+        try { FormSupport.choices(jComboBoxRequest, decisions.requests(true), "Select request"); clearDetails(); }
+        catch (Exception ex) { FormSupport.error(this, ex); }
+    }
+    private void clearDetails() {
+        FormSupport.fill(jTableQuotations, new java.util.ArrayList<Object[]>());
+        FormSupport.fill(jTableQuotationItems, new java.util.ArrayList<Object[]>());
+        jTextAreaRequestDetails.setText(""); jTextAreaComments.setText("");
+        FormSupport.fill(jTableApprovalHistory, new java.util.ArrayList<Object[]>());
+    }
+    private void loadQuotations() throws java.sql.SQLException {
+        int id = FormSupport.choice(jComboBoxRequest);
+        FormSupport.fill(jTableQuotations, decisions.quotations(id, true));
+        jTextAreaRequestDetails.setText(decisions.details(id, 0, true));
+        FormSupport.fill(jTableApprovalHistory, decisions.history(id));
+    }
+    // A selected quotation supplies the item prices and notes shown below it.
+    private void showQuote() {
+        if (jTableQuotations.getSelectedRow() < 0) { return; }
+        try {
+            int id = FormSupport.choice(jComboBoxRequest);
+            int quote = FormSupport.selectedId(jTableQuotations);
+            FormSupport.fill(jTableQuotationItems, decisions.items(id, quote, true));
+            jTextAreaRequestDetails.setText(decisions.details(id, quote, true));
+            
+        } catch (Exception ex) { FormSupport.error(this, ex); }
+    }
+    private void saveDecision(boolean accept) throws java.sql.SQLException {
+        int id = FormSupport.choice(jComboBoxRequest);
+        int quote = FormSupport.selectedId(jTableQuotations);
+        decisions.review(id, quote, accept, jTextAreaComments.getText());
+        jTextAreaComments.setText("");
+        loadQuotations();
+        javax.swing.JOptionPane.showMessageDialog(this, "Decision saved.");
     }
 
     /**
