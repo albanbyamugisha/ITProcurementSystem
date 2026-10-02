@@ -4,6 +4,12 @@ Started: 2 October 2026.
 
 Status: planning only. Items below distinguish requests from recommendations. No application or database changes are authorised by this list alone; agree on the full list before implementation. The explicitly requested logo has been generated and saved as a design asset.
 
+## Final scope reduction — latest decision
+
+The user asked to keep the work small. The authoritative preparation list is [final-dragging-checklist.md](design/final-dragging-checklist.md). It requires only ForgotPasswordFrame and one shared CataloguePanel, plus listed controls on existing forms.
+
+There will be no separate home, profile, catalogue-management, reports or payments screens. Payment recording/receipts are postponed. Account/history PDFs come from MainFrame buttons; all-user/selected-user PDFs come from UserManagementPanel; a selected-request PDF consolidates its available order, decision, delivery and service details. Existing quotation screens will be adapted in code to separate customer selling prices from internal supplier costs. Automatic registration login, gender, Admin permissions and the simple demonstration password reset remain in scope. Earlier, broader proposals below are historical and are overridden by this reduction.
+
 ## Decisions accepted on 2 October 2026
 
 The user said "Use your recommendations" and asked for the catalogue to be created. Record these as agreed direction: separate Admin role, fixed customer catalogue prices with internal supplier costs, no passwords/hashes in PDFs, optional gender choices, and manually recorded payments/receipts without online payment integration. A draft catalogue is saved in [catalogue-draft.md](catalogue-draft.md); its entries stay inactive until actual prices and specifications are set.

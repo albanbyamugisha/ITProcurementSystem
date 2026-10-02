@@ -1,3 +1,5 @@
+> SUPERSEDED: Do not follow this seven-form list. Use [the final reduced checklist](final-dragging-checklist.md): two new forms only.
+
 # Complete NetBeans dragging checklist
 
 Prepared: 2 October 2026. Design preparation only; do not write event handlers yet.
