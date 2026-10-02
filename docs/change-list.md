@@ -109,3 +109,10 @@ Automatic login after registration is distinct from password recovery: recommend
 7. Test access restrictions, price integrity, old records, gender choices, PDF pagination and smaller-screen navigation; update documentation and commit each completed step.
 
 More fixes and additions can be appended to this list before implementation starts.
+
+
+## Design preparation checklist
+
+The complete list of seven new forms and changes to existing forms is saved in [implementation-dragging-checklist.md](design/implementation-dragging-checklist.md). It reuses CustomerQuotationsPanel for customer order confirmation at saved catalogue prices, while QuotationPanel and ApprovalPanel retain internal supplier pricing/review. Class and component variable names are preserved where possible. Admin manually records received payments; customers see only their own payment history/receipts. No online payment gateway or email recovery is part of this version.
+
+The first Admin username and real prices remain setup inputs, not blockers for dragging the forms. No application code was changed when preparing this checklist.
