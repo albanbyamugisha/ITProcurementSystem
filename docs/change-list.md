@@ -4,6 +4,12 @@ Started: 2 October 2026.
 
 Status: planning only. Items below distinguish requests from recommendations. No application or database changes are authorised by this list alone; agree on the full list before implementation. The explicitly requested logo has been generated and saved as a design asset.
 
+## Decisions accepted on 2 October 2026
+
+The user said "Use your recommendations" and asked for the catalogue to be created. Record these as agreed direction: separate Admin role, fixed customer catalogue prices with internal supplier costs, no passwords/hashes in PDFs, optional gender choices, and manually recorded payments/receipts without online payment integration. A draft catalogue is saved in [catalogue-draft.md](catalogue-draft.md); its entries stay inactive until actual prices and specifications are set.
+
+The user is still discussing additions before implementation. The first Admin username, actual UGX prices, tax/delivery-charge policy and email-delivery configuration remain outstanding. Do not infer these from the user's email or invent live values.
+
 ## 1. PDF documents and reports
 
 Requested: use the added iText libraries to produce useful PDFs with the system logo on every document. Admin can view/export all users; a customer can view/export only their own records.
@@ -22,7 +28,7 @@ Proposed documents:
 
 Common template recommendation: logo, system name, document title/number, generation date and time, page numbers, readable tables, repeated table headings, and explicit UGX currency labels. Use a Save dialog and avoid overwriting a file without confirmation. Show empty reports clearly. Check access again when querying report data, not only when displaying buttons.
 
-Requested inclusion of passwords needs correction: the current system stores a one-way SHA-256 hash, not the original password. Recommendation: exclude passwords and password hashes from every PDF, including admin reports. Do not add plain-text password storage or ask users to enter a password for printing. Show ordinary account details, and consider password change/reset as a separate future feature if needed. This recommendation is recorded for discussion, not implemented here.
+Requested inclusion of passwords needs correction: the current system stores a one-way SHA-256 hash, not the original password. Recommendation: exclude passwords and password hashes from every PDF, including admin reports. Do not add plain-text password storage or ask users to enter a password for printing. Show ordinary account details, and consider password change/reset as a separate future feature if needed. The user has accepted this recommendation; it is not implemented yet.
 
 Payment receipts: the system currently has no payment records. Use procurement history, order summaries and delivery acknowledgements initially. If actual payment receipts are wanted, first specify payment recording, amount, method, payment date, reference, partial payments and outstanding balance. Do not label an unpaid request as paid.
 
@@ -72,14 +78,32 @@ Recommendation: use the core runtime JAR for the initial text/table/logo PDFs; a
 
 Official module reference: https://kb.itextpdf.com/it5kb/installing-itext-5-toolbox-for-java-developers
 
+## 8. Forgotten-password recovery
+
+New question: what happens if a user forgets the password?
+
+Proposed addition: a Forgot Password action opens a pre-login recovery form. The user requests a one-time code at their registered email address, enters that code and a new password twice, and then signs in using the new password. The old password is never recovered, printed or emailed.
+
+Use random, expiring, single-use codes; store only code hashes, limit attempts/resends, give neutral account-existence messages, and invalidate old sessions after reset. Proposed expiry is 10 minutes. Email requires a sender/provider configured locally. If unavailable, discuss verified admin-assisted recovery rather than an insecure public reset shortcut. No email credentials have been supplied or requested in chat.
+
+See [the recovery form plan](design/password-recovery-guide.md). This is a new recommendation; email configuration and the precise delivery route remain to be settled.
+
+## 9. Automatic login after registration
+
+Explicitly requested: after successful account creation, open MainFrame directly rather than sending the new user to LoginFrame.
+
+Plan: confirm registration committed, authenticate the newly created account using the supplied credentials while they are still in memory, populate Session from the saved account, open MainFrame and close registration. Clear temporary password values afterward. Never open a session before creation succeeds; duplicate-user, validation and database errors must not create a session. If creation succeeds but automatic login fails, say the account was created and offer ordinary login instead of encouraging duplicate registration. The new account remains a Requester.
+
+Automatic login after registration is distinct from password recovery: recommend normal login after a reset. No new registration-success form is needed.
+
 ## Proposed implementation order, after discussion
 
 1. Agree on roles, customer selling prices versus supplier costs, report scope and gender options.
-2. Update data structure for catalogue, saved prices and gender; migrate existing data without rewriting historic amounts.
-3. Adjust registration, profile, catalogue, request entry and navigation, keeping NetBeans forms editable.
+2. Update data structure for catalogue, saved prices, gender, payments and secure password reset/session invalidation; migrate existing data without rewriting historic amounts.
+3. Prepare the remaining form designs; implement registration auto-login, password recovery, profile, catalogue, request entry and navigation, keeping NetBeans forms editable.
 4. Update quotation/acceptance logic and access checks to fit the chosen price model.
 5. Add the logo-based PDF template and individual report actions.
-6. Add payment records and receipts only if that scope is chosen.
+6. Add the agreed manual payment records and receipts; never mark a document paid before a payment is saved.
 7. Test access restrictions, price integrity, old records, gender choices, PDF pagination and smaller-screen navigation; update documentation and commit each completed step.
 
 More fixes and additions can be appended to this list before implementation starts.
