@@ -8,7 +8,7 @@ Status: planning only. Items below distinguish requests from recommendations. No
 
 The user said "Use your recommendations" and asked for the catalogue to be created. Record these as agreed direction: separate Admin role, fixed customer catalogue prices with internal supplier costs, no passwords/hashes in PDFs, optional gender choices, and manually recorded payments/receipts without online payment integration. A draft catalogue is saved in [catalogue-draft.md](catalogue-draft.md); its entries stay inactive until actual prices and specifications are set.
 
-The user is still discussing additions before implementation. The first Admin username, actual UGX prices, tax/delivery-charge policy and email-delivery configuration remain outstanding. Do not infer these from the user's email or invent live values.
+The user is still discussing additions before implementation. The first Admin username, actual UGX prices, tax/delivery-charge policy remain outstanding. Do not infer these from the user's email or invent live values.
 
 ## 1. PDF documents and reports
 
@@ -78,15 +78,17 @@ Recommendation: use the core runtime JAR for the initial text/table/logo PDFs; a
 
 Official module reference: https://kb.itextpdf.com/it5kb/installing-itext-5-toolbox-for-java-developers
 
-## 8. Forgotten-password recovery
+## 8. Simple class-demonstration password reset
 
-New question: what happens if a user forgets the password?
+The user explicitly requested a beginner-friendly, local class-project flow using the registered username and full name, with the password displayed. Email delivery and reset codes are removed from the plan.
 
-Proposed addition: a Forgot Password action opens a pre-login recovery form. The user requests a one-time code at their registered email address, enters that code and a new password twice, and then signs in using the new password. The old password is never recovered, printed or emailed.
+Planned flow: enter username and full name; check that both match the same registered account; generate a new replacement password; save its hash; then display the new password on the reset form so the user can copy it and log in. Display it only after the database update succeeds. The old password cannot be retrieved from its existing one-way hash. Do not switch account storage to plain text or include the displayed password in PDFs or logs.
 
-Use random, expiring, single-use codes; store only code hashes, limit attempts/resends, give neutral account-existence messages, and invalidate old sessions after reset. Proposed expiry is 10 minutes. Email requires a sender/provider configured locally. If unavailable, discuss verified admin-assisted recovery rather than an insecure public reset shortcut. No email credentials have been supplied or requested in chat.
+Use ordinary fields, an if/else check, a small password-generation helper and a JDBC update, with explanatory comments. Blank or mismatching details must not change an account. Clear the displayed replacement when starting another attempt or closing the form. Keep the existing role unchanged, invalidate old sessions after a successful reset, and return to normal login afterward.
 
-See [the recovery form plan](design/password-recovery-guide.md). This is a new recommendation; email configuration and the precise delivery route remain to be settled.
+Limitation: usernames and full names are not secret. Someone who knows both could reset that account, so this is an intentionally limited local classroom demonstration, not verified account recovery for real users.
+
+See [the simplified form plan](design/password-recovery-guide.md). No application code is changed during planning.
 
 ## 9. Automatic login after registration
 
@@ -99,7 +101,7 @@ Automatic login after registration is distinct from password recovery: recommend
 ## Proposed implementation order, after discussion
 
 1. Agree on roles, customer selling prices versus supplier costs, report scope and gender options.
-2. Update data structure for catalogue, saved prices, gender, payments and secure password reset/session invalidation; migrate existing data without rewriting historic amounts.
+2. Update data structure for catalogue, saved prices, gender, payments and the agreed demonstration password reset/session invalidation; migrate existing data without rewriting historic amounts.
 3. Prepare the remaining form designs; implement registration auto-login, password recovery, profile, catalogue, request entry and navigation, keeping NetBeans forms editable.
 4. Update quotation/acceptance logic and access checks to fit the chosen price model.
 5. Add the logo-based PDF template and individual report actions.

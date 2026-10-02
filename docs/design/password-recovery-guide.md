@@ -1,45 +1,40 @@
-# Forgotten-password form plan
+# Simple password-reset form — class project
 
-Planning only. No form or reset code has been implemented yet.
+Planning only. Updated on 2 October 2026 to follow the user's request for a simpler local demonstration. No email, sender setup or verification codes are required.
 
-## Proposed user flow
+## Flow
 
-1. LoginFrame has a Forgot Password button.
-2. ForgotPasswordFrame asks for the registered email address and sends a reset code.
-3. The user enters the received code, a new password and its confirmation.
-4. After successful validation, replace the saved password hash and consume the code in one transaction.
-5. Return to login after a reset. Automatic login is reserved for successful new-account registration, as requested.
+1. Click Forgot Password? on LoginFrame.
+2. Enter the username and full name registered on the same account.
+3. Click Reset Password.
+4. If the details match, generate a new replacement password and update its hash in the database.
+5. Show the new password only after saving succeeds. The user copies it and returns to login.
 
-Codes should be unpredictable, stored as hashes, expire after a short period (proposed: 10 minutes), be single-use, and have attempt/resend limits. Display the same neutral response for unknown and known email addresses. Send codes only to the stored account address, never to a replacement address typed during recovery. Do not display codes in the public form, logs or PDFs. Resetting a password must invalidate outstanding reset codes and existing sessions.
+The original password cannot be recovered from the hash already stored. Displaying a newly generated password achieves the requested visible result while retaining hashed account storage. The replacement must satisfy the existing password-length policy. Use a short, commented helper with SecureRandom to generate it; no new external library is needed.
 
-Email delivery needs a configured sender/provider. SMTP credentials must stay in local private configuration, not source code or Git. The user should never paste a mailbox password into chat. Real email delivery cannot be described as working until it has been configured and tested.
+If the details are blank or do not match, show a simple error and change nothing. Clear the displayed password before another attempt and when closing the form. Never include it in PDFs, logs or Git. Preserve the account's role and invalidate old sessions after reset. A database failure must not display a password as successfully saved.
 
-If email delivery is unavailable for the assignment demo, a separately agreed admin-assisted recovery flow could issue an expiring code after identity verification through a trusted channel. Knowing a username or email address is not sufficient verification. Do not silently fall back to showing reset codes to whoever requests them.
+Username and full name are not secrets. This flow is a deliberately limited classroom demonstration: anyone who knows both could reset the account. It is not suitable as real-world identity verification.
 
-Reference: https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html
+## Controls
 
-## NetBeans controls to prepare
+Use the JFrame Form `ForgotPasswordFrame` in package `itprocurementsystem`. It is a JFrame because it opens before login and therefore needs its own window. About 500 by 320 pixels is sufficient.
 
-Create a JFrame Form named `ForgotPasswordFrame` in `itprocurementsystem`. A JFrame is suitable because password recovery is available before the user can enter MainFrame. Keep it simple: about 520 by 430 pixels with aligned labels and fields.
-
-| Palette control | Variable name | Text/purpose |
+| Palette control | Variable name | Text / property |
 | --- | --- | --- |
 | Label | jLabelTitle | Reset Password |
-| Label | jLabelEmail | Registered email |
-| Text Field | jTextFieldEmail | Empty |
-| Button | jButtonSendCode | Send Reset Code |
-| Label | jLabelCode | Reset code |
-| Text Field | jTextFieldResetCode | Empty |
-| Label | jLabelNewPassword | New password |
-| Password Field | jPasswordFieldNewPassword | Empty |
-| Label | jLabelConfirmPassword | Confirm new password |
-| Password Field | jPasswordFieldConfirmPassword | Empty |
-| Label | jLabelStatus | Enter your registered email to request a reset code. |
+| Label | jLabelUsername | Username |
+| Text Field | jTextFieldUsername | Empty |
+| Label | jLabelFullName | Full name |
+| Text Field | jTextFieldFullName | Empty |
 | Button | jButtonResetPassword | Reset Password |
+| Label | jLabelNewPassword | Your new password |
+| Text Field | jTextFieldNewPassword | Empty; editable = false; visible text that can be copied |
+| Label | jLabelStatus | Enter your registered username and full name. |
 | Button | jButtonBackToLogin | Back to Login |
 
-Use Password Field controls for both passwords. Put the email and Send Reset Code controls first, followed by the reset code and password fields. The Reset Password and Back to Login buttons belong at the bottom. Do not add event code while preparing the design.
+The result uses a normal Text Field because the user explicitly wants the new password displayed. Read-only means it cannot be edited accidentally; it can still be selected and copied.
 
-Add a Button named `jButtonForgotPassword`, labelled Forgot Password?, to LoginFrame. Registration automatic login reuses MainFrame and needs no additional form.
+If the earlier email/code form was already drawn, reuse the same frame and replace those controls with this list. Add a Button named `jButtonForgotPassword`, labelled Forgot Password?, to LoginFrame. Do not write event code during the design step.
 
-Later code should explain why this form is a JFrame, centre it and return safely to LoginFrame when it closes. The form alone must never be treated as identity verification.
+Registration still follows the separate agreed rule: successful account creation opens MainFrame automatically. Password reset returns to normal login.
