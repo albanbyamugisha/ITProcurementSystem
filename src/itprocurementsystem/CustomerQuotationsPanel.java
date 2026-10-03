@@ -78,7 +78,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
         FormSupport.fill(jTableQuotations, new java.util.ArrayList<Object[]>());
         FormSupport.fill(jTableQuotationItems, new java.util.ArrayList<Object[]>());
         jTextAreaDetails.setText(""); jTextAreaComments.setText("");
-        jLabelDecision.setText("Decision: No quotation selected");
+        jLabelDecision.setText("Decision: Select an order");
     }
     private void loadQuotations() throws java.sql.SQLException {
         int id = FormSupport.choice(jComboBoxRequest);
@@ -94,7 +94,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
             int quote = FormSupport.selectedId(jTableQuotations);
             FormSupport.fill(jTableQuotationItems, decisions.items(id, quote, false));
             jTextAreaDetails.setText(decisions.details(id, quote, false));
-            jLabelDecision.setText("Quotation status: " + FormSupport.cell(jTableQuotations,3));
+            jLabelDecision.setText("Order status: " + FormSupport.cell(jTableQuotations,3));
         } catch (Exception ex) { FormSupport.error(this, ex); }
     }
     private void saveDecision(boolean accept) throws java.sql.SQLException {
@@ -135,11 +135,11 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
         jButtonAccept = new javax.swing.JButton();
         jButtonDecline = new javax.swing.JButton();
 
-        jLabelTitle.setText("My Quotations");
+        jLabelTitle.setText("My Orders");
 
         jLabelRequest.setText("My request");
 
-        jButtonLoadQuotations.setText("Load Quotations");
+        jButtonLoadQuotations.setText("Load Order");
 
         jButtonRefresh.setText("Refresh");
 
@@ -150,7 +150,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Quotation ID", "Vendor", "Total", "Status"
+                "Order ID", "Price basis", "Total", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -201,11 +201,11 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
         jTextAreaComments.setRows(5);
         jScrollPane4.setViewportView(jTextAreaComments);
 
-        jLabelDecision.setText("Decision: No quotation selected");
+        jLabelDecision.setText("Decision: Select an order");
 
-        jButtonAccept.setText("Accept Quotation");
+        jButtonAccept.setText("Confirm Order");
 
-        jButtonDecline.setText("Decline Quotation");
+        jButtonDecline.setText("Decline Order");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

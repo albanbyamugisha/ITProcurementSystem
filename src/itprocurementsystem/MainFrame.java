@@ -56,6 +56,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         // Customers use request screens; managers maintain records and review decisions.
         // Purchasers arrange quotations, equipment deliveries and service completion.
+        boolean admin = "Admin".equals(Session.getRole());
         boolean customer = "Requester".equals(Session.getRole());
         boolean manager = "Manager".equals(Session.getRole());
         boolean purchaser = "Purchaser".equals(Session.getRole());
@@ -65,12 +66,16 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonQuotes.setVisible(manager || purchaser);
         jButtonDeliveries.setVisible(purchaser);
         jButtonServices.setVisible(purchaser);
-        jButtonInventory.setVisible(manager || purchaser);
-        jButtonVendors.setVisible(manager || purchaser);
-        jButtonUsers.setVisible(manager);
-        jButtonDepartments.setVisible(manager);
+        jButtonInventory.setVisible(admin || manager || purchaser);
+        jButtonVendors.setVisible(admin || manager || purchaser);
+        jButtonUsers.setVisible(admin);
+        jButtonDepartments.setVisible(admin);
         jButtonNotifications.setVisible(true);
 
+        // The shared catalogue hides its editor unless the logged-in role is Admin.
+        jButtonCatalogue.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) { showPanel(new CataloguePanel()); }
+        });
         // Each listener opens one panel. SQL methods also check access before saving.
         jButtonLogout.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) { logout(); }
@@ -260,7 +265,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jButtonInventory.setText("Inventory");
 
-        jButtonMyQuotations.setText("My Quotations");
+        jButtonMyQuotations.setText("My Orders");
 
         jButtonVendors.setText("Vendors");
 

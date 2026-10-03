@@ -16,7 +16,7 @@ public class AttachmentDAO {
     }
     public ArrayList<Object[]> forRequest(int request) throws SQLException {
         try (Connection c = DBConnection.getConnection()) {
-            Database.require(c,"Requester","Manager","Purchaser");
+            Database.require(c,"Requester","Admin","Manager","Purchaser","Admin");
             Object[] owner = Database.one(c,"SELECT r.requester_id,u.role FROM requests r JOIN users u ON u.user_id=? WHERE r.request_id=?",Session.getUserId(),request);
             if ("Requester".equals(owner[1]) && Database.id(owner[0]) != Session.getUserId()) { throw new IllegalArgumentException("This request belongs to another customer."); }
             return Database.rows(c,"SELECT file_name,file_path FROM attachments WHERE request_id=? ORDER BY attachment_id",request);

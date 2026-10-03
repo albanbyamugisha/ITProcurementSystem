@@ -52,7 +52,7 @@ public class QuotationDAO {
                 try (PreparedStatement st = c.prepareStatement("SELECT request_status FROM requests WHERE request_id=? FOR UPDATE")) {
                     st.setInt(1, requestId);
                     try (ResultSet r = st.executeQuery()) {
-                        if (!r.next() || !("Pending".equals(r.getString(1)) || "Quoted".equals(r.getString(1)))) {
+                        if (!r.next() || !("Pending".equals(r.getString(1)) || "Quoted".equals(r.getString(1)) || "CustomerAccepted".equals(r.getString(1)))) {
                             throw new SQLException("This request no longer accepts quotations.");
                         }
                     }
@@ -100,12 +100,14 @@ public class QuotationDAO {
                         st.executeUpdate();
                     }
                 }
-                try (PreparedStatement st = c.prepareStatement("UPDATE requests SET request_status='Quoted' WHERE request_id=?")) {
+                try (PreparedStatement st = c.prepareStatement("UPDATE requests SET request_status='Quoted' WHERE request_id=? AND request_status='Pending'")) {
                     st.setInt(1, requestId);
                     st.executeUpdate();
                 }
                 int customer = Database.id(Database.one(c,"SELECT requester_id FROM requests WHERE request_id=?",requestId)[0]);
-                Database.notify(c,customer,"A new quotation is available for request #" + requestId + ". Open My Quotations to review it.");
+                for (Object[] manager : Database.rows(c,"SELECT user_id FROM users WHERE role='Manager'")) {
+                    Database.notify(c,Database.id(manager[0]),"An internal supplier quotation is available for request #" + requestId + ".");
+                }
                 Database.audit(c,"Recorded quotation for request #" + requestId,"quotations",quotationId);
                 c.commit();
                 return quotationId;
@@ -125,7 +127,7 @@ public class QuotationDAO {
             // Check the saved role as well as the remembered session role.
             Database.require(connection,"Purchaser");
             for (Object[] row : Database.rows(connection,
-                    "SELECT request_id FROM requests WHERE request_status IN ('Pending','Quoted') ORDER BY request_id DESC")) {
+                    "SELECT request_id FROM requests WHERE request_status IN ('Pending','Quoted','CustomerAccepted') ORDER BY request_id DESC")) {
                 ids.add(Database.id(row[0]));
             }
         }
@@ -140,7 +142,7 @@ public class QuotationDAO {
             Database.require(connection,"Purchaser");
             String sql = "SELECT i.request_item_id,i.item_description,i.quantity "
                     + "FROM request_items i JOIN requests r ON r.request_id=i.request_id "
-                    + "WHERE r.request_id=? AND r.request_status IN ('Pending','Quoted') ORDER BY i.request_item_id";
+                    + "WHERE r.request_id=? AND r.request_status IN ('Pending','Quoted','CustomerAccepted') ORDER BY i.request_item_id";
             for (Object[] row : Database.rows(connection,sql,requestId)) {
                 items.add(new QuotationItem(Database.id(row[0]),row[1].toString(),Database.id(row[2])));
             }

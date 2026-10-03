@@ -123,18 +123,21 @@ public class RequestDAO {
                 }
 
                 String itemSql = "INSERT INTO request_items "
-                        + "(request_id, category_id, item_description, quantity, estimated_cost) "
-                        + "VALUES (?, ?, ?, ?, ?)";
+                        + "(request_id, category_id, item_description, quantity, estimated_cost, catalogue_id, unit) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement statement = connection.prepareStatement(itemSql)) {
                     // Reuse the statement with each item's values, one row at a time.
                     for (int i = 0; i < items.size(); i++) {
                         RequestItem item = items.get(i);
+                        Object[] current = CatalogueDAO.validate(connection, item, requestType);
                         statement.setInt(1, requestId);
-                        statement.setInt(2, item.getCategory().getCategoryId());
-                        statement.setString(3, item.getDescription());
+                        statement.setInt(2, Database.id(current[0]));
+                        statement.setString(3, current[2].toString());
                         statement.setInt(4, item.getQuantity());
                         // estimated_cost stores one unit's price, not the line total.
-                        statement.setBigDecimal(5, item.getUnitCost());
+                        statement.setBigDecimal(5, (java.math.BigDecimal) current[4]);
+                        statement.setInt(6, item.getCatalogueId());
+                        statement.setString(7, current[3].toString());
                         statement.executeUpdate();
                     }
                 }

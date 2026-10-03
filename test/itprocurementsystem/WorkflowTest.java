@@ -6,7 +6,7 @@ import java.util.ArrayList;
 // Run only against a disposable database using -Dprocurement.test.url=... .
 // The tests create fictional accounts; they never need real account passwords.
 public class WorkflowTest {
-    private static int manager, purchaser, customer, other;
+    private static int admin, manager, purchaser, customer, other;
     private static int checks;
     private static void check(boolean value, String message) {
         if (!value) { throw new AssertionError(message); }
@@ -21,12 +21,13 @@ public class WorkflowTest {
         String url = System.getProperty("procurement.test.url", "");
         if (!url.matches("jdbc:mysql://(127\\.0\\.0\\.1|localhost):[0-9]+/procurement_test(\\?.*)?")) { throw new IllegalStateException("Use a disposable procurement_test database."); }
         try (Connection c = DBConnection.getConnection()) {
+            admin = user(c,"test_admin","Admin");
             manager = user(c,"test_manager","Manager"); purchaser = user(c,"test_purchaser","Purchaser");
             customer = user(c,"test_customer","Requester"); other = user(c,"test_other","Requester");
         }
         try (Connection c = DBConnection.getConnection()) { DatabaseSetup.ensureWorkflowTables(c); }
         ManagementDAO dao = new ManagementDAO();
-        login(manager,"Manager");
+        login(admin,"Admin");
         dao.saveDepartment(0,"Engineering");
         int department = Database.id(dao.departments().get(0)[0]);
         dao.saveDepartment(department,"Operations");
@@ -45,18 +46,58 @@ public class WorkflowTest {
         refused=false;
         try { dao.saveDepartment(0,"Forbidden"); } catch (IllegalArgumentException ex) { refused=true; }
         check(refused,"Customer cannot manage departments");
-        login(manager,"Manager"); dao.changeRole(other,"Requester");
+        login(admin,"Admin"); dao.changeRole(other,"Requester");
         testDecisions();
         testFulfilment();
         testAttachments();
         testRegistration();
         testRecovery();
+        testCatalogue();
         testPanels();
         testDeclineAndRejection();
         testConcurrentSelection();
         testConcurrentDeliveries();
         System.out.println("Passed " + checks + " checks.");
     }
+    // Customer prices must come from the catalogue and survive later Admin edits.
+    private static void testCatalogue() throws Exception {
+        login(customer,"Requester");
+        ArrayList<RequestItem> items = new ArrayList<RequestItem>();
+        RequestItem original = catalogueItem("Equipment",2);
+        items.add(original);
+        int request = new RequestDAO().saveRequest(customer,"Price snapshot",items,"Equipment");
+        boolean refused = false;
+        try { new CatalogueDAO().save(0,"Forbidden","Equipment",original.getCategory().getCategoryId(),"Each","Test","1",true); }
+        catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Customer cannot change catalogue prices");
+        items.clear();
+        items.add(new RequestItem(original.getCatalogueId(),original.getCategory(),original.getDescription(),
+                original.getUnit(),1,new java.math.BigDecimal("0.01")));
+        refused = false;
+        try { new RequestDAO().saveRequest(customer,"Spoofed price",items,"Equipment"); }
+        catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Spoofed customer price rejected");
+        login(admin,"Admin");
+        new CatalogueDAO().save(original.getCatalogueId(),"Changed demo item","Equipment",original.getCategory().getCategoryId(),
+                original.getUnit(),original.getDescription(),original.getUnitCost().add(java.math.BigDecimal.ONE).toPlainString(),true);
+        login(customer,"Requester"); items.clear(); items.add(original); refused = false;
+        try { new RequestDAO().saveRequest(customer,"Stale price",items,"Equipment"); }
+        catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Stale displayed price rejected");
+        try (Connection c = DBConnection.getConnection()) {
+            java.math.BigDecimal saved = (java.math.BigDecimal) Database.one(c,"SELECT estimated_cost FROM request_items WHERE request_id=?",request)[0];
+            check(saved.compareTo(original.getUnitCost())==0,"Historical selling price unchanged");
+            DatabaseSetup.ensureWorkflowTables(c);
+            check("Changed demo item".equals(Database.one(c,"SELECT item_name FROM catalogue WHERE catalogue_id=?",original.getCatalogueId())[0]),"Startup preserves Admin edits");
+        }
+        login(manager,"Manager"); refused = false;
+        try { new ManagementDAO().users(""); } catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Only Admin may list all users");
+        login(customer,"Requester");
+        Object[] order = new DecisionDAO().quotations(request,false).get(0);
+        check(((java.math.BigDecimal)order[2]).compareTo(original.getLineTotal())==0,"Customer sees saved selling total");
+    }
+
     // Recovery changes only the password and expires sessions created before the reset.
     private static void testRecovery() throws Exception {
         String oldPassword = java.util.UUID.randomUUID().toString();
@@ -82,6 +123,12 @@ public class WorkflowTest {
         }
     }
 
+    // New requests must use an actual active catalogue item, including its saved description.
+    private static RequestItem catalogueItem(String type, int quantity) throws Exception {
+        Object[] row = new CatalogueDAO().list("",type).get(0);
+        return new RequestItem(Database.id(row[0]),new Category(Database.id(row[8]),row[3].toString()),
+                row[7].toString(),row[4].toString(),quantity,(java.math.BigDecimal)row[5]);
+    }
     // Build a real request and supplier quote using the application DAOs.
     private static int[] quotedRequest(String type, int quantity) throws Exception {
         int category, vendor;
@@ -91,7 +138,7 @@ public class WorkflowTest {
         }
         login(customer,"Requester");
         ArrayList<RequestItem> items = new ArrayList<RequestItem>();
-        items.add(new RequestItem(new Category(category,"Test category"),"Test item",quantity,new java.math.BigDecimal("10.00")));
+        items.add(catalogueItem(type, quantity));
         int request = new RequestDAO().saveRequest(customer,"Test request",items,type);
         login(purchaser,"Purchaser");
         QuotationDAO quotes = new QuotationDAO();
@@ -182,7 +229,7 @@ public class WorkflowTest {
         int category;
         try (Connection c = DBConnection.getConnection()) { category = Database.id(Database.one(c,"SELECT category_id FROM categories LIMIT 1")[0]); }
         ArrayList<RequestItem> items = new ArrayList<RequestItem>();
-        items.add(new RequestItem(new Category(category,"Test"),"Attachment item",1,new java.math.BigDecimal("2.00")));
+        items.add(catalogueItem("Equipment", 1));
         ArrayList<java.io.File> files = new ArrayList<java.io.File>(); files.add(source.toFile());
         login(customer,"Requester");
         int request = new RequestDAO().saveRequest(customer,"Attachment test",items,"Equipment",files);
@@ -234,7 +281,8 @@ public class WorkflowTest {
                 login(customer,"Requester");
                 new RequestPanel(); new MyRequestsPanel(); new CustomerQuotationsPanel(); new NotificationsPanel();
                 login(manager,"Manager");
-                new ApprovalPanel(); new DepartmentPanel(); new UserManagementPanel();
+                new ApprovalPanel();
+                login(admin,"Admin"); new DepartmentPanel(); new UserManagementPanel(); new CataloguePanel();
                 login(purchaser,"Purchaser");
                 new QuotationPanel(); new DeliveryPanel(); new ServiceCompletionPanel(); new InventoryPanel(); new VendorPanel();
                 check(true,"All 12 actual JPanel constructors load successfully");
@@ -260,7 +308,7 @@ public class WorkflowTest {
         login(purchaser,"Purchaser"); refused=false;
         try { new FulfilmentDAO().equipmentItems(rejected[0]); } catch (IllegalArgumentException ex) { refused=true; }
         check(refused,"Rejected request cannot be delivered");
-        login(manager,"Manager"); new ManagementDAO().changeRole(other,"Requester");
+        login(admin,"Admin"); new ManagementDAO().changeRole(other,"Requester");
         login(other,"Purchaser"); refused=false;
         try { new QuotationDAO().getOpenRequestIds(); } catch (IllegalArgumentException ex) { refused=true; }
         check(refused,"Stale purchaser session cannot read all requests");
@@ -294,7 +342,7 @@ public class WorkflowTest {
         for (Thread thread : threads) { thread.join(); }
         check(unexpected.isEmpty() && saved.get()==1,"Concurrent decisions produce one winner");
         try (Connection c = DBConnection.getConnection()) {
-            check(Database.id(Database.one(c,"SELECT COUNT(*) FROM request_selections WHERE request_id=?",first[0])[0])==1,"One selected quotation stored");
+            check(Database.id(Database.one(c,"SELECT COUNT(*) FROM order_decisions WHERE request_id=?",first[0])[0])==1,"One selected quotation stored");
         }
     }
 

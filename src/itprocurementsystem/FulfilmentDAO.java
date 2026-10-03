@@ -114,14 +114,14 @@ public class FulfilmentDAO {
     // Inventory remains a staff screen; customers see fulfilment notifications.
     public ArrayList<Object[]> inventory(String search) throws SQLException {
         try (Connection c = DBConnection.getConnection()) {
-            Database.require(c,"Manager","Purchaser");
+            Database.require(c,"Admin","Manager","Purchaser");
             String match = "%" + search.trim() + "%";
             return Database.rows(c,"SELECT i.inventory_id,i.item_description,i.serial_number,c.category_name,u.full_name,i.date_added,r.request_id FROM inventory i JOIN categories c ON c.category_id=i.category_id LEFT JOIN users u ON u.user_id=i.assigned_to JOIN delivery_items d ON d.delivery_item_id=i.delivery_item_id JOIN request_items r ON r.request_item_id=d.request_item_id WHERE i.item_description LIKE ? OR i.serial_number LIKE ? ORDER BY i.inventory_id DESC",match,match);
         }
     }
     public ArrayList<Object[]> assignees() throws SQLException {
         try (Connection c = DBConnection.getConnection()) {
-            Database.require(c,"Manager","Purchaser");
+            Database.require(c,"Admin","Manager","Purchaser");
             return Database.rows(c,"SELECT user_id,CONCAT(full_name,' (',username,')') FROM users ORDER BY full_name");
         }
     }
@@ -132,7 +132,7 @@ public class FulfilmentDAO {
             c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             c.setAutoCommit(false);
             try {
-                Database.require(c,"Manager","Purchaser");
+                Database.require(c,"Admin","Manager","Purchaser");
                 if (Database.update(c,"UPDATE inventory SET assigned_to=? WHERE inventory_id=?",user,inventory) != 1) { throw new IllegalArgumentException("Equipment no longer exists."); }
                 Database.audit(c,user == null ? "Unassigned equipment" : "Assigned equipment to user #" + user,"inventory",inventory);
                 if (user != null) { Database.notify(c,user,"Equipment #" + inventory + " has been assigned to you."); }

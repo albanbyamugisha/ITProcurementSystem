@@ -7,6 +7,18 @@ import java.math.BigDecimal;
 public class RequestItem {
     // Private fields keep the item's related values together inside this object.
     private Category category;
+    private int catalogueId;
+    private String unit;
+    public int getCatalogueId() { return catalogueId; }
+    public String getUnit() { return unit; }
+
+    // The selection includes the displayed price; the DAO checks it again before saving.
+    public RequestItem(int catalogueId, Category category, String description, String unit,
+            int quantity, BigDecimal price) {
+        this(category, description, quantity, price);
+        this.catalogueId = catalogueId;
+        this.unit = unit;
+    }
     private String description;
     private int quantity;
     private BigDecimal unitCost;

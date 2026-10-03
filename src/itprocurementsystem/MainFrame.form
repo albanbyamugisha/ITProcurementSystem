@@ -178,7 +178,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="jButtonMyQuotations">
           <Properties>
-            <Property name="text" type="java.lang.String" value="My Quotations"/>
+            <Property name="text" type="java.lang.String" value="My Orders"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonVendors">
