@@ -28,6 +28,14 @@ public class MyRequestsPanel extends javax.swing.JPanel {
     public MyRequestsPanel() {
         // Create the controls and layout arranged in NetBeans Design view.
         initComponents();
+        // These buttons save authorised reports through the standard file dialog.
+        jButtonRequestPdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { ReportActions.export(MyRequestsPanel.this,"request",FormSupport.selectedId(jTableRequests)); }
+                catch (IllegalArgumentException ex) { FormSupport.error(MyRequestsPanel.this,ex); }
+            }
+        });
+
         // Right-click the request control to view its saved supporting documents.
         AttachmentDAO.addMenu(jTableRequests, new AttachmentDAO.RequestChoice() {
             public int requestId() { return FormSupport.selectedId(jTableRequests); }
@@ -99,6 +107,7 @@ public class MyRequestsPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableRequests = new javax.swing.JTable();
         jLabelCount = new javax.swing.JLabel();
+        jButtonRequestPdf = new javax.swing.JButton();
 
         jLabelTitle.setText("My Requests");
 
@@ -109,7 +118,7 @@ public class MyRequestsPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Request ID", "Date Created", "Status", "Total", "Notes"
+                "Request ID", "Date Created", "Status", "Total (UGX)", "Notes"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -124,6 +133,8 @@ public class MyRequestsPanel extends javax.swing.JPanel {
 
         jLabelCount.setText("Requests: 0");
 
+        jButtonRequestPdf.setText("Save Request PDF");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -132,13 +143,17 @@ public class MyRequestsPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jButtonRefresh)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 544, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 12, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelCount))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonRequestPdf)
+                .addGap(156, 156, 156))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,13 +166,16 @@ public class MyRequestsPanel extends javax.swing.JPanel {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabelCount)
-                .addGap(178, 178, 178))
+                .addGap(42, 42, 42)
+                .addComponent(jButtonRequestPdf)
+                .addGap(112, 112, 112))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonRefresh;
+    private javax.swing.JButton jButtonRequestPdf;
     private javax.swing.JLabel jLabelCount;
     private javax.swing.JLabel jLabelTitle;
     private javax.swing.JScrollPane jScrollPane1;

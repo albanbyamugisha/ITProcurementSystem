@@ -135,7 +135,7 @@
               <Table columnCount="4" rowCount="0">
                 <Column editable="false" title="Order ID" type="java.lang.Object"/>
                 <Column editable="false" title="Price basis" type="java.lang.Object"/>
-                <Column editable="false" title="Total" type="java.lang.Object"/>
+                <Column editable="false" title="Total (UGX)" type="java.lang.Object"/>
                 <Column editable="false" title="Status" type="java.lang.Object"/>
               </Table>
             </Property>
@@ -161,8 +161,8 @@
               <Table columnCount="4" rowCount="0">
                 <Column editable="false" title="Description" type="java.lang.Object"/>
                 <Column editable="false" title="Quantity" type="java.lang.Object"/>
-                <Column editable="false" title="Unit Price" type="java.lang.Object"/>
-                <Column editable="false" title="Line Total" type="java.lang.Object"/>
+                <Column editable="false" title="Unit price (UGX)" type="java.lang.Object"/>
+                <Column editable="false" title="Line total (UGX)" type="java.lang.Object"/>
               </Table>
             </Property>
           </Properties>
@@ -171,7 +171,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabelDetails">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Quotation details"/>
+        <Property name="text" type="java.lang.String" value="Order details"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane3">

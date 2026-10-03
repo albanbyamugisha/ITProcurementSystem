@@ -1,17 +1,17 @@
-# Current status
+# Current handoff — 3 October 2026
 
-The design stage and planned application implementation are complete in code.
+The final reduced two-form scope is implemented. No more dragging is required.
 
-Implemented: navigation, registration, requests, attachments, quotations, customer decisions, staff review, deliveries, inventory, services, supporting-record management and private notifications.
+Completed: ForgotPasswordFrame, shared CataloguePanel, optional gender, automatic registration login, Admin permissions, 15 priced demo catalogue entries, customer order confirmation separate from supplier costs, branded PDFs and scrollable navigation. Existing saved designs were retained and minor naming/model errors corrected.
 
-Validation: Java compilation passes and the isolated MariaDB suite passes 49 checks, including all 12 actual JPanel constructors. The three JFrame windows and real desktop interactions still need a live run in NetBeans.
+Validation: 83 isolated database/PDF checks pass. All four real JFrame constructors and catalogue/request navigation were tested on the separate test database. Rendered forms and representative report pages were inspected.
 
-## Local handoff
+The normal local database was backed up privately in `db/backups/before-catalogue-2026-10-03.sql` before the upgrade. Applying the upgrade twice preserved existing user/request counts and saved amounts. Fifteen demo catalogue entries are present. No existing user was promoted without the requested username.
 
-- Start MySQL in XAMPP. Automatic startup was blocked because sudo requires the user's administrator password.
-- Run Project. The main class creates the three new workflow tables without deleting data.
-- If no Manager exists, register the intended staff member, then appoint them using `db/promote_staff.sql`. Only a trusted local administrator should do this.
-- Follow the workflow in README.md with Requester, Purchaser and Manager accounts.
-- Refresh the earlier Workbench ER model from the updated database; it predates the three new workflow tables.
+Remaining handoff:
 
-Keep code beginner-friendly, explain new parts in comments, and commit and push each completed future change. Do not publish local credential scripts.
+1. Provide the exact existing application username for the first Admin; no password is needed.
+2. Run Project in NetBeans and exercise the workflow in README, including saving a PDF to your chosen folder.
+3. Refresh the Workbench ER diagram by reverse-engineering the updated 21-table database.
+
+The starter UGX prices are fictional classroom examples. Payments, payment receipts, email recovery and extra forms remain out of scope. Username/full-name recovery is a classroom demonstration, not real identity verification.

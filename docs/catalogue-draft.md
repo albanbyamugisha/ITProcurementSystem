@@ -1,37 +1,23 @@
-# Proposed product and service catalogue
+# Demo product and service catalogue
 
-Planning draft — 2 October 2026. No catalogue records have been inserted into the application database.
+Implemented 3 October 2026. These are fictional class-project prices, not market quotations. All 15 starter entries are active. Admin may edit or deactivate them; startup never overwrites Admin edits. Each seeded description is labelled `[Class demo]`.
 
-The user approved an admin-managed catalogue with fixed customer prices in UGX and separate internal supplier costs. The entries below are a starting list, not a claim about current market prices or available stock. All entries start inactive and unpriced. The Admin must enter the exact specification/scope and a positive selling price before activating an entry. A missing price is not a free item.
-
-| Code | Type | Category | Product or service | Unit | Specification/scope needed before activation | UGX price |
+| Code | Item | Type | Category | Unit | Specification/scope | Sample price (UGX) |
 | --- | --- | --- | --- | --- | --- | --- |
-| EQ-001 | Equipment | Computers | Laptop computer | Each | Model, processor, memory, storage and warranty | To be set |
-| EQ-002 | Equipment | Computers | Desktop computer | Each | Model, processor, memory, storage; specify included accessories | To be set |
-| EQ-003 | Equipment | Displays | Monitor | Each | Model, screen size, resolution and inputs | To be set |
-| EQ-004 | Equipment | Printing | Printer | Each | Model, print type, colour/mono and included consumables | To be set |
-| EQ-005 | Equipment | Networking | Wireless router | Each | Model, supported networking features and warranty | To be set |
-| EQ-006 | Equipment | Networking | Network switch | Each | Model, port count and speed | To be set |
-| EQ-007 | Equipment | Power | UPS | Each | Model, rated capacity and warranty | To be set |
-| EQ-008 | Equipment | Storage | External storage drive | Each | Model, capacity, drive type and connector | To be set |
-| SV-001 | Service | Installation | Computer setup | Per computer | Agreed setup checklist; list what is excluded | To be set |
-| SV-002 | Service | Software | Software installation | Per computer/package | Named software; clarify licence costs separately | To be set |
-| SV-003 | Service | Maintenance | Computer maintenance | Per computer | Inspection/cleaning checklist; replacement parts excluded unless stated | To be set |
-| SV-004 | Service | Support | Fault diagnosis | Per device | Diagnosis only; repairs need an agreed separate scope | To be set |
-| SV-005 | Service | Networking | Network device configuration | Per device | Device type and configuration scope; hardware excluded unless stated | To be set |
-| SV-006 | Service | Data | Backup setup | Per computer | Scope and destination; storage/subscription costs stated explicitly | To be set |
-| SV-007 | Service | Training | Basic computer training | Per person/session | Session duration and topics | To be set |
+| EQ-001 | Laptop computer | Equipment | Computers | Each | Demo laptop: 8 GB RAM, 256 GB SSD | 1,800,000 |
+| EQ-002 | Desktop computer | Equipment | Computers | Each | Demo desktop tower: 8 GB RAM, 256 GB SSD; monitor excluded | 1,500,000 |
+| EQ-003 | Monitor | Equipment | Displays | Each | Demo 24-inch full-HD HDMI monitor | 450,000 |
+| EQ-004 | Printer | Equipment | Printing | Each | Demo monochrome laser printer with starter toner | 750,000 |
+| EQ-005 | Wireless router | Equipment | Networking | Each | Demo dual-band wireless router | 180,000 |
+| EQ-006 | Network switch | Equipment | Networking | Each | Demo 8-port gigabit switch | 220,000 |
+| EQ-007 | UPS | Equipment | Power | Each | Demo 650 VA backup power unit | 300,000 |
+| EQ-008 | External storage drive | Equipment | Storage | Each | Demo 1 TB USB external hard drive | 250,000 |
+| SV-001 | Computer setup | Service | Installation | Per computer | Demo setup: user account and basic settings; hardware excluded | 50,000 |
+| SV-002 | Software installation | Service | Software | Per package/computer | Install one customer-supplied licensed package; licence excluded | 30,000 |
+| SV-003 | Computer maintenance | Service | Maintenance | Per computer | Inspection and cleaning; replacement parts excluded | 60,000 |
+| SV-004 | Fault diagnosis | Service | Support | Per device | Diagnosis and findings only; repair excluded | 25,000 |
+| SV-005 | Network device configuration | Service | Networking | Per device | Basic router or switch configuration; hardware excluded | 80,000 |
+| SV-006 | Backup setup | Service | Data | Per computer | Configure one backup destination; storage and subscriptions excluded | 40,000 |
+| SV-007 | Basic computer training | Service | Training | Per person/session | One 2-hour session: files, typing and email basics | 50,000 |
 
-## Rules for the planned catalogue
-
-- Customers choose a catalogue entry and quantity; they cannot type a selling price.
-- Each active entry needs a precise specification, unit and Admin-set UGX price.
-- Separate model/specification variants use separate entries rather than an ambiguous shared price.
-- Save the chosen description, unit and price on each submitted request so history remains accurate.
-- Supplier costs stay internal and never silently replace the customer's agreed price.
-- Catalogue price changes affect new submissions; inform the customer if a displayed price changed before submission.
-- Deactivate old entries instead of deleting records referenced by history.
-- Tax, discounts and delivery-charge policy have not been supplied. Do not invent charges or claim a tax-inclusive price until those policies are decided.
-- The existing equipment delivery design requires one serial number per unit. These initial equipment categories fit that model. Unserialised consumables and accessories would need a separate stock/delivery rule before adding them.
-
-This list can be edited before implementation. Demo amounts, if later requested for testing, must be clearly identified as fictional and kept separate from approved selling prices.
+Customers cannot set prices. Submitted descriptions, units and prices are snapshots. Later edits affect new requests only. Equipment requires one serial number per delivered unit. No tax, discount or delivery charge has been invented. No payments or payment receipts are implemented.

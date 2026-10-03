@@ -4,13 +4,13 @@
 -- Leaving the username empty deliberately changes nothing. No password is included here.
 USE it_procurement_db;
 SET @staff_username = '';
-SET @staff_role = 'Manager'; -- Choose Manager or Purchaser.
+SET @staff_role = 'Admin'; -- Choose Admin, Manager or Purchaser.
 
 UPDATE users
 SET role = @staff_role
 WHERE username = @staff_username
   AND @staff_username <> ''
-  AND @staff_role IN ('Manager', 'Purchaser');
+  AND @staff_role IN ('Admin', 'Manager', 'Purchaser');
 
 -- Check the result, then ask the person to log out and back in.
 SELECT user_id, username, full_name, role

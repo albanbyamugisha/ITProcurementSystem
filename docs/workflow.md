@@ -1,3 +1,9 @@
+# Current workflow update — 3 October 2026
+
+The current flow is documented in README.md. New requests use saved catalogue selling prices; customers confirm orders in My Orders. Managers independently select internal supplier quotations. Only Admin manages users/departments and catalogue prices. The database now has 21 tables. Password recovery, gender and PDFs are implemented.
+
+The material below describes the previous quotation-selection workflow and remains as historical notes for pre-catalogue records.
+
 # Workflow and data relationships
 
 ## Request lifecycle

@@ -5,7 +5,7 @@
 package itprocurementsystem;
 
 /**
- * We use a JPanel because customer quotation review belongs inside MainFrame.
+ * We use a JPanel because customer order confirmation belongs inside MainFrame.
  * It groups the related controls without opening another window.
  * MainFrame provides the title bar and navigation for this panel.
  *
@@ -86,7 +86,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
         jTextAreaDetails.setText(decisions.details(id, 0, false));
         
     }
-    // A selected quotation supplies the item prices and notes shown below it.
+    // The selected order supplies saved customer prices, never internal supplier prices.
     private void showQuote() {
         if (jTableQuotations.getSelectedRow() < 0) { return; }
         try {
@@ -150,7 +150,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Order ID", "Price basis", "Total", "Status"
+                "Order ID", "Price basis", "Total (UGX)", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -170,7 +170,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Description", "Quantity", "Unit Price", "Line Total"
+                "Description", "Quantity", "Unit price (UGX)", "Line total (UGX)"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -183,7 +183,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
         });
         jScrollPane2.setViewportView(jTableQuotationItems);
 
-        jLabelDetails.setText("Quotation details");
+        jLabelDetails.setText("Order details");
 
         jTextAreaDetails.setWrapStyleWord(true);
         jTextAreaDetails.setLineWrap(true);

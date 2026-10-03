@@ -44,6 +44,20 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         // Create the components arranged in NetBeans Design view.
         initComponents();
+        // These buttons save authorised reports through the standard file dialog.
+        jButtonAccountPdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { ReportActions.export(MainFrame.this,"account",Session.getUserId()); }
+                catch (IllegalArgumentException ex) { FormSupport.error(MainFrame.this,ex); }
+            }
+        });
+        jButtonHistoryPdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                try { ReportActions.export(MainFrame.this,"history",Session.getUserId()); }
+                catch (IllegalArgumentException ex) { FormSupport.error(MainFrame.this,ex); }
+            }
+        });
+
 
         // Do not open the main window without a verified login.
         if (Session.getUserId() == 0) {
@@ -160,12 +174,64 @@ public class MainFrame extends javax.swing.JFrame {
                 showPanel(notificationsPanel);
             }
         });
+        // Reuse the dragged controls in a scrollable sidebar at runtime.
+        arrangeNavigation();
+        showWelcome();
         // Make room for large panels, while keeping scrollbars on smaller screens.
         java.awt.Dimension screen = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setSize(Math.min(1200, screen.width - 60), Math.min(850, screen.height - 80));
 
         // Open this window in the middle of the screen.
         setLocationRelativeTo(null);
+    }
+
+    // BoxLayout stacks only visible buttons, removing the large empty designer gaps.
+    // JScrollPane makes the last buttons reachable on a small laptop screen.
+    private void arrangeNavigation() {
+        jPanelSidebar.removeAll();
+        jPanelSidebar.setLayout(new javax.swing.BoxLayout(jPanelSidebar,javax.swing.BoxLayout.Y_AXIS));
+        jPanelSidebar.setBorder(javax.swing.BorderFactory.createEmptyBorder(12,10,12,10));
+        javax.swing.JButton[] buttons = {jButtonRequests,jButtonMyRequests,jButtonMyQuotations,
+            jButtonQuotes,jButtonDeliveries,jButtonServices,jButtonInventory,jButtonVendors,
+            jButtonUsers,jButtonDepartments,jButtonCatalogue,jButtonNotifications,
+            jButtonAccountPdf,jButtonHistoryPdf,jButtonLogout};
+        for (javax.swing.JButton button : buttons) {
+            button.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+            button.setMaximumSize(new java.awt.Dimension(225,36));
+            button.setPreferredSize(new java.awt.Dimension(225,36));
+            jPanelSidebar.add(button);
+            if (button.isVisible()) { jPanelSidebar.add(javax.swing.Box.createVerticalStrut(8)); }
+        }
+        javax.swing.JPanel heading = new javax.swing.JPanel(new java.awt.GridLayout(2,1,0,8));
+        heading.setBorder(javax.swing.BorderFactory.createEmptyBorder(12,16,12,16));
+        heading.add(jLabelTitle); heading.add(jLabelWelcome);
+        getContentPane().removeAll();
+        getContentPane().setLayout(new java.awt.BorderLayout());
+        getContentPane().add(heading,java.awt.BorderLayout.NORTH);
+        javax.swing.JScrollPane navigation = new javax.swing.JScrollPane(jPanelSidebar);
+        navigation.setPreferredSize(new java.awt.Dimension(260,500));
+        navigation.getVerticalScrollBar().setUnitIncrement(18);
+        getContentPane().add(navigation,java.awt.BorderLayout.WEST);
+        getContentPane().add(jPanelContent,java.awt.BorderLayout.CENTER);
+    }
+
+    // A few labels fill the existing content area; there is no additional HomePanel form.
+    private void showWelcome() {
+        javax.swing.JPanel welcome = new javax.swing.JPanel(new java.awt.BorderLayout(12,24));
+        welcome.setBorder(javax.swing.BorderFactory.createEmptyBorder(35,25,35,25));
+        java.net.URL image = getClass().getResource("resources/system-logo.png");
+        if (image != null) {
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(image);
+            welcome.add(new javax.swing.JLabel(new javax.swing.ImageIcon(icon.getImage().getScaledInstance(440,165,java.awt.Image.SCALE_SMOOTH))),java.awt.BorderLayout.NORTH);
+        }
+        javax.swing.JTextArea message = new javax.swing.JTextArea("Welcome to the IT Procurement Request System.\n\n"
+                + "Use the menu to open your permitted screens. Browse Catalogue for equipment and services with fixed UGX prices.\n\n"
+                + "My Account PDF and My History PDF save your details. Catalogue starter prices are fictional class examples.\n\n"
+                + "Your role: " + Session.getRole());
+        message.setEditable(false); message.setLineWrap(true); message.setWrapStyleWord(true);
+        message.setFont(jLabelWelcome.getFont()); message.setOpaque(false);
+        welcome.add(message,java.awt.BorderLayout.CENTER);
+        showPanel(welcome);
     }
 
     // A scroll pane keeps every control reachable when a panel is taller than the window.

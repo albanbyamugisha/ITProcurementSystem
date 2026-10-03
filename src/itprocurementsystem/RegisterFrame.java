@@ -217,7 +217,7 @@ public class RegisterFrame extends javax.swing.JFrame {
 
         jLabelGender.setText("Gender (optional)");
 
-        jComboBoxGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select gender (optional)", "Female", "Male", "Other", "Prefer not to say", " " }));
+        jComboBoxGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select gender (optional)", "Female", "Male", "Other", "Prefer not to say" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

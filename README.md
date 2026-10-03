@@ -1,165 +1,105 @@
 # IT Procurement Request System
 
-An individual Object Oriented Programming II project for Year 2, Semester 1 of the B.Sc. Software Engineering programme.
+An individual Object Oriented Programming II project for Year 2, Semester 1 of B.Sc. Software Engineering. Individuals and organisations can request equipment and IT services at fixed UGX prices.
 
-The system lets individuals and organisations request IT equipment or services, review supplier quotations and follow their requests through approval and fulfilment. It is intended for general use, rather than being limited to a college.
+Built with Java Swing, JDBC and MySQL/MariaDB. Beginner-friendly comments explain our forms, event handlers and database operations. NetBeans `.java` and `.form` pairs remain editable in Design view.
 
-Built with Java Swing, JDBC and MySQL/MariaDB. NetBeans `.form` files remain editable in Design view. Simple comments explain the forms, event handlers, data objects and database operations.
+## Current status
 
-## Project status
+The reduced scope is implemented: **17 forms (4 JFrame windows and 13 JPanel screens)**. The latest isolated MariaDB run passes **85 checks**. All four real windows were constructed and rendered, and catalogue/request navigation was exercised using fictional test accounts.
 
-**All 15 planned forms and their application workflows are implemented.** Java compilation and the latest isolated database test run passed. A full desktop run against the normal local database and an updated Workbench ER model remain to be checked.
-
-See [the current handoff notes](docs/next-steps.md) and [workflow documentation](docs/workflow.md).
-
-## Implemented
-
-- Registration for individuals and organisations, with required account type and unique usernames/emails.
-- Login, logout and role-based navigation.
-- Equipment and service requests, item validation, exact decimal totals and supporting documents.
-- Supplier quotations, customer acceptance/decline and separate staff approval/rejection.
-- Partial equipment deliveries, unique serial numbers, inventory and assignment.
-- Service progress and completion dates, without inventory or serial numbers.
-- Vendor, department and user-role management.
-- Private notifications and audit entries for workflow decisions.
-
-All 15 planned forms are designed and connected. The final automated run passed **49 checks** against a separate MariaDB test database, including transaction rollback, ownership, duplicate registration, concurrent decisions/deliveries and all 12 JPanel constructors. Full desktop window interaction on the user's normal database still needs a live run; automated panel tests do not replace that check.
-
-## Requirements
-
-| Tool | Project setup |
-| --- | --- |
-| Java Development Kit | JDK 26 in the saved NetBeans configuration |
-| IDE | Apache NetBeans with Java Swing GUI Builder support |
-| Database | Local MySQL or MariaDB; this project uses XAMPP |
-| JDBC driver | MySQL Connector/J, configured as `lib/mysql-connector-j-26.7.0.jar` |
-| ER modelling | MySQL Workbench |
-
-The JDBC JAR is not committed to Git. Add it locally before building.
+The normal local database has been backed up and upgraded. Existing user/request counts and request amounts were verified unchanged. It now contains 15 catalogue entries with **fictional class-demo prices**, not researched market prices. The first Admin still needs to be assigned to the user's chosen existing application username. The Workbench ER model also needs refreshing.
 
 ## Run in NetBeans
 
-Open the project folder containing `build.xml` and `nbproject/`, then follow these steps.
+1. Start the local XAMPP MySQL service on port 3306. Database: `it_procurement_db`; database user: `root`; database password: empty.
+2. On a fresh installation, run `db/it_procurement_schema.sql`. Run Project automatically applies missing catalogue/account/workflow additions and inserts missing demo catalogue entries. It preserves existing records and Admin edits. Much older installations may also need the earlier account-type/email/request-type migrations in `db/`.
+3. Supply `lib/mysql-connector-j-26.7.0.jar` and `lib/itextpdf-5.5.5.jar`. Both are configured with relative paths and ignored by Git. The iText sources, Javadoc, PDF/A and Xtra JARs are not needed for these reports.
+4. Use **Run Project**, starting `ITProcurementSystem`. Registration opens MainFrame automatically after the account is saved and its password is verified.
+5. To appoint the first Admin, register that person normally, then set their exact application username and role `Admin` in `db/promote_staff.sql`. Its empty username deliberately changes nothing. An Admin can subsequently assign staff roles through Users. Log out and back in after changing a role.
 
-1. Start MySQL using the XAMPP control panel. The application uses `localhost:3306`, database `it_procurement_db`, user `root` and an empty database password.
-2. For a new database, run `db/it_procurement_schema.sql` and `db/sample_categories.sql`. Existing installations keep their data. The main application adds the three workflow tables automatically; `db/add_workflow_tables.sql` is the equivalent manual script.
-3. Put MySQL Connector/J in `lib/` and check Project Properties → Libraries. The configured filename is `mysql-connector-j-26.7.0.jar`.
-4. Run the **ITProcurementSystem** main class using Run Project. Create an account or use an existing application account.
-5. Public registration always creates a Requester. To appoint the first trusted staff member, register that person normally, then use `db/promote_staff.sql` with their exact username and chosen staff role. Subsequent role changes can be made by a manager in Users. Log out and back in after a role change.
+The project uses JDK 26 in NetBeans. Our application source also compiles with `javac --release 8`; that does not lower the JDBC driver's Java runtime requirement. The empty database password is separate from users' application passwords.
 
-The MySQL connection settings are in [DBConnection.java](src/itprocurementsystem/DBConnection.java):
+## Accounts and access
 
-| Setting | Value |
+Registration requires an explicit Individual or Organisation account type. Usernames and emails are unique. Organisations provide a name and may choose a department. Gender is optional; for an organisation it describes the contact person. Public registration always creates a Requester, never staff.
+
+| Role | Main screens |
 | --- | --- |
-| Host | `localhost` |
-| Port | `3306` |
-| Database | `it_procurement_db` |
-| Database username | `root` |
-| Database password | Empty |
+| Requester | Requests, My Requests, My Orders |
+| Purchaser | Supplier quotations, Deliveries, Services, Inventory, Vendors |
+| Manager | Supplier review/approval, Inventory, Vendors |
+| Admin | Users, Departments, Vendors, Inventory, catalogue editing and user reports |
+| All four | Catalogue browsing, own notifications, own account/history PDF, Logout |
 
-The empty password applies to the **database connection**. People using the application still register and sign in with their own username and password.
+Navigation intentionally shows only permitted actions. The sidebar scrolls on small screens. DAO methods also check the saved role and session version, so hiding buttons is not the access control itself.
 
-For an existing project database, Run Project adds only the three new workflow tables if missing. It does not apply the earlier account-type, email or request-type migrations; those separate scripts in `db/` are needed only for older database versions that lack those changes.
+## Classroom password recovery
 
-The saved NetBeans build targets JDK 26. Source compilation was also checked with `javac --release 8`; changing the source target does not change the JDBC driver's own Java requirements.
+Forgot Password checks the registered username and full name, creates a random **replacement** password, saves its hash and displays the replacement only after saving succeeds. The old password stops working and earlier sessions cannot perform protected actions. Roles do not change. The original password cannot be retrieved from its hash.
 
-## Who uses each screen?
+This deliberately simple classroom flow is not suitable for real deployment: knowledge of a person's username and full name is not proof of identity. The existing SHA-256 classroom password scheme remains in use. Passwords and hashes never appear in PDFs, account tables, notifications or audit messages.
 
-| Role | Screens |
-| --- | --- |
-| Requester | Requests, My Requests, My Quotations, Notifications |
-| Purchaser | Quotations, Deliveries, Services, Inventory, Vendors, Notifications |
-| Manager | Quotation review, Inventory, Vendors, Users, Departments, Notifications |
+## Catalogue and prices
 
-A role controls staff access. An account type describes an individual or organisation customer. Selecting Organisation does not create a staff account or impose an organisation department approval process. Individuals have no department; organisations supply a name and may leave department empty.
+The 15 starter entries cover computers, displays, printing, networking, power, storage, installation, maintenance, support, backups and training. See `docs/catalogue-draft.md` for their sample prices and specifications.
 
-## Try the complete workflow
+Admin can add, edit or deactivate items. Customers select an active item and quantity; description and price fields are read-only. Submission re-reads and locks the catalogue record in MySQL. If its price or specification changed, the customer must remove and re-add the item to review the new details. Submitted descriptions, units and prices remain unchanged when the catalogue is later edited. Historical pre-catalogue records keep their original estimates and are labelled as legacy records.
 
-1. **Requester:** add items and submit an Equipment or Service request. Each request uses one type.
-2. **Purchaser:** open Quotations, load the request, select a vendor, price every item and save. Add vendors in Vendors when needed.
-3. **Requester:** in My Quotations, select the request and load quotations. Select a quotation to inspect its items, then accept or decline. Acceptance chooses one final quotation for the request.
-4. **Manager:** load the customer-accepted request, select that same quotation and approve or reject it. Rejection requires a reason. This is the procurement system's staff authorisation to fulfil, separate from the customer's decision.
-5. **Purchaser, equipment:** load the approved request in Deliveries. Select an item and add one serial number per received unit. Save with the actual delivery date. Partial deliveries keep the request open; the final units mark it Delivered. Inventory records are created in the same transaction.
-6. **Purchaser, service:** load the approved request in Services. Save work status and notes; Completed requires a real completion date and marks the request Completed.
-7. **Requester:** refresh My Requests and Notifications to see updates.
+No taxes, discounts or delivery charges are invented. Payment recording, receipts and online payments are outside this round.
 
-Saved decisions are final for that request. A rejected request requires a new request. A declined quotation stays declined, but the purchaser may offer another quotation while the request is still Quoted. The application does not take payments.
+## Complete workflow
 
-Panels preserve unfinished entries when navigating. Use Refresh on list screens to read recent database changes. Returning to an empty Quotation screen refreshes requests and vendors; Clear also reloads those choices.
+1. **Requester:** select Equipment or Service, select catalogue items, enter quantities and add them. Optionally add notes/documents, then submit.
+2. **Requester:** open My Orders, load the request and select its saved order row. Review the fixed prices, then confirm or decline. A decision is final; a declined/rejected order needs a new request.
+3. **Purchaser:** collect internal supplier quotations for the request. These costs do not replace customer selling prices and are not shown on the customer screen/PDF.
+4. **Manager:** load a customer-confirmed request, select a supplier quotation and approve or reject. Rejection requires a reason. Supplier collection may happen before customer confirmation, but approval requires confirmation.
+5. **Purchaser, equipment:** record actual delivery dates and one unique serial number per unit. Partial deliveries leave outstanding quantities; final delivery completes the request. Inventory is created in the same transaction.
+6. **Purchaser, service:** update work status and notes. Completed requires a completion date. Services do not create inventory or serial numbers.
+7. **Requester:** use My Requests, My Orders and Notifications to follow progress and export the selected request.
 
-## Supporting files
+Legacy approved/selected quotations remain intact. Unconfirmed legacy estimates cannot be confirmed as fixed-price catalogue orders; create a new catalogue request instead.
 
-Requests accept up to ten documents, each at most 10 MB: PDF, PNG, JPG/JPEG, TXT, DOCX and XLSX. Choose File and Remove File work on the pending list. Submitting copies documents into `~/.it-procurement/attachments`; the originals are unchanged. Failed saves remove their new copies.
+## PDF documents
 
-To open saved documents, select a request and right-click the request table in My Requests, or the request dropdown in quotation/review screens, then choose **View request attachments**. Purchasers must load the request first. A customer can view only their own request's documents. This is a local desktop assignment: another computer needs access to the stored files as well as the database.
+- **My Account PDF:** current account details, including optional gender and organisation.
+- **My History PDF:** the user's requests, saved totals, order decisions, deliveries and services.
+- **Save Request PDF:** selected request, items, customer decision, staff outcome and applicable delivery/service details.
+- **Save Users PDF:** Admin-only user directory.
+- **Selected User PDF:** Admin-only selected account plus its procurement history.
 
-## Forms
+All documents have the system logo on every page, document reference, Kampala generation time, UGX labels, repeated table headings and page numbers. The user directory uses landscape A4. A Save dialog asks before overwriting; a temporary file prevents failed generation from damaging an existing PDF. Reports are not proof of payment. Customer reports omit internal supplier costs and all reports omit passwords/hashes.
 
-| Form type | Forms | Why it is used |
-| --- | --- | --- |
-| JFrame | LoginFrame, RegisterFrame, MainFrame | Each needs its own window with a title bar and close button. |
-| JPanel | RequestPanel, MyRequestsPanel, QuotationPanel, CustomerQuotationsPanel, ApprovalPanel | Request and quotation screens share MainFrame's navigation. |
-| JPanel | DeliveryPanel, InventoryPanel, ServiceCompletionPanel | Fulfilment screens appear inside the same main window. |
-| JPanel | VendorPanel, DepartmentPanel, UserManagementPanel, NotificationsPanel | Supporting screens also use the main window. |
+The bundled DejaVu font makes report rendering portable; its licence is beside it in `src/itprocurementsystem/resources/`. The supplied iText core JAR remains a local dependency.
 
-Keep each form's `.java` and `.form` files together so NetBeans can open its design. Application event code is kept outside the generated layout block.
+## Supporting documents
 
-## Object-oriented concepts used
+Requests accept up to ten attachments, each at most 10 MB: PDF, PNG, JPG/JPEG, TXT, DOCX and XLSX. Originals stay untouched; submitted copies go to `~/.it-procurement/attachments`. A failed save removes its new copies.
 
-- **Classes and objects:** a `RequestItem`, `QuotationItem` or `DeliveryUnit` represents one piece of application data.
-- **Encapsulation:** private fields hold data, while constructors and methods validate and expose it.
-- **Inheritance:** form classes extend Swing's `JFrame` or `JPanel` to use their existing window and container behaviour.
-- **Interfaces:** event listeners implement methods that Swing calls when the user interacts with a control.
-- **Separation of responsibilities:** forms display controls, model objects hold values, and DAO classes handle database operations. DAO means Data Access Object.
+Right-click a saved request in My Requests or the request selector in quotation/review screens to view its attachments. Purchasers load the request first. Customers can access only their own documents. Another computer needs access to both the database and stored attachment files.
 
-## Code map
+## Forms and code
 
-- `Session`, `UserDAO`, `RegistrationDAO`: authentication, registration and remembered login.
-- `RequestItem`, `QuotationItem`, `DeliveryUnit`: data objects with validation.
-- `RequestDAO`, `QuotationDAO`, `DecisionDAO`, `FulfilmentDAO`, `ManagementDAO`, `AttachmentDAO`: SQL and business rules.
-- `Database`: small JDBC helpers for parameters, rows, access checks, audit and notification records.
-- `FormSupport`: shared table, dropdown and error-dialog code.
-- `DatabaseSetup`: creates only the new workflow tables if missing.
-- `*Frame`: independent windows. `*Panel`: screens displayed inside MainFrame.
+JFrame is used for LoginFrame, RegisterFrame, ForgotPasswordFrame and MainFrame because they need their own windows. The other 13 forms are JPanel screens inside MainFrame. Each form explains that choice in its comments. Keep `.java` and `.form` files together.
 
-## Database and ER model
+- `Session`, `UserDAO`, `RegistrationDAO`, `PasswordResetDAO`: account access.
+- `RequestItem`, `QuotationItem`, `DeliveryUnit`: encapsulated data and validation.
+- `CatalogueDAO`, `CatalogueSeed`: catalogue operations and labelled demo data.
+- `RequestDAO`, `QuotationDAO`, `DecisionDAO`, `FulfilmentDAO`: request lifecycle.
+- `ManagementDAO`, `AttachmentDAO`: supporting records and documents.
+- `ReportDAO`, `ReportData`, `PdfReports`, `ReportActions`: authorised data, PDF drawing and saving.
+- `Database`, `DatabaseSetup`, `FormSupport`: shared JDBC/setup/display helpers.
 
-The schema now has 19 tables. `customer_decisions` records accept/decline comments, `request_selections` identifies the one quotation chosen for a request, and `service_progress` stores service work. Joining approvals to request selections identifies the precise quotation reviewed.
+These demonstrate classes/objects, private fields and getters, inheritance from Swing, event-listener interfaces, and separation of form code from database code.
 
-The earlier Workbench `.mwb`, PNG, PDF and SVG files in `db/` are snapshots from before those three tables were added. Reverse-engineer the updated database to refresh that editable Workbench model. The current added relationships are documented in [workflow.md](docs/workflow.md).
+## Database and ER diagram
 
-## Tests
+There are now **21 tables**. The additions are `catalogue` and `order_decisions`; users also gain `gender` and `session_version`, and request items gain catalogue links and saved units. `customer_decisions` remains for legacy quotation decisions. `request_selections` records the internally selected supplier, and `service_progress` stores service work.
 
-`test/itprocurementsystem/WorkflowTest.java` exercises real DAO transactions and panel construction. Use `bash test/run-tests.sh` with a separate local MySQL/MariaDB instance on port **3307**. The runner resets only the database named `procurement_test` on that test instance. It refuses port 3306. The JDBC JAR must be present in `lib/`.
+Run Project performs additive updates through `DatabaseSetup`. `db/add_catalogue_and_accounts.sql` provides the MariaDB manual additions; Run Project completes the named catalogue foreign key and demo seed. Backups in `db/backups/` are private and Git-ignored. Earlier Workbench exports are historical snapshots: reverse-engineer the current database and save an updated `.mwb` and PDF.
 
-The tests use fictional users and generate a registration password at runtime. The local staff credential script is ignored by Git. Database test data never goes into the user's normal `it_procurement_db`.
+## Verification
 
+Run `bash test/run-tests.sh` with a separate local test server on port **3307**. The script resets only `procurement_test` and refuses port 3306. Both JARs must be in `lib/`. It checks registration/duplicates, recovery and session expiry, role/ownership restrictions, fixed-price tampering/staleness, historical snapshots, order decisions, concurrent decisions/deliveries, attachment rollback and JPanel construction. PDF tests check permissions, pagination, repeated headings/logo resources and excluded password/supplier data. Sample PDFs are written under `/tmp/procurement-pdf-review/` for inspection.
 
-## Project folders
-
-| Location | Contents |
-| --- | --- |
-| `src/itprocurementsystem/` | Java classes and NetBeans form designs |
-| `db/` | Schema, migration scripts, sample categories and earlier ER exports |
-| `docs/design/` | Design references, guides and the design review |
-| `docs/workflow.md` | Request lifecycle, new relationships and transaction explanations |
-| `test/` | Integration tests and their runner |
-| `nbproject/` | NetBeans project configuration |
-| `lib/` | Locally supplied JDBC driver |
-
-## Common setup problems
-
-- **Database connection fails:** start MySQL in XAMPP and check the database name and port. Run Project must be able to connect before the login window opens.
-- **JDBC driver is missing:** add the configured Connector/J JAR under Project Properties → Libraries.
-- **No categories appear:** run `db/sample_categories.sql` against the project database.
-- **No suppliers appear:** a Manager or Purchaser should add a vendor in Vendors, then return to an empty quotation form or clear it to reload the choices.
-- **A new role is not reflected in navigation:** log out and back in after the role change.
-- **A saved attachment cannot open:** check that its file still exists in the application's attachment folder and that the computer has an application for that document type.
-
-## Remaining manual checks
-
-1. Start the normal MySQL service and run the application in NetBeans.
-2. Follow the complete workflow above using the three roles, checking the windows and controls on your screen.
-3. Reverse-engineer the updated database in Workbench and save fresh ER exports for all 19 tables.
-
-Future changes should keep the code beginner-friendly, include explanatory comments, and be committed and pushed after each completed step.
+The last run passed 85 checks; rendered PDFs and real JFrame layouts were also inspected. A final interactive run in your NetBeans session is still useful, especially saving to your preferred PDF folder. Future changes should retain simple comments and be committed and pushed after each completed step.

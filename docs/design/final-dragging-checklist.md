@@ -1,5 +1,7 @@
 # FINAL reduced dragging checklist
 
+**Implemented and checked on 3 October 2026. No further dragging is required.**
+
 Agreed reduced scope: two new forms plus small changes to six existing forms. This file replaces the earlier seven-form checklist. Prepare only the controls listed here. No separate HomePanel, ProfilePanel, CatalogueManagementPanel, ReportsPanel or PaymentsPanel is needed. Payment recording and payment receipts are postponed.
 
 ## General settings
@@ -12,14 +14,14 @@ Tables start with zero rows, the specified column order and no editable columns.
 
 This is a JFrame because it opens before login. Reuse it if already drawn.
 
-| Control | Variable name | Text / setting |
-| --- | --- | --- |
-| Text Field | jTextFieldUsername | Empty; caption Username |
-| Text Field | jTextFieldFullName | Empty; caption Full name |
-| Button | jButtonResetPassword | Reset Password |
-| Text Field | jTextFieldNewPassword | Empty, editable=false; caption New password |
-| Label | jLabelStatus | Enter your registered username and full name. |
-| Button | jButtonBackToLogin | Back to Login |
+| Control    | Variable name         | Text / setting                                |
+| ---------- | --------------------- | --------------------------------------------- |
+| Text Field | jTextFieldUsername    | Empty; caption Username                       |
+| Text Field | jTextFieldFullName    | Empty; caption Full name                      |
+| Button     | jButtonResetPassword  | Reset Password                                |
+| Text Field | jTextFieldNewPassword | Empty, editable=false; caption New password   |
+| Label      | jLabelStatus          | Enter your registered username and full name. |
+| Button     | jButtonBackToLogin    | Back to Login                                 |
 
 Add a title label saying Reset Password. The output is a normal Text Field so the new replacement password can be read and copied. No email/code controls are required. The old hashed password is not retrieved. This username/full-name reset is a limited classroom demonstration.
 
@@ -29,32 +31,32 @@ One shared catalogue is sufficient. A JPanel fits inside MainFrame. Everyone per
 
 ### Top/list section
 
-| Control | Variable name | Text / setting |
-| --- | --- | --- |
-| Label | jLabelTitle | Products and Services |
-| Text Field | jTextFieldSearch | Empty; caption Search |
-| Button | jButtonSearch | Search |
-| Button | jButtonRefresh | Refresh |
-| Table | jTableCatalogue | Item ID, Item Name, Type, Category, Unit, Price (UGX), Status |
+| Control    | Variable name    | Text / setting                                                |
+| ---------- | ---------------- | ------------------------------------------------------------- |
+| Label      | jLabelTitle      | Products and Services                                         |
+| Text Field | jTextFieldSearch | Empty; caption Search                                         |
+| Button     | jButtonSearch    | Search                                                        |
+| Button     | jButtonRefresh   | Refresh                                                       |
+| Table      | jTableCatalogue  | Item ID, Item Name, Type, Category, Unit, Price (UGX), Status |
 
 ### Admin editor underneath the table
 
 Drag a Panel and name it `jPanelEditor`. Put ALL the following controls and their captions inside it, so code can hide the whole editor from customers.
 
-| Control | Variable name | Text / setting |
-| --- | --- | --- |
-| Text Field | jTextFieldItemName | Empty; caption Item name |
-| Combo Box | jComboBoxType | Select type; Equipment; Service |
-| Combo Box | jComboBoxCategory | Select category |
-| Text Field | jTextFieldUnit | Empty; caption Unit, e.g. Each or Per computer |
-| Text Field | jTextFieldPrice | Empty; caption Price (UGX) |
-| Text Area | jTextAreaDescription | Empty; caption Description/specification; wrap lines and words |
-| Check Box | jCheckBoxActive | Active; selected=false |
-| Button | jButtonAddItem | Add Item |
-| Button | jButtonUpdateItem | Update Selected |
-| Button | jButtonClear | Clear |
+| Control    | Variable name        | Text / setting                                                 |
+| ---------- | -------------------- | -------------------------------------------------------------- |
+| Text Field | jTextFieldItemName   | Empty; caption Item name                                       |
+| Combo Box  | jComboBoxType        | Select type; Equipment; Service                                |
+| Combo Box  | jComboBoxCategory    | Select category                                                |
+| Text Field | jTextFieldUnit       | Empty; caption Unit, e.g. Each or Per computer                 |
+| Text Field | jTextFieldPrice      | Empty; caption Price (UGX)                                     |
+| Text Area  | jTextAreaDescription | Empty; caption Description/specification; wrap lines and words |
+| Check Box  | jCheckBoxActive      | Active; selected=false                                         |
+| Button     | jButtonAddItem       | Add Item                                                       |
+| Button     | jButtonUpdateItem    | Update Selected                                                |
+| Button     | jButtonClear         | Clear                                                          |
 
-Do not add delete, online-payment or PDF-preview controls. Unpriced draft entries stay inactive until Admin sets a price and specification. Customers never receive access to the editor's save operations.
+Do not add delete, online-payment or PDF-preview controls. The 15 supplied entries have clearly labelled fictional class-demo prices. Admin may edit or deactivate them. Customers never receive access to the editor's save operations.
 
 ## 3. Existing LoginFrame
 
@@ -83,9 +85,9 @@ Do not add a staff-role selector. Automatic login after successful registration 
 
 Add only these three buttons to jPanelSidebar:
 
-| Variable name | Text |
-| --- | --- |
-| jButtonCatalogue | Catalogue |
+| Variable name     | Text           |
+| ----------------- | -------------- |
+| jButtonCatalogue  | Catalogue      |
 | jButtonAccountPdf | My Account PDF |
 | jButtonHistoryPdf | My History PDF |
 
@@ -97,12 +99,12 @@ Add a label saying `Product / Service` and a Combo Box named `jComboBoxCatalogue
 
 Change these existing properties, preserving variable names:
 
-| Control | Change |
-| --- | --- |
-| jTextFieldUnitCost | editable=false |
-| jLabelUnitCost | Text = Unit price (UGX) |
-| jTextFieldDescription | editable=false |
-| jLabelTotal | Text = Total (UGX) |
+| Control               | Change                  |
+| --------------------- | ----------------------- |
+| jTextFieldUnitCost    | editable=false          |
+| jLabelUnitCost        | Text = Unit price (UGX) |
+| jTextFieldDescription | editable=false          |
+| jLabelTotal           | Text = Total (UGX)      |
 
 Keep quantity editable and keep all existing item/attachment controls. Code will populate descriptions and prices from the selected catalogue item, show the unit, calculate totals and save the historical price. Do not create another request form or additional price input.
 
@@ -126,9 +128,9 @@ Admin
 
 Add two buttons:
 
-| Variable name | Text |
-| --- | --- |
-| jButtonUsersPdf | Save Users PDF |
+| Variable name          | Text              |
+| ---------------------- | ----------------- |
+| jButtonUsersPdf        | Save Users PDF    |
 | jButtonSelectedUserPdf | Selected User PDF |
 
 Only Admin will have the all-user screen/export permissions. The selected-user document can include that account and its procurement history; it must omit passwords/hashes. Keep the existing table and role-update controls.
@@ -149,4 +151,4 @@ No payment records, payment receipts, email recovery, online payments or additio
 
 ## User handoff
 
-After saving the designs, provide the existing APPLICATION USERNAME to appoint as the first Admin, not a password. The Admin can fill actual UGX prices in the catalogue after implementation. Draft entries remain inactive until then; no invented prices or extra charges will be applied.
+After saving the designs, provide the existing APPLICATION USERNAME to appoint as the first Admin, not a password. The Admin can edit the supplied fictional class-demo UGX prices. No market-price claims or extra charges are made.

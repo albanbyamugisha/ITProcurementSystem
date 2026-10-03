@@ -57,8 +57,52 @@ public class WorkflowTest {
         testDeclineAndRejection();
         testConcurrentSelection();
         testConcurrentDeliveries();
+        testReports();
         System.out.println("Passed " + checks + " checks.");
     }
+    // Inspect real PDFs and prove that exports enforce ownership outside the form.
+    private static void testReports() throws Exception {
+        ReportDAO reports = new ReportDAO();
+        login(customer,"Requester");
+        boolean refused = false;
+        try { reports.account(other,true); } catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Customer cannot export another account");
+        refused = false;
+        try { reports.users(); } catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Customer cannot export user directory");
+        int request;
+        try (Connection c = DBConnection.getConnection()) {
+            request = Database.id(Database.one(c,"SELECT request_id FROM requests WHERE requester_id=? ORDER BY request_id LIMIT 1",customer)[0]);
+        }
+        login(other,"Requester"); refused = false;
+        try { reports.request(request); } catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Customer cannot export another request");
+        login(customer,"Requester");
+        java.io.File folder = new java.io.File("/tmp/procurement-pdf-review"); folder.mkdirs();
+        PdfReports.write(new java.io.File(folder,"request.pdf"),reports.request(request));
+        PdfReports.write(new java.io.File(folder,"account-history.pdf"),reports.account(customer,true));
+        login(admin,"Admin");
+        try (Connection c = DBConnection.getConnection()) {
+            for (int i=0;i<75;i++) { user(c,"pdf_example_" + i,"Requester"); }
+        }
+        PdfReports.write(new java.io.File(folder,"users.pdf"),reports.users());
+        com.itextpdf.text.pdf.PdfReader reader = new com.itextpdf.text.pdf.PdfReader(new java.io.File(folder,"users.pdf").toString());
+        check(reader.getNumberOfPages()>1,"User directory paginates");
+        for (int page=1;page<=reader.getNumberOfPages();page++) {
+            String text = com.itextpdf.text.pdf.parser.PdfTextExtractor.getTextFromPage(reader,page);
+            check(text.contains("Page " + page) && text.contains("Username"),"Page numbers and table headers repeat");
+            com.itextpdf.text.pdf.PdfDictionary resources = reader.getPageN(page).getAsDict(com.itextpdf.text.pdf.PdfName.RESOURCES);
+            check(resources.getAsDict(com.itextpdf.text.pdf.PdfName.XOBJECT)!=null,"Logo present on each PDF page");
+            check(!text.contains("not-a-login-hash") && !text.contains("password_hash"),"No password hashes in PDF");
+        }
+        reader.close();
+        reader = new com.itextpdf.text.pdf.PdfReader(new java.io.File(folder,"request.pdf").toString());
+        String requestText = "";
+        for (int page=1;page<=reader.getNumberOfPages();page++) { requestText += com.itextpdf.text.pdf.parser.PdfTextExtractor.getTextFromPage(reader,page); }
+        check(!requestText.contains("12.50") && requestText.contains("UGX"),"Request PDF excludes supplier unit price");
+        reader.close();
+    }
+
     // Customer prices must come from the catalogue and survive later Admin edits.
     private static void testCatalogue() throws Exception {
         login(customer,"Requester");
@@ -282,10 +326,18 @@ public class WorkflowTest {
                 new RequestPanel(); new MyRequestsPanel(); new CustomerQuotationsPanel(); new NotificationsPanel();
                 login(manager,"Manager");
                 new ApprovalPanel();
-                login(admin,"Admin"); new DepartmentPanel(); new UserManagementPanel(); new CataloguePanel();
+                login(admin,"Admin"); new DepartmentPanel(); new UserManagementPanel();
+                CataloguePanel catalogue = new CataloguePanel();
+                try {
+                    java.lang.reflect.Field type = CataloguePanel.class.getDeclaredField("jComboBoxType"); type.setAccessible(true);
+                    check(((javax.swing.JComboBox<?>)type.get(catalogue)).getItemCount()==3,"Catalogue has both type choices");
+                    login(customer,"Requester"); catalogue = new CataloguePanel();
+                    java.lang.reflect.Field editor = CataloguePanel.class.getDeclaredField("jPanelEditor"); editor.setAccessible(true);
+                    check(!((javax.swing.JPanel)editor.get(catalogue)).isVisible(),"Customer catalogue editor hidden");
+                } catch (ReflectiveOperationException ex) { throw new AssertionError(ex); }
                 login(purchaser,"Purchaser");
                 new QuotationPanel(); new DeliveryPanel(); new ServiceCompletionPanel(); new InventoryPanel(); new VendorPanel();
-                check(true,"All 12 actual JPanel constructors load successfully");
+                check(true,"All 13 actual JPanel constructors load successfully");
             }
         });
     }

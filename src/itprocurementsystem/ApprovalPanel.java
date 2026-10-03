@@ -8,7 +8,7 @@ package itprocurementsystem;
  * We use a JPanel because staff review takes place inside MainFrame.
  * This panel will group quotation choices, item details and review comments.
  * It does not open another window; MainFrame supplies the title bar and navigation.
- * Staff review is separate from the customer's acceptance of a quotation.
+ * Staff review chooses a supplier after the customer confirms the fixed-price order.
  *
  * @author alban-byamugisha
  */

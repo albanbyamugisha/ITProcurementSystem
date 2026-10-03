@@ -104,7 +104,6 @@ public class QuotationDAO {
                     st.setInt(1, requestId);
                     st.executeUpdate();
                 }
-                int customer = Database.id(Database.one(c,"SELECT requester_id FROM requests WHERE request_id=?",requestId)[0]);
                 for (Object[] manager : Database.rows(c,"SELECT user_id FROM users WHERE role='Manager'")) {
                     Database.notify(c,Database.id(manager[0]),"An internal supplier quotation is available for request #" + requestId + ".");
                 }

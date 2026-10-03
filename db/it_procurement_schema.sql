@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS users (
     organisation_name VARCHAR(150),
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    gender VARCHAR(30),
+    session_version INT NOT NULL DEFAULT 0,
     full_name VARCHAR(100) NOT NULL,
     -- Each registered email must belong to only one account.
     email VARCHAR(100) UNIQUE,
@@ -90,7 +92,13 @@ CREATE TABLE IF NOT EXISTS requests (
 -- Each row describes one type of item and the quantity needed.
 -- estimated_cost is the estimated price of ONE unit.
 -- DECIMAL(12,2) stores an amount with two decimal places.
+-- Fixed selling prices; supplier quotations remain a separate internal cost.
+CREATE TABLE IF NOT EXISTS catalogue (catalogue_id INT AUTO_INCREMENT PRIMARY KEY, seed_code VARCHAR(20) UNIQUE, item_name VARCHAR(100) NOT NULL, item_type VARCHAR(20) NOT NULL, category_id INT NOT NULL, unit VARCHAR(50) NOT NULL, description VARCHAR(255) NOT NULL, price DECIMAL(12,2) NOT NULL, active BOOLEAN NOT NULL DEFAULT FALSE, FOREIGN KEY(category_id) REFERENCES categories(category_id)) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS request_items (
+    catalogue_id INT NULL,
+    unit VARCHAR(50),
+    CONSTRAINT fk_request_catalogue FOREIGN KEY(catalogue_id) REFERENCES catalogue(catalogue_id),
     request_item_id INT AUTO_INCREMENT PRIMARY KEY,
     request_id INT NOT NULL,
     category_id INT NOT NULL,
@@ -320,6 +328,9 @@ CREATE TABLE IF NOT EXISTS service_progress (
     FOREIGN KEY (request_id) REFERENCES requests(request_id),
     FOREIGN KEY (updated_by) REFERENCES users(user_id)
 ) ENGINE=InnoDB;
+
+-- Customer confirmation is separate from the internal supplier selection.
+CREATE TABLE IF NOT EXISTS order_decisions (request_id INT PRIMARY KEY, customer_id INT NOT NULL, decision VARCHAR(20) NOT NULL, comments TEXT, decision_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(request_id) REFERENCES requests(request_id), FOREIGN KEY(customer_id) REFERENCES users(user_id)) ENGINE=InnoDB;
 
 -- Show the tables so we can confirm that they were created.
 SHOW TABLES;

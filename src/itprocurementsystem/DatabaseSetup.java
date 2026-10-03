@@ -3,7 +3,7 @@ package itprocurementsystem;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-// Add the three new workflow tables without changing or deleting existing records.
+// Add missing workflow/catalogue tables and account columns without deleting records.
 // The original schema must already exist. The matching SQL script is in db/.
 public final class DatabaseSetup {
     public static void ensureWorkflowTables(Connection connection) throws SQLException {

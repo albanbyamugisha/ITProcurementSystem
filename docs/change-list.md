@@ -2,7 +2,9 @@
 
 Started: 2 October 2026.
 
-Status: planning only. Items below distinguish requests from recommendations. No application or database changes are authorised by this list alone; agree on the full list before implementation. The explicitly requested logo has been generated and saved as a design asset.
+Current status (3 October 2026): the reduced scope is implemented; see README.md and next-steps.md. The remaining text records the earlier planning discussion, including superseded proposals. The user subsequently approved fictional demo prices and completed the two-form designs.
+
+Historical status: planning only. Items below distinguish requests from recommendations. No application or database changes are authorised by this list alone; agree on the full list before implementation. The explicitly requested logo has been generated and saved as a design asset.
 
 ## Final scope reduction — latest decision
 

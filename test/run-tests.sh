@@ -14,7 +14,8 @@ trap 'rm -rf -- "$test_classes"' EXIT
 # The replacement applies to the checked-in schema, not arbitrary user input.
 { echo 'DROP DATABASE IF EXISTS procurement_test;'; sed 's/it_procurement_db/procurement_test/g' db/it_procurement_schema.sql; } |
     mysql --protocol=TCP -h 127.0.0.1 -P "$test_port" -u root >/dev/null
-javac --release 8 -d "$test_classes" src/itprocurementsystem/*.java test/itprocurementsystem/*.java
+javac --release 8 -cp "lib/*" -d "$test_classes" src/itprocurementsystem/*.java test/itprocurementsystem/*.java
+cp -r src/itprocurementsystem/resources "$test_classes/itprocurementsystem/"
 java -Djava.awt.headless=true \
     "-Dprocurement.test.url=jdbc:mysql://127.0.0.1:$test_port/procurement_test?useSSL=false" \
-    -cp "$test_classes:lib/mysql-connector-j-26.7.0.jar" itprocurementsystem.WorkflowTest
+    -cp "$test_classes:lib/*" itprocurementsystem.WorkflowTest

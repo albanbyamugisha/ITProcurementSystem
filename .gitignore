@@ -22,3 +22,6 @@
 
 # Keep the local staff test-account script private.
 /db/test_purchaser.sql
+
+# Private local database backups can contain account information.
+/db/backups/

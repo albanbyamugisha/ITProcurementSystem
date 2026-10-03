@@ -66,6 +66,7 @@ public class CataloguePanel extends javax.swing.JPanel {
     }
     private void clearEditor() {
         jTableCatalogue.clearSelection();
+        jLabel3.setText("Select an item to view its specification.");
         jTextFieldItemName.setText(""); jTextFieldPrice.setText(""); jTextFieldUnit.setText("");
         jTextAreaDescription.setText(""); jCheckBoxActive.setSelected(false);
         jComboBoxType.setSelectedIndex(0); jComboBoxCategory.setSelectedIndex(0);
@@ -74,6 +75,9 @@ public class CataloguePanel extends javax.swing.JPanel {
         int index = jTableCatalogue.getSelectedRow();
         if (index < 0) { return; }
         Object[] row = catalogueRows.get(jTableCatalogue.convertRowIndexToModel(index));
+        // Escape user text before putting it inside Swing's small HTML label.
+        String details = (row[1] + ": " + row[7]).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+        jLabel3.setText("<html><div style='width:500px'>" + details + "</div></html>");
         jTextFieldItemName.setText(row[1].toString()); jComboBoxType.setSelectedItem(row[2]);
         jTextFieldUnit.setText(row[4].toString()); jTextFieldPrice.setText(row[5].toString());
         jCheckBoxActive.setSelected("Active".equals(row[6])); jTextAreaDescription.setText(row[7].toString());
@@ -165,7 +169,7 @@ public class CataloguePanel extends javax.swing.JPanel {
 
         jLabelPrice.setText("Price (UGX)");
 
-        jLabel7.setText("jLabel7");
+        jLabel7.setText("Description / specification");
 
         jTextAreaDescription.setColumns(20);
         jTextAreaDescription.setRows(5);
@@ -186,7 +190,7 @@ public class CataloguePanel extends javax.swing.JPanel {
 
         jComboBoxCategory.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select category" }));
 
-        jComboBoxType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select category" }));
+        jComboBoxType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select type", "Equipment", "Service" }));
 
         javax.swing.GroupLayout jPanelEditorLayout = new javax.swing.GroupLayout(jPanelEditor);
         jPanelEditor.setLayout(jPanelEditorLayout);
@@ -265,7 +269,7 @@ public class CataloguePanel extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel3.setText("jLabel3");
+        jLabel3.setText("Select an item to view its specification.");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

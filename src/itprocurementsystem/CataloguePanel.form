@@ -267,7 +267,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel7">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jLabel7"/>
+            <Property name="text" type="java.lang.String" value="Description / specification"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane2">
@@ -339,8 +339,10 @@
         <Component class="javax.swing.JComboBox" name="jComboBoxType">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="1">
-                <StringItem index="0" value="Select category"/>
+              <StringArray count="3">
+                <StringItem index="0" value="Select type"/>
+                <StringItem index="1" value="Equipment"/>
+                <StringItem index="2" value="Service"/>
               </StringArray>
             </Property>
           </Properties>
@@ -352,7 +354,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel3"/>
+        <Property name="text" type="java.lang.String" value="Select an item to view its specification."/>
       </Properties>
     </Component>
   </SubComponents>

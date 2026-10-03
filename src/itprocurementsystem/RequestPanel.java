@@ -122,7 +122,11 @@ public class RequestPanel extends javax.swing.JPanel {
     }
     private void showCatalogueItem() {
         int index = jComboBoxCatalogueItem.getSelectedIndex()-1;
-        if (index < 0 || index >= catalogue.size()) { return; }
+        if (index < 0 || index >= catalogue.size()) {
+            jTextFieldDescription.setText(""); jTextFieldUnitCost.setText("0.00");
+            if (jComboBoxCategory.getItemCount() > 0) { jComboBoxCategory.setSelectedIndex(0); }
+            return;
+        }
         Object[] row = catalogue.get(index);
         jTextFieldDescription.setText(row[7].toString());
         jTextFieldUnitCost.setText(row[5].toString());
@@ -260,7 +264,6 @@ public class RequestPanel extends javax.swing.JPanel {
         try {
             // Convert text to numbers. Invalid text causes NumberFormatException.
             int quantity = Integer.parseInt(jTextFieldQuantity.getText().trim());
-            BigDecimal unitCost = new BigDecimal(jTextFieldUnitCost.getText().trim());
 
             // Subtract one because the dropdown starts with our instruction option.
             Category category = categories.get(selectedIndex - 1);
@@ -396,7 +399,7 @@ public class RequestPanel extends javax.swing.JPanel {
 
         jLabelQuantity.setText("Quantity");
 
-        jLabelUnitCost.setText("Estimated Unit Cost");
+        jLabelUnitCost.setText("Unit price (UGX)");
 
         jTextFieldDescription.setEditable(false);
 
@@ -415,7 +418,7 @@ public class RequestPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Category", "Description", "Quantity", "Unit Cost", "Line Total"
+                "Category", "Description", "Quantity", "Unit price (UGX)", "Line total (UGX)"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -428,10 +431,10 @@ public class RequestPanel extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jTableItems);
 
-        jLabelTotal.setText("Total:");
+        jLabelTotal.setText("Total (UGX)");
 
         jTextFieldTotal.setEditable(false);
-        jTextFieldTotal.setText("Total (UGX)");
+        jTextFieldTotal.setText("0.00");
 
         jLabelNotes.setText("Notes (optional)");
 
@@ -523,7 +526,7 @@ public class RequestPanel extends javax.swing.JPanel {
                         .addGap(15, 15, 15))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabelTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabelTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTextFieldTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(107, 107, 107))

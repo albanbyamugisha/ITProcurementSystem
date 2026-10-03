@@ -25,7 +25,7 @@ public class DecisionDAO {
             request(c,id,staff,false);
             if (!staff) {
                 // Keep this screen's existing four columns, but return only selling totals.
-                return Database.rows(c,"SELECT r.request_id,'Saved order',SUM(i.quantity*i.estimated_cost),COALESCE(d.decision,r.request_status) FROM requests r JOIN request_items i ON i.request_id=r.request_id LEFT JOIN order_decisions d ON d.request_id=r.request_id WHERE r.request_id=? GROUP BY r.request_id,r.request_status,d.decision",id);
+                return Database.rows(c,"SELECT r.request_id,IF(COUNT(i.catalogue_id)=COUNT(*),'Saved catalogue','Legacy estimate'),SUM(i.quantity*i.estimated_cost),COALESCE(d.decision,r.request_status) FROM requests r JOIN request_items i ON i.request_id=r.request_id LEFT JOIN order_decisions d ON d.request_id=r.request_id WHERE r.request_id=? GROUP BY r.request_id,r.request_status,d.decision",id);
             }
             return Database.rows(c,"SELECT q.quotation_id,v.vendor_name,q.quoted_amount,q.quotation_status FROM quotations q JOIN vendors v ON v.vendor_id=q.vendor_id WHERE q.request_id=? ORDER BY q.quotation_id",id);
         }
