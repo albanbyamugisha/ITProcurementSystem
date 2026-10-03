@@ -44,11 +44,8 @@
               <Component id="jLabelTitle" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="jPanelSidebar" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                  </Group>
                   <Component id="jPanelContent" max="32767" attributes="0"/>
+                  <Component id="jPanelSidebar" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -70,24 +67,28 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jButtonLogout" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonRequests" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jButtonMyRequests" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jButtonQuotes" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonDeliveries" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonInventory" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonMyQuotations" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jButtonVendors" alignment="1" max="32767" attributes="0"/>
                       <Component id="jButtonServices" alignment="0" max="32767" attributes="0"/>
                       <Component id="jButtonUsers" alignment="1" max="32767" attributes="0"/>
+                      <Component id="jButtonDepartments" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jButtonNotifications" alignment="1" max="32767" attributes="0"/>
+                      <Component id="jButtonCatalogue" alignment="1" max="32767" attributes="0"/>
+                      <Component id="jButtonAccountPdf" alignment="1" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jLabelWelcome" alignment="0" min="-2" pref="186" max="-2" attributes="0"/>
-                              <Component id="jLabelRole" alignment="0" min="-2" pref="186" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="jLabelWelcome" min="-2" pref="186" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                              <Component id="jButtonMyRequests" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jButtonQuotes" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jButtonVendors" alignment="0" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="jButtonDepartments" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jButtonNotifications" alignment="1" max="32767" attributes="0"/>
+                      <Component id="jButtonHistoryPdf" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -99,8 +100,6 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabelWelcome" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jLabelRole" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonRequests" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonMyRequests" min="-2" max="-2" attributes="0"/>
@@ -108,7 +107,7 @@
                   <Component id="jButtonQuotes" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonDeliveries" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jButtonInventory" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonMyQuotations" min="-2" max="-2" attributes="0"/>
@@ -122,7 +121,13 @@
                   <Component id="jButtonDepartments" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jButtonNotifications" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="41" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonCatalogue" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonAccountPdf" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jButtonHistoryPdf" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Component id="jButtonLogout" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -133,11 +138,6 @@
         <Component class="javax.swing.JLabel" name="jLabelWelcome">
           <Properties>
             <Property name="text" type="java.lang.String" value="Welcome"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabelRole">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Role"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="jButtonLogout">
@@ -204,6 +204,21 @@
         <Component class="javax.swing.JButton" name="jButtonNotifications">
           <Properties>
             <Property name="text" type="java.lang.String" value="Notifications"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonCatalogue">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Catalogue"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonAccountPdf">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="My Account PDF"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonHistoryPdf">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="My History PDF"/>
           </Properties>
         </Component>
       </SubComponents>

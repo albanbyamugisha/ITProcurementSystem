@@ -32,6 +32,7 @@ public class RequestDAO {
         // Automatically close the connection, statement and results after reading.
         try (Connection connection = DBConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql)) {
+            Database.require(connection, "Requester");
             statement.setInt(1, Session.getUserId());
             try (ResultSet result = statement.executeQuery()) {
                 // Create one summary per request, with the newest requests first.
@@ -82,6 +83,7 @@ public class RequestDAO {
             // A transaction groups the request and its items into one complete change.
             // Turning off auto-commit prevents each INSERT from being saved separately.
             connection.setAutoCommit(false);
+            Database.require(connection, "Requester");
             try {
                 Integer departmentId;
                 // Read the department and role from MySQL, not from user-entered fields.

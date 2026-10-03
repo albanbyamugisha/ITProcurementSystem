@@ -47,6 +47,10 @@
                           <Component id="jButtonRegister" min="-2" pref="149" max="-2" attributes="0"/>
                       </Group>
                   </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="67" max="-2" attributes="0"/>
+                      <Component id="jButtonForgotPassword" min="-2" pref="205" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace pref="65" max="32767" attributes="0"/>
           </Group>
@@ -72,7 +76,9 @@
                   <Component id="jButtonLogin" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jButtonRegister" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="jButtonForgotPassword" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -104,13 +110,15 @@
     <Component class="javax.swing.JTextField" name="jTextFieldUsername">
     </Component>
     <Component class="javax.swing.JPasswordField" name="jPasswordFieldPassword">
-      <Properties>
-        <Property name="text" type="java.lang.String" value=""/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButtonRegister">
       <Properties>
         <Property name="text" type="java.lang.String" value="Create Account"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButtonForgotPassword">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Forgot Password ?"/>
       </Properties>
     </Component>
   </SubComponents>

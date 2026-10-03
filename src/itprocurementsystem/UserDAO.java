@@ -25,7 +25,7 @@ public class UserDAO {
         // The question mark is a placeholder for the username.
         // PreparedStatement treats the entered username as data, not as SQL commands.
         // We also read the user's details so we can remember them after a successful login.
-        String sql = "SELECT user_id, username, full_name, role, password_hash "
+        String sql = "SELECT user_id, username, full_name, role, password_hash, session_version "
                 + "FROM users WHERE username = ?";
 
         // Close the connection and statement automatically when this block finishes.
@@ -50,7 +50,7 @@ public class UserDAO {
                         Session.start(result.getInt("user_id"),
                                 result.getString("username"),
                                 result.getString("full_name"),
-                                result.getString("role"));
+                                result.getString("role"), result.getInt("session_version"));
                         return true;
                     }
 

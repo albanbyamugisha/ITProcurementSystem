@@ -14,10 +14,19 @@ public class Session {
     private static String username = "";
     private static String fullName = "";
     private static String role = "";
+    // A reset increases this number in MySQL, making older sessions expire.
+    private static int version = 0;
+    public static int getVersion() { return version; }
 
     // Call this only after the username and password have been verified.
     // Each parameter contains a value read from the matching database record.
     public static void start(int id, String loginName, String name, String userRole) {
+        start(id, loginName, name, userRole, 0);
+    }
+
+    // Login reads this version together with the verified account details.
+    public static void start(int id, String loginName, String name, String userRole, int sessionVersion) {
+        version = sessionVersion;
         userId = id;
         username = loginName;
         fullName = name;
@@ -48,6 +57,7 @@ public class Session {
     // Clear all remembered details when logging out or starting a new login attempt.
     public static void clear() {
         userId = 0;
+        version = 0;
         username = "";
         fullName = "";
         role = "";

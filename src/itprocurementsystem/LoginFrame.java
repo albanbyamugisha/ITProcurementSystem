@@ -37,6 +37,13 @@ public class LoginFrame extends javax.swing.JFrame {
             }
         });
 
+        // Password recovery opens before login, so it has its own JFrame.
+        jButtonForgotPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                new ForgotPasswordFrame().setVisible(true);
+                dispose();
+            }
+        });
         // Center this window on the screen after its size has been set.
         // null means we center it on the screen, rather than beside another window.
         setLocationRelativeTo(null);
@@ -61,6 +68,7 @@ public class LoginFrame extends javax.swing.JFrame {
         jTextFieldUsername = new javax.swing.JTextField();
         jPasswordFieldPassword = new javax.swing.JPasswordField();
         jButtonRegister = new javax.swing.JButton();
+        jButtonForgotPassword = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -73,9 +81,9 @@ public class LoginFrame extends javax.swing.JFrame {
         jButtonLogin.setText("Login");
         jButtonLogin.addActionListener(this::jButtonLoginActionPerformed);
 
-        jPasswordFieldPassword.setText("");
-
         jButtonRegister.setText("Create Account");
+
+        jButtonForgotPassword.setText("Forgot Password ?");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -98,7 +106,10 @@ public class LoginFrame extends javax.swing.JFrame {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jTextFieldUsername)
                                 .addComponent(jPasswordFieldPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE))
-                            .addComponent(jButtonRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jButtonRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(67, 67, 67)
+                        .addComponent(jButtonForgotPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(65, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -118,7 +129,9 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonLogin)
                     .addComponent(jButtonRegister))
-                .addGap(42, 42, 42))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonForgotPassword)
+                .addContainerGap())
         );
 
         pack();
@@ -226,6 +239,7 @@ public class LoginFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonForgotPassword;
     private javax.swing.JButton jButtonLogin;
     private javax.swing.JButton jButtonRegister;
     private javax.swing.JLabel jLabelPassword;

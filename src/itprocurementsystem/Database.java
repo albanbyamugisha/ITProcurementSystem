@@ -62,7 +62,11 @@ final class Database {
     // Re-read the role so a changed role takes effect even in an already open screen.
     static void require(Connection c, String... allowedRoles) throws SQLException {
         if (Session.getUserId() <= 0) { throw new IllegalArgumentException("Please log in first."); }
-        Object role = one(c, "SELECT role FROM users WHERE user_id=?", Session.getUserId())[0];
+        Object[] account = one(c, "SELECT role,session_version FROM users WHERE user_id=?", Session.getUserId());
+        if (id(account[1]) != Session.getVersion()) {
+            throw new IllegalArgumentException("Your session has expired. Please log out and log in again.");
+        }
+        Object role = account[0];
         for (String allowed : allowedRoles) { if (allowed.equals(role)) { return; } }
         throw new IllegalArgumentException("Your account cannot perform this action.");
     }

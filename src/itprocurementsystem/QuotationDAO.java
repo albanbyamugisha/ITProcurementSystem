@@ -37,6 +37,7 @@ public class QuotationDAO {
         }
         try (Connection c = DBConnection.getConnection()) {
             c.setAutoCommit(false);
+            Database.require(c, "Purchaser");
             try {
                 // Recheck the role in MySQL in case the account changed after login.
                 try (PreparedStatement st = c.prepareStatement("SELECT role FROM users WHERE user_id=?")) {

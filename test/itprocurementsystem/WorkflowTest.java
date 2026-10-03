@@ -50,12 +50,38 @@ public class WorkflowTest {
         testFulfilment();
         testAttachments();
         testRegistration();
+        testRecovery();
         testPanels();
         testDeclineAndRejection();
         testConcurrentSelection();
         testConcurrentDeliveries();
         System.out.println("Passed " + checks + " checks.");
     }
+    // Recovery changes only the password and expires sessions created before the reset.
+    private static void testRecovery() throws Exception {
+        String oldPassword = java.util.UUID.randomUUID().toString();
+        new RegistrationDAO().register("Recovery User", "recovery_user", "recovery@example.invalid", 0,
+                oldPassword, oldPassword, "Individual", null, "Other");
+        check(new UserDAO().checkLogin("recovery_user", oldPassword), "New registration can authenticate immediately");
+        int id = Session.getUserId();
+        boolean refused = false;
+        try { new PasswordResetDAO().reset("recovery_user", "Wrong Name"); }
+        catch (IllegalArgumentException ex) { refused = true; }
+        check(refused, "Wrong recovery name rejected");
+        String replacement = new PasswordResetDAO().reset("recovery_user", "Recovery User");
+        refused = false;
+        try { new ManagementDAO().notifications("All notifications"); }
+        catch (IllegalArgumentException ex) { refused = true; }
+        check(refused, "Reset expires an old session");
+        check(!new UserDAO().checkLogin("recovery_user", oldPassword), "Old password no longer works");
+        check(new UserDAO().checkLogin("recovery_user", replacement), "Replacement password works");
+        try (Connection c = DBConnection.getConnection()) {
+            Object[] row = Database.one(c, "SELECT gender,role,password_hash FROM users WHERE user_id=?", id);
+            check("Other".equals(row[0]) && "Requester".equals(row[1]), "Recovery preserves gender and role");
+            check(!replacement.equals(row[2]), "Only the password hash is stored");
+        }
+    }
+
     // Build a real request and supplier quote using the application DAOs.
     private static int[] quotedRequest(String type, int quantity) throws Exception {
         int category, vendor;

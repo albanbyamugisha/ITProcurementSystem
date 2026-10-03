@@ -41,6 +41,17 @@ public class RegistrationDAO {
     public void register(String fullName, String username, String email, int departmentId,
             String password, String confirmation, String accountType, String organisationName)
             throws SQLException {
+        register(fullName, username, email, departmentId, password, confirmation, accountType, organisationName, null);
+    }
+
+    // Gender is optional; for an organisation it describes the contact person.
+    public void register(String fullName, String username, String email, int departmentId,
+            String password, String confirmation, String accountType, String organisationName,
+            String gender) throws SQLException {
+        if (gender != null && !gender.equals("Female") && !gender.equals("Male")
+                && !gender.equals("Other") && !gender.equals("Prefer not to say")) {
+            throw new IllegalArgumentException("Choose a listed gender or leave it blank.");
+        }
         if (!"Individual".equals(accountType) && !"Organisation".equals(accountType)) {
             throw new IllegalArgumentException("Select an account type.");
         }
@@ -74,7 +85,7 @@ public class RegistrationDAO {
         try (Connection c = DBConnection.getConnection()) {
             checkDuplicates(c, username, email);
             try (PreparedStatement s = c.prepareStatement(
-                    "INSERT INTO users (department_id,username,password_hash,full_name,email,role,account_type,organisation_name) VALUES (?,?,?,?,?,'Requester',?,?)")) {
+                    "INSERT INTO users (department_id,username,password_hash,full_name,email,role,account_type,organisation_name,gender) VALUES (?,?,?,?,?,'Requester',?,?,?)")) {
                 // SQL NULL means no department, rather than an invalid department ID of zero.
                 if (departmentId == 0) { s.setNull(1, java.sql.Types.INTEGER); }
                 else { s.setInt(1, departmentId); }
@@ -84,6 +95,7 @@ public class RegistrationDAO {
                 s.setString(5, email);
                 s.setString(6, accountType);
                 s.setString(7, organisationName == null ? null : organisationName.trim());
+                s.setString(8, gender);
                 // The role is fixed in SQL: registration cannot create privileged accounts.
                 s.executeUpdate();
             } catch (SQLException ex) {
