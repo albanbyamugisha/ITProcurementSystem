@@ -8,7 +8,7 @@ Built with Java Swing, JDBC and MySQL/MariaDB. Beginner-friendly comments explai
 
 The reduced scope is implemented: **17 forms (4 JFrame windows and 13 JPanel screens)**. The latest isolated MariaDB run passes **85 checks**. All four real windows were constructed and rendered, and catalogue/request navigation was exercised using fictional test accounts.
 
-The normal local database has been backed up and upgraded. Existing user/request counts and request amounts were verified unchanged. It now contains 15 catalogue entries with **fictional class-demo prices**, not researched market prices. The first Admin still needs to be assigned to the user's chosen existing application username. The Workbench ER model also needs refreshing.
+The normal local database has been backed up and upgraded. Existing user/request counts and request amounts were verified unchanged. It now contains 15 catalogue entries with **fictional class-demo prices**, not researched market prices. The first Admin has been assigned to the user's chosen existing application account. Log out and back in to load its Admin navigation. The Workbench ER model still needs refreshing.
 
 ## Run in NetBeans
 
