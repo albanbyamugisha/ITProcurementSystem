@@ -25,6 +25,3 @@
 
 # Private local database backups can contain account information.
 /db/backups/
-
-# Rebuildable submission package; private working files are excluded.
-/submission/

@@ -109,7 +109,3 @@ Run Project performs additive updates through `DatabaseSetup`. `db/add_catalogue
 Run `bash test/run-tests.sh` with a separate local test server on port **3307**. The script resets only `procurement_test` and refuses port 3306. Both JARs must be in `lib/`. It checks registration/duplicates, recovery and session expiry, role/ownership restrictions, fixed-price tampering/staleness, historical snapshots, order decisions, concurrent decisions/deliveries, attachment rollback and JPanel construction. PDF tests check permissions, pagination, repeated headings/logo resources and excluded password/supplier data. Sample PDFs are written under `/tmp/procurement-pdf-review/` for inspection.
 
 The latest automated run passed 105 checks. PDF layouts and the login/password-change windows were also checked.
-
-## Submission package
-
-`submission/ITProcurementSystem.zip` contains the current source, editable NetBeans forms, build files, database setup/migrations, required local JARs, verification tests and current documentation. It excludes Git history, generated builds, private database backups, local credentials, machine-specific NetBeans settings, drafting guides and outdated ER exports. No live account records are included. The older Workbench files in the working folder are retained as historical references; the SQL schema is current.
