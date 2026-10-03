@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package itprocurementsystem;
 
 /**
@@ -107,7 +103,7 @@ public class UserManagementPanel extends javax.swing.JPanel {
         jButtonUsersPdf = new javax.swing.JButton();
         jButtonSelectedUserPdf = new javax.swing.JButton();
 
-        jButton3.setText("jButton3");
+        jButton3.setText("");
 
         jLabelTitle.setText("User Management");
 

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package itprocurementsystem;
 
 /**
@@ -16,7 +12,7 @@ public class CataloguePanel extends javax.swing.JPanel {
     public CataloguePanel() {
         initComponents();
         jPanelEditor.setVisible("Admin".equals(Session.getRole()));
-        jLabeltitle.setText("Products and Services — fictional class-demo prices in UGX");
+        jLabeltitle.setText("Products and Services (UGX)");
         jTextAreaDescription.setLineWrap(true);
         jTextAreaDescription.setWrapStyleWord(true);
         jTableCatalogue.setModel(new javax.swing.table.DefaultTableModel(
@@ -127,15 +123,15 @@ public class CataloguePanel extends javax.swing.JPanel {
         jComboBoxType = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
 
-        jButton3.setText("jButton3");
+        jButton3.setText("");
 
-        jLabel8.setText("jLabel8");
+        jLabel8.setText("");
 
-        jButton7.setText("jButton7");
+        jButton7.setText("");
 
-        jTextField6.setText("jTextField6");
+        jTextField6.setText("");
 
-        jLabel12.setText("jLabel12");
+        jLabel12.setText("");
 
         jLabeltitle.setText("Products and Services");
 
@@ -325,7 +321,7 @@ public class CataloguePanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonUpdateItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUpdateItemActionPerformed
-        // TODO add your handling code here:
+        // Updating is handled by connect(jButtonUpdateItem, "update") in the constructor.
     }//GEN-LAST:event_jButtonUpdateItemActionPerformed
 
 

@@ -3,7 +3,7 @@ package itprocurementsystem;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-// Fictional UGX prices make the class demonstration usable immediately.
+// Initial catalogue entries and preset selling prices for this system.
 // Stable seed codes prevent startup from duplicating entries or overwriting Admin edits.
 final class CatalogueSeed {
     static void insertMissing(Connection c) throws SQLException {
@@ -25,11 +25,21 @@ final class CatalogueSeed {
             {"SV-007","Basic computer training","Service","Training","Per person/session","One 2-hour session: files, typing and email basics","50000"}
         };
         for (String[] e : entries) {
+            // Clean our exact earlier wording without changing prices or Admin-edited specifications.
+            String oldDescription = e[5] + " [Class demo]";
+            if (e[5].startsWith("Demo ")) { e[5] = e[5].substring(5); }
+            e[5] = Character.toUpperCase(e[5].charAt(0)) + e[5].substring(1);
+            Database.update(c,"UPDATE catalogue SET description=? WHERE seed_code=? AND description=?",e[5],e[0],oldDescription);
+            // These fixed table names are our code, not user input. Only descriptive text changes.
+            String[] tables = {"request_items","quotation_items","delivery_items","inventory"};
+            for (String table : tables) {
+                Database.update(c,"UPDATE " + table + " SET item_description=? WHERE item_description=?",e[5],oldDescription);
+            }
             if (!Database.rows(c, "SELECT catalogue_id FROM catalogue WHERE seed_code=?", e[0]).isEmpty()) { continue; }
             java.util.ArrayList<Object[]> categories = Database.rows(c, "SELECT category_id FROM categories WHERE category_name=? ORDER BY category_id", e[3]);
             int category = categories.isEmpty() ? Database.insert(c, "INSERT INTO categories(category_name) VALUES (?)", e[3]) : Database.id(categories.get(0)[0]);
             Database.update(c, "INSERT IGNORE INTO catalogue(seed_code,item_name,item_type,category_id,unit,description,price,active) VALUES (?,?,?,?,?,?,?,TRUE)",
-                    e[0], e[1], e[2], category, e[4], e[5] + " [Class demo]", new java.math.BigDecimal(e[6]));
+                    e[0], e[1], e[2], category, e[4], e[5], new java.math.BigDecimal(e[6]));
         }
     }
 }

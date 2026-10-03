@@ -4,16 +4,22 @@ An individual Object Oriented Programming II project for Year 2, Semester 1 of B
 
 Built with Java Swing, JDBC and MySQL/MariaDB. Beginner-friendly comments explain our forms, event handlers and database operations. NetBeans `.java` and `.form` pairs remain editable in Design view.
 
-## Current status
+## Author
 
-The reduced scope is implemented: **17 forms (4 JFrame windows and 13 JPanel screens)**. The latest isolated MariaDB run passes **102 checks**. All four real windows were constructed and rendered, and catalogue/request navigation was exercised using fictional test accounts.
+BYAMUGISHA ALBAN
 
-The normal local database has been backed up and upgraded. Existing user/request counts and request amounts were verified unchanged. It now contains 15 catalogue entries with **fictional class-demo prices**, not researched market prices. The first Admin has been assigned to the user's chosen existing application account. Log out and back in to load its Admin navigation. The Workbench ER model still needs refreshing.
+Student number: 2500603090
+
+Registration number: 2025/BSE/062/PS
+
+## Features
+
+Account registration and login, equipment/service requests, a preset UGX catalogue, customer order confirmation, staff approvals, deliveries, inventory, service progress, account administration, notifications and PDF reports. The interface uses 17 NetBeans forms and a mandatory password-change dialog.
 
 ## Run in NetBeans
 
 1. Start the local XAMPP MySQL service on port 3306. Database: `it_procurement_db`; database user: `root`; database password: empty.
-2. On a fresh installation, run `db/it_procurement_schema.sql`. Run Project automatically applies missing catalogue/account/workflow additions and inserts missing demo catalogue entries. It preserves existing records and Admin edits. Much older installations may also need the earlier account-type/email/request-type migrations in `db/`.
+2. On a fresh installation, run `db/it_procurement_schema.sql`. Run Project automatically applies missing catalogue/account/workflow additions and inserts missing catalogue entries. It preserves existing records and Admin edits. Much older installations may also need the earlier account-type/email/request-type migrations in `db/`.
 3. Supply `lib/mysql-connector-j-26.7.0.jar` and `lib/itextpdf-5.5.5.jar`. Both are configured with relative paths and ignored by Git. The iText sources, Javadoc, PDF/A and Xtra JARs are not needed for these reports.
 4. Use **Run Project**, starting `ITProcurementSystem`. Registration opens MainFrame automatically after the account is saved and its password is verified.
 5. To appoint the first Admin, register that person normally, then set their exact application username and role `Admin` in `db/promote_staff.sql`. Its empty username deliberately changes nothing. An Admin can subsequently assign staff roles through Users. Log out and back in after changing a role.
@@ -34,7 +40,7 @@ Registration requires an explicit Individual or Organisation account type. Usern
 
 Navigation intentionally shows only permitted actions. The sidebar scrolls on small screens. DAO methods also check the saved role and session version, so hiding buttons is not the access control itself.
 
-## Classroom password recovery
+## Password recovery
 
 Forgot Password checks the registered username and full name, creates a random **replacement** password, saves its hash and displays the replacement only after saving succeeds. The old password stops working and earlier sessions cannot perform protected actions. After login with this temporary password, a mandatory dialog asks for a new password and confirmation (8–128 characters). It rejects a mismatch or reuse of the temporary password. Closing/cancelling signs out; the user cannot enter MainFrame or access protected data until the change is saved. The requirement persists between runs, including earlier recorded resets. Roles do not change. The original password cannot be retrieved from its hash.
 
@@ -42,7 +48,7 @@ This deliberately simple classroom flow is not suitable for real deployment: kno
 
 ## Catalogue and prices
 
-The 15 starter entries cover computers, displays, printing, networking, power, storage, installation, maintenance, support, backups and training. See `docs/catalogue-draft.md` for their sample prices and specifications.
+The 15 starter entries cover computers, displays, printing, networking, power, storage, installation, maintenance, support, backups and training. See `docs/catalogue.md` for the preset prices and specifications.
 
 Admin can add, edit or deactivate items. Customers select an active item and quantity; description and price fields are read-only. Submission re-reads and locks the catalogue record in MySQL. If its price or specification changed, the customer must remove and re-add the item to review the new details. Submitted descriptions, units and prices remain unchanged when the catalogue is later edited. Historical pre-catalogue records keep their original estimates and are labelled as legacy records.
 
@@ -96,10 +102,14 @@ These demonstrate classes/objects, private fields and getters, inheritance from 
 
 There are now **21 tables**. The additions are `catalogue` and `order_decisions`; users also gain `gender` and `session_version`, and request items gain catalogue links and saved units. `customer_decisions` remains for legacy quotation decisions. `request_selections` records the internally selected supplier, and `service_progress` stores service work.
 
-Run Project performs additive updates through `DatabaseSetup`. `db/add_catalogue_and_accounts.sql` provides the MariaDB manual additions; Run Project completes the named catalogue foreign key and demo seed. Backups in `db/backups/` are private and Git-ignored. Earlier Workbench exports are historical snapshots: reverse-engineer the current database and save an updated `.mwb` and PDF.
+Run Project performs additive updates through `DatabaseSetup`. `db/add_catalogue_and_accounts.sql` provides the MariaDB manual additions; Run Project completes the named catalogue foreign key and catalogue seed. Backups in `db/backups/` are private and Git-ignored. Earlier Workbench exports are historical snapshots: reverse-engineer the current database and save an updated `.mwb` and PDF.
 
 ## Verification
 
 Run `bash test/run-tests.sh` with a separate local test server on port **3307**. The script resets only `procurement_test` and refuses port 3306. Both JARs must be in `lib/`. It checks registration/duplicates, recovery and session expiry, role/ownership restrictions, fixed-price tampering/staleness, historical snapshots, order decisions, concurrent decisions/deliveries, attachment rollback and JPanel construction. PDF tests check permissions, pagination, repeated headings/logo resources and excluded password/supplier data. Sample PDFs are written under `/tmp/procurement-pdf-review/` for inspection.
 
-The last run passed 102 checks; rendered PDFs and real JFrame layouts were also inspected. A final interactive run in your NetBeans session is still useful, especially saving to your preferred PDF folder. Future changes should retain simple comments and be committed and pushed after each completed step.
+The latest automated run passed 105 checks. PDF layouts and the login/password-change windows were also checked.
+
+## Submission package
+
+`submission/ITProcurementSystem.zip` contains the current source, editable NetBeans forms, build files, database setup/migrations, required local JARs, verification tests and current documentation. It excludes Git history, generated builds, private database backups, local credentials, machine-specific NetBeans settings, drafting guides and outdated ER exports. No live account records are included. The older Workbench files in the working folder are retained as historical references; the SQL schema is current.

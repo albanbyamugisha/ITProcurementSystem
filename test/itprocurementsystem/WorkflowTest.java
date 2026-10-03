@@ -53,6 +53,7 @@ public class WorkflowTest {
         testRegistration();
         testRecovery();
         testCatalogue();
+        testCatalogueCleanup();
         testPanels();
         testDeclineAndRejection();
         testConcurrentSelection();
@@ -105,6 +106,22 @@ public class WorkflowTest {
         for (int page=1;page<=reader.getNumberOfPages();page++) { requestText += com.itextpdf.text.pdf.parser.PdfTextExtractor.getTextFromPage(reader,page); }
         check(!requestText.contains("12.50") && requestText.contains("UGX"),"Request PDF excludes supplier unit price");
         reader.close();
+    }
+
+    // Cosmetic cleanup must keep the catalogue price and Admin-authored descriptions intact.
+    private static void testCatalogueCleanup() throws Exception {
+        try (Connection c = DBConnection.getConnection()) {
+            Object[] before = Database.one(c,"SELECT catalogue_id,price FROM catalogue WHERE seed_code='SV-006'");
+            Database.update(c,"UPDATE catalogue SET description=? WHERE catalogue_id=?",
+                    "Configure one backup destination; storage and subscriptions excluded [Class demo]",before[0]);
+            DatabaseSetup.ensureWorkflowTables(c);
+            Object[] after = Database.one(c,"SELECT description,price FROM catalogue WHERE catalogue_id=?",before[0]);
+            check("Configure one backup destination; storage and subscriptions excluded".equals(after[0]),"Development tag removed from saved catalogue");
+            check(before[1].equals(after[1]),"Cleanup preserves preset prices");
+            Database.update(c,"UPDATE catalogue SET description='Custom backup specification' WHERE catalogue_id=?",before[0]);
+            DatabaseSetup.ensureWorkflowTables(c);
+            check("Custom backup specification".equals(Database.one(c,"SELECT description FROM catalogue WHERE catalogue_id=?",before[0])[0]),"Cleanup preserves Admin descriptions");
+        }
     }
 
     // Customer prices must come from the catalogue and survive later Admin edits.

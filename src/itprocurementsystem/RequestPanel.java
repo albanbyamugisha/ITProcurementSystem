@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package itprocurementsystem;
 
 // These classes help us keep category objects and report database problems.
@@ -335,7 +331,7 @@ public class RequestPanel extends javax.swing.JPanel {
             // Only allow a choice when the database has categories to choose from.
             if (categories.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
-                        "No categories are saved. Run db/sample_categories.sql, then log in again.",
+                        "No categories are available. Please contact the administrator.",
                         "Categories", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 jComboBoxCategory.setEnabled(true);

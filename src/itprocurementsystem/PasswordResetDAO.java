@@ -30,8 +30,8 @@ public class PasswordResetDAO {
                 Database.update(c, "UPDATE users SET password_hash=?,must_change_password=TRUE,session_version=session_version+1 WHERE user_id=?",
                         PasswordUtil.hashPassword(password.toString()), user);
                 // Never put the replacement password or its hash in notifications or logs.
-                Database.update(c, "INSERT INTO audit_logs(user_id,action,table_affected,record_id) VALUES (?,'Classroom password reset','users',?)", user, user);
-                Database.notify(c, user, "Your password was reset using the classroom recovery form.");
+                Database.update(c, "INSERT INTO audit_logs(user_id,action,table_affected,record_id) VALUES (?,'Password reset','users',?)", user, user);
+                Database.notify(c, user, "Your password was reset. Log in with the temporary password to choose your own.");
                 c.commit();
                 return password.toString();
             } catch (SQLException | RuntimeException ex) { c.rollback(); throw ex; }

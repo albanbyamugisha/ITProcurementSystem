@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package itprocurementsystem;
 
 /**
@@ -163,7 +159,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jTableQuotations);
 
-        jLabelItems.setText("Selected quotation items");
+        jLabelItems.setText("Order items");
 
         jTableQuotationItems.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -190,7 +186,7 @@ public class CustomerQuotationsPanel extends javax.swing.JPanel {
         jTextAreaDetails.setEditable(false);
         jTextAreaDetails.setColumns(20);
         jTextAreaDetails.setRows(5);
-        jTextAreaDetails.setText("Select a quotation to view its details.");
+        jTextAreaDetails.setText("Select an order to view its details.");
         jScrollPane3.setViewportView(jTextAreaDetails);
 
         jLabelComments.setText("Your comments (optional)");

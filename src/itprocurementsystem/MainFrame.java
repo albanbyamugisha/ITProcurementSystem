@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package itprocurementsystem;
 
 // These classes let us respond when the Logout button is clicked.
@@ -233,7 +229,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         javax.swing.JTextArea message = new javax.swing.JTextArea("Welcome to the IT Procurement Request System.\n\n"
                 + "Use the menu to open your permitted screens. Browse Catalogue for equipment and services with fixed UGX prices.\n\n"
-                + "My Account PDF and My History PDF save your details. Catalogue starter prices are fictional class examples.\n\n"
+                + "Open My Account PDF or My History PDF to view your details and save a copy.\n\n"
                 + "Your role: " + Session.getRole());
         message.setEditable(false); message.setLineWrap(true); message.setWrapStyleWord(true);
         message.setFont(jLabelWelcome.getFont()); message.setOpaque(false);
