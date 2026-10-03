@@ -133,7 +133,7 @@ public class MyRequestsPanel extends javax.swing.JPanel {
 
         jLabelCount.setText("Requests: 0");
 
-        jButtonRequestPdf.setText("Save Request PDF");
+        jButtonRequestPdf.setText("View Request PDF");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

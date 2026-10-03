@@ -27,7 +27,7 @@ public class PasswordResetDAO {
                     throw new IllegalArgumentException("The username and full name do not match an account.");
                 }
                 int user = Database.id(matches.get(0)[0]);
-                Database.update(c, "UPDATE users SET password_hash=?,session_version=session_version+1 WHERE user_id=?",
+                Database.update(c, "UPDATE users SET password_hash=?,must_change_password=TRUE,session_version=session_version+1 WHERE user_id=?",
                         PasswordUtil.hashPassword(password.toString()), user);
                 // Never put the replacement password or its hash in notifications or logs.
                 Database.update(c, "INSERT INTO audit_logs(user_id,action,table_affected,record_id) VALUES (?,'Classroom password reset','users',?)", user, user);

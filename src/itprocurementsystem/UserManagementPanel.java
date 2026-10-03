@@ -151,7 +151,7 @@ public class UserManagementPanel extends javax.swing.JPanel {
 
         jLabelSelectedUser.setText("Selected user: None");
 
-        jButtonUsersPdf.setText("Save Users PDF");
+        jButtonUsersPdf.setText("View Users PDF");
 
         jButtonSelectedUserPdf.setText("Selected User PDF");
 

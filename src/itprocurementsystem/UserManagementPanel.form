@@ -217,7 +217,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButtonUsersPdf">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Save Users PDF"/>
+        <Property name="text" type="java.lang.String" value="View Users PDF"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButtonSelectedUserPdf">

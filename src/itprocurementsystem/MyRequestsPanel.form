@@ -96,7 +96,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButtonRequestPdf">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Save Request PDF"/>
+        <Property name="text" type="java.lang.String" value="View Request PDF"/>
       </Properties>
     </Component>
   </SubComponents>

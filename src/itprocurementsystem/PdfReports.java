@@ -47,7 +47,7 @@ public class PdfReports {
                         ColumnText.showTextAligned(w.getDirectContent(),Element.ALIGN_RIGHT,
                                 new Phrase("Page " + w.getPageNumber(),body),d.right(),25,0);
                         ColumnText.showTextAligned(w.getDirectContent(),Element.ALIGN_LEFT,
-                                new Phrase("Class project | UGX | Not proof of payment",body),36,25,0);
+                                new Phrase("2500603090 - BYAMUGISHA ALBAN - 2025/BSE/062/PS",body),36,25,0);
                     } catch (DocumentException ex) { throw new IllegalStateException("Could not draw the report header.",ex); }
                 }
             });

@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     gender VARCHAR(30),
     session_version INT NOT NULL DEFAULT 0,
+    -- Generated reset passwords must be replaced before the main screen opens.
+    must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
     full_name VARCHAR(100) NOT NULL,
     -- Each registered email must belong to only one account.
     email VARCHAR(100) UNIQUE,

@@ -10,6 +10,10 @@ public final class DatabaseSetup {
         // These additions keep existing accounts and request records intact.
         addColumn(connection, "users", "gender", "VARCHAR(30) NULL");
         addColumn(connection, "users", "session_version", "INT NOT NULL DEFAULT 0");
+        // This flag survives closing the program, so a reset password cannot bypass the prompt.
+        addColumn(connection, "users", "must_change_password", "BOOLEAN NOT NULL DEFAULT FALSE");
+        // Older recorded resets also need the new rule. A completed change prevents re-flagging.
+        Database.update(connection,"UPDATE users u SET must_change_password=TRUE WHERE must_change_password=FALSE AND EXISTS (SELECT 1 FROM audit_logs r WHERE r.user_id=u.user_id AND r.action='Classroom password reset' AND NOT EXISTS (SELECT 1 FROM audit_logs done WHERE done.user_id=u.user_id AND done.action='Changed temporary password' AND done.log_id>r.log_id))");
         // Catalogue IDs link new requests to products, while snapshots preserve old prices.
         Database.update(connection, "CREATE TABLE IF NOT EXISTS catalogue (catalogue_id INT AUTO_INCREMENT PRIMARY KEY, seed_code VARCHAR(20) UNIQUE, item_name VARCHAR(100) NOT NULL, item_type VARCHAR(20) NOT NULL, category_id INT NOT NULL, unit VARCHAR(50) NOT NULL, description VARCHAR(255) NOT NULL, price DECIMAL(12,2) NOT NULL, active BOOLEAN NOT NULL DEFAULT FALSE, FOREIGN KEY(category_id) REFERENCES categories(category_id)) ENGINE=InnoDB");
         addColumn(connection, "request_items", "catalogue_id", "INT NULL");

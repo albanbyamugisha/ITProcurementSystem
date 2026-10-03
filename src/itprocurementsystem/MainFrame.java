@@ -65,6 +65,13 @@ public class MainFrame extends javax.swing.JFrame {
             throw new IllegalStateException("Please log in before opening the main window.");
         }
 
+        // Check the database too: a temporary-password session cannot open this frame directly.
+        try (java.sql.Connection c = DBConnection.getConnection()) {
+            Database.require(c,"Requester","Manager","Purchaser","Admin");
+        } catch (java.sql.SQLException | IllegalArgumentException ex) {
+            dispose();
+            throw new IllegalStateException(ex.getMessage(),ex);
+        }
         // Display the details remembered after a successful database login.
         jLabelWelcome.setText("Welcome, " + Session.getFullName() + " (" + Session.getRole() + ")");
 

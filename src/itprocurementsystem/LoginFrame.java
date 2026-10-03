@@ -175,6 +175,8 @@ public class LoginFrame extends javax.swing.JFrame {
             boolean correctLogin = userDAO.checkLogin(username, password);
 
             if (correctLogin) {
+                // Cancel/close signs out; MainFrame opens only after the required change succeeds.
+                if (Session.mustChangePassword() && !PasswordChangeDialog.show(this)) { return; }
                 // Tell the user that the database accepted their login details.
                 JOptionPane.showMessageDialog(this,
                         "Welcome, " + Session.getFullName() + "!",

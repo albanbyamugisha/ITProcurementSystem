@@ -6,7 +6,7 @@ Built with Java Swing, JDBC and MySQL/MariaDB. Beginner-friendly comments explai
 
 ## Current status
 
-The reduced scope is implemented: **17 forms (4 JFrame windows and 13 JPanel screens)**. The latest isolated MariaDB run passes **85 checks**. All four real windows were constructed and rendered, and catalogue/request navigation was exercised using fictional test accounts.
+The reduced scope is implemented: **17 forms (4 JFrame windows and 13 JPanel screens)**. The latest isolated MariaDB run passes **102 checks**. All four real windows were constructed and rendered, and catalogue/request navigation was exercised using fictional test accounts.
 
 The normal local database has been backed up and upgraded. Existing user/request counts and request amounts were verified unchanged. It now contains 15 catalogue entries with **fictional class-demo prices**, not researched market prices. The first Admin has been assigned to the user's chosen existing application account. Log out and back in to load its Admin navigation. The Workbench ER model still needs refreshing.
 
@@ -36,7 +36,7 @@ Navigation intentionally shows only permitted actions. The sidebar scrolls on sm
 
 ## Classroom password recovery
 
-Forgot Password checks the registered username and full name, creates a random **replacement** password, saves its hash and displays the replacement only after saving succeeds. The old password stops working and earlier sessions cannot perform protected actions. Roles do not change. The original password cannot be retrieved from its hash.
+Forgot Password checks the registered username and full name, creates a random **replacement** password, saves its hash and displays the replacement only after saving succeeds. The old password stops working and earlier sessions cannot perform protected actions. After login with this temporary password, a mandatory dialog asks for a new password and confirmation (8–128 characters). It rejects a mismatch or reuse of the temporary password. Closing/cancelling signs out; the user cannot enter MainFrame or access protected data until the change is saved. The requirement persists between runs, including earlier recorded resets. Roles do not change. The original password cannot be retrieved from its hash.
 
 This deliberately simple classroom flow is not suitable for real deployment: knowledge of a person's username and full name is not proof of identity. The existing SHA-256 classroom password scheme remains in use. Passwords and hashes never appear in PDFs, account tables, notifications or audit messages.
 
@@ -64,11 +64,11 @@ Legacy approved/selected quotations remain intact. Unconfirmed legacy estimates 
 
 - **My Account PDF:** current account details, including optional gender and organisation.
 - **My History PDF:** the user's requests, saved totals, order decisions, deliveries and services.
-- **Save Request PDF:** selected request, items, customer decision, staff outcome and applicable delivery/service details.
-- **Save Users PDF:** Admin-only user directory.
+- **View Request PDF:** selected request, items, customer decision, staff outcome and applicable delivery/service details.
+- **View Users PDF:** Admin-only user directory.
 - **Selected User PDF:** Admin-only selected account plus its procurement history.
 
-All documents have the system logo on every page, document reference, Kampala generation time, UGX labels, repeated table headings and page numbers. The user directory uses landscape A4. A Save dialog asks before overwriting; a temporary file prevents failed generation from damaging an existing PDF. Reports are not proof of payment. Customer reports omit internal supplier costs and all reports omit passwords/hashes.
+All documents have the system logo on every page, document reference, Kampala generation time, UGX labels, repeated table headings and page numbers. The user directory uses landscape A4. Clicking a PDF button immediately creates a temporary preview and opens the default PDF viewer. Use the viewer’s Save As / Save a Copy command to keep it, or close it without saving. Temporary previews are removed when the application exits. A default PDF viewer must be installed. Every footer reads `2500603090 - BYAMUGISHA ALBAN - 2025/BSE/062/PS`. Reports are not proof of payment. Customer reports omit internal supplier costs and all reports omit passwords/hashes.
 
 The bundled DejaVu font makes report rendering portable; its licence is beside it in `src/itprocurementsystem/resources/`. The supplied iText core JAR remains a local dependency.
 
@@ -102,4 +102,4 @@ Run Project performs additive updates through `DatabaseSetup`. `db/add_catalogue
 
 Run `bash test/run-tests.sh` with a separate local test server on port **3307**. The script resets only `procurement_test` and refuses port 3306. Both JARs must be in `lib/`. It checks registration/duplicates, recovery and session expiry, role/ownership restrictions, fixed-price tampering/staleness, historical snapshots, order decisions, concurrent decisions/deliveries, attachment rollback and JPanel construction. PDF tests check permissions, pagination, repeated headings/logo resources and excluded password/supplier data. Sample PDFs are written under `/tmp/procurement-pdf-review/` for inspection.
 
-The last run passed 85 checks; rendered PDFs and real JFrame layouts were also inspected. A final interactive run in your NetBeans session is still useful, especially saving to your preferred PDF folder. Future changes should retain simple comments and be committed and pushed after each completed step.
+The last run passed 102 checks; rendered PDFs and real JFrame layouts were also inspected. A final interactive run in your NetBeans session is still useful, especially saving to your preferred PDF folder. Future changes should retain simple comments and be committed and pushed after each completed step.

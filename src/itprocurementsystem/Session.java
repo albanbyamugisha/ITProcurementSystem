@@ -16,6 +16,9 @@ public class Session {
     private static String role = "";
     // A reset increases this number in MySQL, making older sessions expire.
     private static int version = 0;
+    // A temporary-password login may only open the mandatory password dialog.
+    private static boolean passwordChangeRequired = false;
+    public static boolean mustChangePassword() { return passwordChangeRequired; }
     public static int getVersion() { return version; }
 
     // Call this only after the username and password have been verified.
@@ -26,6 +29,12 @@ public class Session {
 
     // Login reads this version together with the verified account details.
     public static void start(int id, String loginName, String name, String userRole, int sessionVersion) {
+        start(id, loginName, name, userRole, sessionVersion, false);
+    }
+
+    public static void start(int id, String loginName, String name, String userRole,
+            int sessionVersion, boolean mustChange) {
+        passwordChangeRequired = mustChange;
         version = sessionVersion;
         userId = id;
         username = loginName;
@@ -58,6 +67,7 @@ public class Session {
     public static void clear() {
         userId = 0;
         version = 0;
+        passwordChangeRequired = false;
         username = "";
         fullName = "";
         role = "";

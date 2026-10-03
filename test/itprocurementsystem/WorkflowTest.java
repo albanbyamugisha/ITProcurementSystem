@@ -79,6 +79,9 @@ public class WorkflowTest {
         check(refused,"Customer cannot export another request");
         login(customer,"Requester");
         java.io.File folder = new java.io.File("/tmp/procurement-pdf-review"); folder.mkdirs();
+        java.nio.file.Path preview = ReportActions.createPreview(reports.request(request));
+        check(java.nio.file.Files.size(preview)>0,"Preview created before choosing a permanent destination");
+        java.nio.file.Files.delete(preview);
         PdfReports.write(new java.io.File(folder,"request.pdf"),reports.request(request));
         PdfReports.write(new java.io.File(folder,"account-history.pdf"),reports.account(customer,true));
         login(admin,"Admin");
@@ -93,6 +96,7 @@ public class WorkflowTest {
             check(text.contains("Page " + page) && text.contains("Username"),"Page numbers and table headers repeat");
             com.itextpdf.text.pdf.PdfDictionary resources = reader.getPageN(page).getAsDict(com.itextpdf.text.pdf.PdfName.RESOURCES);
             check(resources.getAsDict(com.itextpdf.text.pdf.PdfName.XOBJECT)!=null,"Logo present on each PDF page");
+            check(text.contains("2500603090 - BYAMUGISHA ALBAN - 2025/BSE/062/PS") && !text.contains("Class project | UGX"),"Personal footer appears on every page");
             check(!text.contains("not-a-login-hash") && !text.contains("password_hash"),"No password hashes in PDF");
         }
         reader.close();
@@ -160,6 +164,35 @@ public class WorkflowTest {
         check(refused, "Reset expires an old session");
         check(!new UserDAO().checkLogin("recovery_user", oldPassword), "Old password no longer works");
         check(new UserDAO().checkLogin("recovery_user", replacement), "Replacement password works");
+        check(Session.mustChangePassword(), "Temporary login requires a password change");
+        refused = false;
+        try { new ManagementDAO().notifications("All notifications"); }
+        catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Temporary login cannot use protected features");
+        Session.clear();
+        check(new UserDAO().checkLogin("recovery_user", replacement) && Session.mustChangePassword(),"Required change survives another login");
+        PasswordChangeDAO change = new PasswordChangeDAO();
+        refused = false;
+        try { change.change(replacement,replacement); } catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Cannot keep generated password");
+        refused = false;
+        try { change.change("short","short"); } catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Short personal password rejected");
+        String personal = java.util.UUID.randomUUID().toString();
+        refused = false;
+        try { change.change(personal,"different"); } catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Confirmation must match");
+        check(Session.mustChangePassword(),"Invalid input does not dismiss required change");
+        change.change(personal,personal);
+        check(!Session.mustChangePassword(),"Saved personal password completes login");
+        new ManagementDAO().notifications("All notifications");
+        check(!new UserDAO().checkLogin("recovery_user",replacement),"Temporary password stops working after change");
+        try (Connection c = DBConnection.getConnection()) { DatabaseSetup.ensureWorkflowTables(c); }
+        check(new UserDAO().checkLogin("recovery_user",personal) && !Session.mustChangePassword(),"Personal password logs in normally after startup migration");
+        Session.clear(); refused = false;
+        try { change.change(personal,personal); } catch (IllegalArgumentException ex) { refused = true; }
+        check(refused,"Cancelled or logged-out session cannot change a password");
+
         try (Connection c = DBConnection.getConnection()) {
             Object[] row = Database.one(c, "SELECT gender,role,password_hash FROM users WHERE user_id=?", id);
             check("Other".equals(row[0]) && "Requester".equals(row[1]), "Recovery preserves gender and role");

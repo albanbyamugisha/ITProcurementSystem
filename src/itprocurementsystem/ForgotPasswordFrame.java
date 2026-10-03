@@ -39,7 +39,7 @@ public class ForgotPasswordFrame extends javax.swing.JFrame {
         try {
             String replacement = new PasswordResetDAO().reset(jTextFieldUsername.getText(), jTextFieldFullName.getText());
             jTextFieldNewPassword.setText(replacement);
-            jLabelStatus.setText("New password created. Copy it, then return to Login.");
+            jLabelStatus.setText("Temporary password ready. Log in to change it.");
         } catch (java.sql.SQLException | IllegalArgumentException ex) {
             jLabelStatus.setText("Password was not reset.");
             FormSupport.error(this, ex);
