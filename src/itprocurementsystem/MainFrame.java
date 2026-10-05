@@ -412,7 +412,8 @@ public class MainFrame extends javax.swing.JFrame {
 
     // A few labels fill the existing content area; there is no additional HomePanel form.
     // Build the initial welcome content using the packaged system logo and introductory text.
-    private void showWelcome() {
+    // Package access lets the vendor Exit button return to this existing welcome screen.
+    void showWelcome() {
         // Declare welcome with type javax.swing.JPanel. Create a container for controls inside an existing
         // window.
         javax.swing.JPanel welcome = new javax.swing.JPanel(new java.awt.BorderLayout(12,24));

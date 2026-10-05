@@ -68,6 +68,43 @@ public class ManagementDAO {
             }
         }
     }
+    // Remove only unused suppliers. Database foreign keys also protect against concurrent new references.
+    public void deleteVendor(int id) throws SQLException {
+        // A real saved vendor must be selected; zero is reserved for creating a new vendor.
+        if (id <= 0) { throw new IllegalArgumentException("Select a vendor first."); }
+        // Close the connection automatically after success or failure.
+        try (Connection c = DBConnection.getConnection()) {
+            // Check current permissions even if this method is called without the panel.
+            Database.require(c, "Admin", "Manager", "Purchaser");
+            // Keep the deletion and its audit record together in one transaction.
+            c.setAutoCommit(false);
+            try {
+                // A prepared placeholder targets one ID; linked quotations or deliveries make MySQL refuse deletion.
+                if (Database.update(c, "DELETE FROM vendors WHERE vendor_id=?", id) != 1) {
+                    // Report an already removed record instead of claiming that deletion succeeded.
+                    throw new IllegalArgumentException("Vendor not found. Refresh the list.");
+                }
+                // Record which staff member removed the unused supplier.
+                Database.audit(c, "Deleted unused vendor", "vendors", id);
+                // Make both the deletion and audit entry permanent.
+                c.commit();
+            } catch (SQLException ex) {
+                // Restore the record if deletion or the audit insert fails.
+                c.rollback();
+                // MySQL error 1451 means another table still refers to this vendor.
+                if (ex.getErrorCode() == 1451) {
+                    throw new IllegalArgumentException("This vendor is used by a quotation or delivery and cannot be deleted.");
+                }
+                // Pass other database errors to the panel for display.
+                throw ex;
+            } catch (RuntimeException ex) {
+                // A missing-record error must also finish the transaction without saving changes.
+                c.rollback();
+                throw ex;
+            }
+        }
+    }
+
     // Read the department list for an Admin, ordered by department name.
     public ArrayList<Object[]> departments() throws SQLException {
         // Open the declared resources for this block; try-with-resources closes them in reverse order even if

@@ -33,3 +33,8 @@ cp -r src/itprocurementsystem/resources "$test_classes/itprocurementsystem/"
 java -Djava.awt.headless=true \
     "-Dprocurement.test.url=jdbc:mysql://127.0.0.1:$test_port/procurement_test?useSSL=false" \
     -cp "$test_classes:lib/*" itprocurementsystem.WorkflowTest
+
+# Use the fixtures just created by WorkflowTest to verify vendor navigation and protected deletion.
+java -Djava.awt.headless=true \
+    "-Dprocurement.test.url=jdbc:mysql://127.0.0.1:$test_port/procurement_test?useSSL=false" \
+    -cp "$test_classes:lib/*" itprocurementsystem.VendorButtonsTest

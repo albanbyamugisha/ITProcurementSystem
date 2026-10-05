@@ -102,6 +102,19 @@ The Java source, SQL scripts and test runner include detailed comments in genera
 
 For a first reading, follow `ITProcurementSystem` → `DBConnection` → `LoginFrame` → `UserDAO` → `Session` → `MainFrame`. Then follow a request through `RequestPanel`, `RequestItem` and `RequestDAO`. Form constructors connect actions; DAO classes validate and save; data classes hold related values. The comments above `initComponents` explain layout constants. NetBeans can replace comments inside generated sections when Design view regenerates them, so keep the handwritten explanations outside those sections as well.
 
+## Vendor record buttons
+
+The Vendors panel provides **Save, Delete, Find, First, Previous, Next, Last and Exit**, plus Clear and Refresh.
+
+- **Clear** empties the fields and removes the selection. Enter a vendor and click **Save** to add it.
+- Select a row or use the navigation buttons, edit its details, and click **Save** to update that vendor.
+- **Find** searches vendor names without case sensitivity. Punctuation is treated literally. A blank search or **Refresh** restores the full list.
+- **First / Previous / Next / Last** select visible rows and fill the fields. They respect filtering and column sorting, and stop at the list boundaries.
+- **Delete** asks for confirmation. Vendors used by quotations or deliveries cannot be deleted; MySQL foreign keys enforce this even during simultaneous changes. Successful deletions are audited.
+- **Exit** returns to the main welcome screen without logging out. Unsaved vendor field edits are cleared.
+
+Save replaces the old Add Vendor and Update Selected controls. Those controls and the extra default designer button remain hidden. A selected row determines which record Save updates; the typed name does not determine the record ID.
+
 ## Database and ER diagram
 
 There are now **21 tables**. The additions are `catalogue` and `order_decisions`; users also gain `gender` and `session_version`, and request items gain catalogue links and saved units. `customer_decisions` remains for legacy quotation decisions. `request_selections` records the internally selected supplier, and `service_progress` stores service work.
@@ -112,6 +125,6 @@ Run Project performs additive updates through `DatabaseSetup`. `db/add_catalogue
 
 Run `bash test/run-tests.sh` with a separate local test server on port **3307**. The script resets only `procurement_test` and refuses port 3306. Both JARs must be in `lib/`. It checks registration/duplicates, recovery and session expiry, role/ownership restrictions, fixed-price tampering/staleness, historical snapshots, order decisions, concurrent decisions/deliveries, attachment rollback and JPanel construction. PDF tests check permissions, pagination, repeated headings/logo resources and excluded password/supplier data. Sample PDFs are written under `/tmp/procurement-pdf-review/` for inspection.
 
-The latest automated run passed 105 checks. PDF layouts and the login/password-change windows were also checked.
+The latest automated run passed 105 workflow checks and 23 vendor button checks. PDF layouts and the login/password-change windows were also checked.
 
 The comment-only revision was verified by compiling before and after with debug metadata disabled: all 175 class files were identical. Executable Java and SQL tokens were unchanged, all 17 form XML files parsed, and the test runner passed shell syntax validation. No application behaviour was changed by this revision.

@@ -12,133 +12,207 @@ package itprocurementsystem;
 // Define VendorPanel as a JPanel: it groups this task's controls inside MainFrame rather than opening
 // another window.
 public class VendorPanel extends javax.swing.JPanel {
-    // The DAO handles validation and SQL; the form handles display.
-    // Only this class accesses this field directly. Declare management with type ManagementDAO. Create a
-    // ManagementDAO object using the supplied constructor values. The reference or value cannot be
-    // reassigned after initialisation.
+    // The DAO validates changes and checks staff permissions before accessing MySQL.
     private final ManagementDAO management = new ManagementDAO();
+    // A sorter filters the visible table while retaining each vendor's original database ID.
+    private javax.swing.table.TableRowSorter<javax.swing.table.TableModel> sorter;
 
-
-    /**
-     * Creates new form VendorPanel
-     */
-    // Construct this object and initialise its fields or controls from the supplied starting values; a
-    // constructor has no return type.
+    // A JPanel keeps vendor entry inside MainFrame, with the same navigation and login session.
     public VendorPanel() {
-        // Build the controls and layout saved in NetBeans Design view.
-        // Create the controls and apply the layout stored by NetBeans before reading or changing any of those
-        // controls.
+        // Create the controls arranged in NetBeans before connecting their actions.
         initComponents();
-        // Run this action when the user clicks the button.
-        // Connect this control to its actionPerformed callback, which runs when an action is raised.
-        jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
-            // Handle the action event raised by the control connected to this listener.
-            public void actionPerformed(java.awt.event.ActionEvent event) {
-                // Attempt these operations; the following catch or finally blocks handle failures or cleanup.
-                // Read current saved records for this screen and refresh its choices, table or count.
-                try { reload(); }
-                // Handle Exception ex from the preceding try block so the failure follows the recovery steps below.
-                // Show the caught error as a message instead of allowing the event action to fail silently.
-                catch (Exception ex) { FormSupport.error(null, ex); }
-            }
-        });
-        // Run this action when the user clicks the button.
-        // Connect this control to its actionPerformed callback, which runs when an action is raised.
-        jButtonClear.addActionListener(new java.awt.event.ActionListener() {
-            // Handle the action event raised by the control connected to this listener.
-            public void actionPerformed(java.awt.event.ActionEvent event) {
-                // Attempt these operations; the following catch or finally blocks handle failures or cleanup.
-                // Clear the selected vendor and the editable supplier fields for a fresh entry.
-                try { clearFields(); }
-                // Handle Exception ex from the preceding try block so the failure follows the recovery steps below.
-                // Show the caught error as a message instead of allowing the event action to fail silently.
-                catch (Exception ex) { FormSupport.error(null, ex); }
-            }
-        });
-        // Run this action when the user clicks the button.
-        // Connect this control to its actionPerformed callback, which runs when an action is raised.
-        jButtonAddVendor.addActionListener(new java.awt.event.ActionListener() {
-            // Handle the action event raised by the control connected to this listener.
-            public void actionPerformed(java.awt.event.ActionEvent event) {
-                // Attempt these operations; the following catch or finally blocks handle failures or cleanup.
-                // Validate supplier details, then insert a new vendor for ID zero or update the specified existing
-                // vendor.
-                try { saveVendor(0); }
-                // Handle Exception ex from the preceding try block so the failure follows the recovery steps below.
-                // Show the caught error as a message instead of allowing the event action to fail silently.
-                catch (Exception ex) { FormSupport.error(null, ex); }
-            }
-        });
-        // Run this action when the user clicks the button.
-        // Connect this control to its actionPerformed callback, which runs when an action is raised.
-        jButtonUpdateVendor.addActionListener(new java.awt.event.ActionListener() {
-            // Handle the action event raised by the control connected to this listener.
-            public void actionPerformed(java.awt.event.ActionEvent event) {
-                // Attempt these operations; the following catch or finally blocks handle failures or cleanup.
-                // Validate supplier details, then insert a new vendor for ID zero or update the specified existing
-                // vendor.
-                try { saveVendor(FormSupport.selectedId(jTableVendors)); }
-                // Handle Exception ex from the preceding try block so the failure follows the recovery steps below.
-                // Show the caught error as a message instead of allowing the event action to fail silently.
-                catch (Exception ex) { FormSupport.error(null, ex); }
-            }
-        });
-        // Show the selected row in the editing fields.
-        // Connect the table selection to valueChanged so selecting a row updates the displayed details.
+        // Save replaces the two older actions; the unused default button has no purpose on this screen.
+        jButtonAddVendor.setVisible(false);
+        jButtonUpdateVendor.setVisible(false);
+        jButton8.setVisible(false);
+        // Keep filtering and navigation based on the rows currently visible to the user.
+        sorter = new javax.swing.table.TableRowSorter<javax.swing.table.TableModel>(jTableVendors.getModel());
+        jTableVendors.setRowSorter(sorter);
+        // Connect the existing dragged controls to the actions below.
+        connect(btnsave, "save");
+        connect(jButtonDelete, "delete");
+        connect(jButtonFind, "find");
+        connect(jButtonFirst, "first");
+        connect(jButtonPrevious, "previous");
+        connect(jButtonNext, "next");
+        connect(jButtonLast, "last");
+        connect(jButtonExit, "exit");
+        connect(jButtonClear, "clear");
+        connect(jButtonRefresh, "refresh");
+        // Selecting a row, including through navigation, copies that vendor into the editing fields.
         jTableVendors.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            // Respond to a table-selection change; the event can fire several times while a selection is
-            // adjusting.
             public void valueChanged(javax.swing.event.ListSelectionEvent event) {
-                // Wait for a completed selection change before reading the selected table row.
-                // Set the text displayed by jTextFieldVendorName to `FormSupport.cell(jTableVendors, 1).toString()`.
-                // Set the text displayed by jTextFieldContactPerson to `FormSupport.cell(jTableVendors,
-                // 2).toString()`.
-                // Set the text displayed by jTextFieldPhone to `FormSupport.cell(jTableVendors, 3).toString()`.
-                // Set the text displayed by jTextFieldEmail to `FormSupport.cell(jTableVendors, 4).toString()`.
-                // Set the text displayed by jTextAreaAddress to `FormSupport.cell(jTableVendors, 5).toString()`.
-                if (!event.getValueIsAdjusting()) { jTextFieldVendorName.setText(FormSupport.cell(jTableVendors, 1).toString()); jTextFieldContactPerson.setText(FormSupport.cell(jTableVendors, 2).toString()); jTextFieldPhone.setText(FormSupport.cell(jTableVendors, 3).toString()); jTextFieldEmail.setText(FormSupport.cell(jTableVendors, 4).toString()); jTextAreaAddress.setText(FormSupport.cell(jTableVendors, 5).toString()); }
+                // Wait until the selection settles rather than reacting to intermediate selection events.
+                if (!event.getValueIsAdjusting()) {
+                    // FormSupport converts visible row positions to model positions after sorting or filtering.
+                    jTextFieldVendorName.setText(FormSupport.cell(jTableVendors, 1).toString());
+                    jTextFieldContactPerson.setText(FormSupport.cell(jTableVendors, 2).toString());
+                    jTextFieldPhone.setText(FormSupport.cell(jTableVendors, 3).toString());
+                    jTextFieldEmail.setText(FormSupport.cell(jTableVendors, 4).toString());
+                    jTextAreaAddress.setText(FormSupport.cell(jTableVendors, 5).toString());
+                    // Prevent navigation beyond the first or last visible record.
+                    updateButtons();
+                }
             }
         });
-        // Read current saved records for this screen and refresh its choices, table or count.
-        reload();
-
-    }
-
-    // Reload saved rows after an add or update.
-    // Read current saved records for this screen and refresh its choices, table or count.
-    private void reload() {
-        // Attempt these operations; the following catch or finally blocks handle failures or cleanup.
-        // Replace the displayed rows using the supplied table model data; keep the existing headings.
-        // Set the text displayed by jLabelCount to `"Vendors: " + jTableVendors.getRowCount()`.
-        try { FormSupport.fill(jTableVendors, management.vendors()); jLabelCount.setText("Vendors: " + jTableVendors.getRowCount()); }
-        // Handle Exception ex from the preceding try block so the failure follows the recovery steps below.
-        // Show the caught error as a message instead of allowing the event action to fail silently.
+        // Load the initial vendor list; report a connection or permission failure in this panel.
+        try { reload(); }
         catch (Exception ex) { FormSupport.error(this, ex); }
+        // An empty or unavailable list must leave Delete and navigation disabled.
+        updateButtons();
     }
-    // Clear the selected vendor and the editable supplier fields for a fresh entry.
+
+    // Each button supplies a short action name, avoiding a separate listener implementation for every button.
+    private void connect(javax.swing.JButton button, final String action) {
+        // Swing calls this listener when the connected button is clicked.
+        button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent event) {
+                // Handle validation and database errors without closing the application.
+                try {
+                    // Save creates a vendor when no row is selected, otherwise it updates the selected ID.
+                    if (action.equals("save")) { saveVendor(); }
+                    // Delete requests confirmation before contacting the database.
+                    else if (action.equals("delete")) { deleteVendor(); }
+                    // Find asks for a name and filters the table without changing database records.
+                    else if (action.equals("find")) { findVendor(); }
+                    // The first visible record has index zero.
+                    else if (action.equals("first")) { selectRow(0); }
+                    // Move one visible record backward or forward from the current selection.
+                    else if (action.equals("previous")) { selectRow(jTableVendors.getSelectedRow() - 1); }
+                    else if (action.equals("next")) { selectRow(jTableVendors.getSelectedRow() + 1); }
+                    // The final visible index is one less than the number of visible rows.
+                    else if (action.equals("last")) { selectRow(jTableVendors.getRowCount() - 1); }
+                    // Clear prepares a new entry; Refresh reloads the full saved list and removes a search.
+                    else if (action.equals("clear")) { clearFields(); }
+                    else if (action.equals("refresh")) { reload(); }
+                    // Exit returns to the welcome panel without logging the user out.
+                    else if (action.equals("exit")) { exitPanel(); }
+                } catch (Exception ex) {
+                    // Display the actual error beside the vendor controls.
+                    FormSupport.error(VendorPanel.this, ex);
+                }
+            }
+        });
+    }
+
+    // Refresh removes a search and replaces rows only after the database read succeeds.
+    private void reload() throws java.sql.SQLException {
+        // Read first so a failed query does not erase the existing table or typed values.
+        java.util.ArrayList<Object[]> rows = management.vendors();
+        // Remove the name filter so newly saved vendors can appear in the full list.
+        sorter.setRowFilter(null);
+        // Fill keeps the designer's headings and makes selection single-row only.
+        FormSupport.fill(jTableVendors, rows);
+        // No selected record means the next Save creates a new vendor.
+        clearFields();
+    }
+
+    // Clear affects only the editing controls, never saved vendor records.
     private void clearFields() {
-        // Clear the selected row or entry in jTableVendors without deleting its data.
+        // Remove the selected ID before clearing fields to enter a new vendor.
         jTableVendors.clearSelection();
-        // Set the text displayed by jTextFieldVendorName to empty text.
+        // Empty all five fields so values from the previous vendor are not reused.
         jTextFieldVendorName.setText("");
-        // Set the text displayed by jTextFieldContactPerson to empty text.
         jTextFieldContactPerson.setText("");
-        // Set the text displayed by jTextFieldPhone to empty text.
         jTextFieldPhone.setText("");
-        // Set the text displayed by jTextFieldEmail to empty text.
         jTextFieldEmail.setText("");
-        // Set the text displayed by jTextAreaAddress to empty text.
         jTextAreaAddress.setText("");
+        // Update enabled buttons and move typing focus to the name field.
+        updateButtons();
+        jTextFieldVendorName.requestFocusInWindow();
     }
-    // Validate supplier details, then insert a new vendor for ID zero or update the specified existing
-    // vendor.
-    private void saveVendor(int id) throws java.sql.SQLException {
-        // Validate supplier details, then insert a new vendor for ID zero or update the specified existing
-        // vendor.
-        management.saveVendor(id, jTextFieldVendorName.getText(), jTextFieldContactPerson.getText(), jTextFieldPhone.getText(), jTextFieldEmail.getText(), jTextAreaAddress.getText());
-        // Read current saved records for this screen and refresh its choices, table or count.
-        // Clear the selected vendor and the editable supplier fields for a fresh entry.
-        reload(); clearFields();
+
+    // One Save action chooses Add or Update using the selected database ID, not the typed vendor name.
+    private void saveVendor() throws java.sql.SQLException {
+        // Zero tells the DAO to insert; selectedId safely handles sorted and filtered rows.
+        int id = jTableVendors.getSelectedRow() < 0 ? 0 : FormSupport.selectedId(jTableVendors);
+        // The DAO checks required fields, email format and staff permissions before saving.
+        management.saveVendor(id, jTextFieldVendorName.getText(), jTextFieldContactPerson.getText(),
+                jTextFieldPhone.getText(), jTextFieldEmail.getText(), jTextAreaAddress.getText());
+        // Clear the selection immediately so an accidental second click cannot update the previous vendor.
+        clearFields();
+        // Confirm the save separately from the subsequent refresh, which could fail independently.
+        javax.swing.JOptionPane.showMessageDialog(this, "Vendor saved successfully.");
+        reload();
+    }
+
+    // Confirm the chosen vendor's identity before attempting deletion.
+    private void deleteVendor() throws java.sql.SQLException {
+        // Reject an absent selection and remember the exact ID before opening the confirmation dialog.
+        int id = FormSupport.selectedId(jTableVendors);
+        // Include the name and ID so vendors sharing a name remain distinguishable.
+        int answer = javax.swing.JOptionPane.showConfirmDialog(this,
+                "Delete vendor #" + id + " - " + FormSupport.cell(jTableVendors, 1) + "?",
+                "Delete Vendor", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+        // No and closing the dialog both leave the saved record untouched.
+        if (answer != javax.swing.JOptionPane.YES_OPTION) { return; }
+        // Foreign keys prevent removing a supplier used by a quotation or delivery.
+        management.deleteVendor(id);
+        // Remove the deleted record from the editor, then refresh the saved list.
+        clearFields();
+        javax.swing.JOptionPane.showMessageDialog(this, "Vendor deleted successfully.");
+        reload();
+    }
+
+    // A small input dialog avoids adding another search field or frame.
+    private void findVendor() {
+        // Cancel returns null and preserves the current search and selection.
+        String name = javax.swing.JOptionPane.showInputDialog(this, "Enter a vendor name (leave blank to show all):", "Find Vendor", javax.swing.JOptionPane.QUESTION_MESSAGE);
+        if (name == null) { return; }
+        // Apply the search only after an answer is supplied.
+        filterVendors(name);
+    }
+
+    // Package access allows a focused test to check filtering without opening an input dialog.
+    void filterVendors(String name) {
+        // Clear the old selection so Save cannot update a vendor hidden by the new filter.
+        clearFields();
+        // Quote treats punctuation as literal text; (?i) makes the search case-insensitive, and column 1 is the name.
+        sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(name.trim()), 1));
+        // Select the first match, if one exists, and show how many records remain visible.
+        selectRow(0);
+    }
+
+    // Navigation uses visible indices, so First and Next also work correctly after Find or column sorting.
+    private void selectRow(int row) {
+        // Refuse negative or past-the-end positions, including navigation on an empty table.
+        if (row >= 0 && row < jTableVendors.getRowCount()) {
+            // Selecting the row fires the listener that fills the vendor fields.
+            jTableVendors.setRowSelectionInterval(row, row);
+            // Scroll the chosen record into view when the table is longer than its viewport.
+            jTableVendors.scrollRectToVisible(jTableVendors.getCellRect(row, 0, true));
+        }
+        // Recalculate boundary buttons even when the requested row did not exist.
+        updateButtons();
+    }
+
+    // Disable actions that have no valid record to operate on, rather than letting indices wrap around.
+    private void updateButtons() {
+        // JTable counts visible rows when a RowFilter is active.
+        int count = jTableVendors.getRowCount();
+        int row = jTableVendors.getSelectedRow();
+        // First and Last can choose a starting record even when Clear removed the selection.
+        jButtonFirst.setEnabled(count > 0 && row != 0);
+        jButtonLast.setEnabled(count > 0 && row != count - 1);
+        // Previous stops at the first row; Next also selects the first row from an unselected list.
+        jButtonPrevious.setEnabled(row > 0);
+        jButtonNext.setEnabled(count > 0 && row < count - 1);
+        // Delete requires a selected record; Save remains available for new records.
+        jButtonDelete.setEnabled(row >= 0);
+        // Show visible and full counts so an empty search is not mistaken for an empty database.
+        jLabelCount.setText("Vendors: " + count + " of " + jTableVendors.getModel().getRowCount());
+    }
+
+    // Return to the containing main window; no new frame or login session is needed.
+    private void exitPanel() {
+        // Find the top-level window that contains this panel, even when it is inside a scroll pane.
+        java.awt.Window window = javax.swing.SwingUtilities.getWindowAncestor(this);
+        // Only MainFrame owns the application's welcome panel.
+        if (window instanceof MainFrame) {
+            // Discard unsaved editor values when leaving the vendor task.
+            clearFields();
+            ((MainFrame) window).showWelcome();
+        }
     }
 
     /**
@@ -157,80 +231,59 @@ public class VendorPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        // Set jLabelTitle from the following operation: create a non-editable text or image display.
         jLabelTitle = new javax.swing.JLabel();
-        // Set jLabelVendorName from the following operation: create a non-editable text or image display.
         jLabelVendorName = new javax.swing.JLabel();
-        // Set jLabelContactName from the following operation: create a non-editable text or image display.
         jLabelContactName = new javax.swing.JLabel();
-        // Set jLabelPhone from the following operation: create a non-editable text or image display.
         jLabelPhone = new javax.swing.JLabel();
-        // Set jLabelEmail from the following operation: create a non-editable text or image display.
         jLabelEmail = new javax.swing.JLabel();
-        // Set jLabelAddress from the following operation: create a non-editable text or image display.
         jLabelAddress = new javax.swing.JLabel();
-        // Set jButtonAddVendor from the following operation: create a clickable action button.
         jButtonAddVendor = new javax.swing.JButton();
-        // Set jButtonUpdateVendor from the following operation: create a clickable action button.
         jButtonUpdateVendor = new javax.swing.JButton();
-        // Set jButtonClear from the following operation: create a clickable action button.
         jButtonClear = new javax.swing.JButton();
-        // Set jButtonRefresh from the following operation: create a clickable action button.
         jButtonRefresh = new javax.swing.JButton();
-        // Set jScrollPane1 from the following operation: create a scrollable viewport for another control.
         jScrollPane1 = new javax.swing.JScrollPane();
-        // Set jTableVendors from the following operation: create a table displaying rows and columns through a
-        // model.
         jTableVendors = new javax.swing.JTable();
-        // Set jLabelCount from the following operation: create a non-editable text or image display.
         jLabelCount = new javax.swing.JLabel();
-        // Set jTextFieldEmail from the following operation: create a single-line text input.
         jTextFieldEmail = new javax.swing.JTextField();
-        // Set jTextFieldVendorName from the following operation: create a single-line text input.
         jTextFieldVendorName = new javax.swing.JTextField();
-        // Set jTextFieldContactPerson from the following operation: create a single-line text input.
         jTextFieldContactPerson = new javax.swing.JTextField();
-        // Set jTextFieldPhone from the following operation: create a single-line text input.
         jTextFieldPhone = new javax.swing.JTextField();
-        // Set jScrollPane2 from the following operation: create a scrollable viewport for another control.
         jScrollPane2 = new javax.swing.JScrollPane();
-        // Set jTextAreaAddress from the following operation: create a multi-line text display or input.
         jTextAreaAddress = new javax.swing.JTextArea();
+        btnsave = new javax.swing.JButton();
+        jButtonDelete = new javax.swing.JButton();
+        jButtonFind = new javax.swing.JButton();
+        jButtonFirst = new javax.swing.JButton();
+        jButtonPrevious = new javax.swing.JButton();
+        jButtonNext = new javax.swing.JButton();
+        jButtonLast = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
+        jButtonExit = new javax.swing.JButton();
 
-
-
-
-        // Set the text displayed by jLabelTitle to "Vendor Management".
         jLabelTitle.setText("Vendor Management");
 
-        // Set the text displayed by jLabelVendorName to "Vendor Name:".
         jLabelVendorName.setText("Vendor Name:");
 
-        // Set the text displayed by jLabelContactName to "Contact person:".
         jLabelContactName.setText("Contact person:");
 
-        // Set the text displayed by jLabelPhone to "Phone:".
         jLabelPhone.setText("Phone:");
 
-        // Set the text displayed by jLabelEmail to "Email:".
         jLabelEmail.setText("Email:");
 
-        // Set the text displayed by jLabelAddress to "Address:".
         jLabelAddress.setText("Address:");
 
-        // Set the text displayed by jButtonAddVendor to "Add Vendor".
+        // Hide the superseded or unused designer control; Save handles both create and update.
+        jButtonAddVendor.setVisible(false);
         jButtonAddVendor.setText("Add Vendor");
 
-        // Set the text displayed by jButtonUpdateVendor to "Update Selected".
+        // Hide the superseded or unused designer control; Save handles both create and update.
+        jButtonUpdateVendor.setVisible(false);
         jButtonUpdateVendor.setText("Update Selected");
 
-        // Set the text displayed by jButtonClear to "Clear".
         jButtonClear.setText("Clear");
 
-        // Set the text displayed by jButtonRefresh to "Refresh".
         jButtonRefresh.setText("Refresh");
 
-        // Give jTableVendors the supplied model, which holds its choices or table data.
         jTableVendors.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -239,249 +292,171 @@ public class VendorPanel extends javax.swing.JPanel {
                 "Vendor ID", "Vendor Name", "Contact Person", "Phone", "Email", "Address"
             }
         ) {
-            // Declare canEdit with type boolean[]. Create an array of boolean values containing the listed entries
-            // in order.
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false
             };
 
-            // Tell the table model whether the indicated cell accepts direct typing; false protects displayed
-            // database values.
             public boolean isCellEditable(int rowIndex, int columnIndex) {
-                // Return `canEdit[columnIndex]` to the caller.
                 return canEdit [columnIndex];
             }
         });
-        // Place jTableVendors inside jScrollPane1 so it can scroll when larger than the available space.
         jScrollPane1.setViewportView(jTableVendors);
 
-        // Set the text displayed by jLabelCount to "Vendors: 0".
         jLabelCount.setText("Vendors: 0");
 
-        // Connect this control to its actionPerformed callback, which runs when an action is raised.
         jTextFieldVendorName.addActionListener(this::jTextFieldVendorNameActionPerformed);
 
-        // Control whether wrapped text breaks at word boundaries rather than between letters.
-        jTextAreaAddress.setWrapStyleWord(true);
-        // Control whether jTextAreaAddress wraps long text onto another line.
-        jTextAreaAddress.setLineWrap(true);
-        // Set the preferred text width of jTextAreaAddress to 20 columns; this is not a text-length limit.
         jTextAreaAddress.setColumns(20);
-        // Set the preferred visible height of jTextAreaAddress to 5 text rows.
         jTextAreaAddress.setRows(5);
-        // Place jTextAreaAddress inside jScrollPane2 so it can scroll when larger than the available space.
+        jTextAreaAddress.setLineWrap(true);
+        jTextAreaAddress.setWrapStyleWord(true);
         jScrollPane2.setViewportView(jTextAreaAddress);
 
-        // Declare layout with type javax.swing.GroupLayout. Create a layout manager describing horizontal and
-        // vertical arrangements separately.
+        btnsave.setText("Save");
+
+        jButtonDelete.setText("Delete");
+
+        jButtonFind.setText("Find");
+
+        jButtonFirst.setText("First");
+
+        jButtonPrevious.setText("Previous");
+
+        jButtonNext.setText("Next");
+
+        jButtonLast.setText("Last");
+
+        // Hide the superseded or unused designer control; Save handles both create and update.
+        jButton8.setVisible(false);
+        jButton8.setText("jButton8");
+
+        jButtonExit.setText("Exit");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        // Assign the supplied layout manager to this to control child-component positions and sizes.
         this.setLayout(layout);
-        // Define the left-to-right arrangement and widths; the vertical group separately controls heights.
         layout.setHorizontalGroup(
-            // Start a parallel group whose children occupy the same region on this axis, using the selected
-            // alignment.
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            // Nest a sequential group to place controls one after another.
             .addGroup(layout.createSequentialGroup()
-                // Nest a parallel group so controls share this horizontal or vertical region.
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    // Nest a sequential group to place controls one after another.
                     .addGroup(layout.createSequentialGroup()
-                        // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
                         .addGap(46, 46, 46)
-                        // Nest a parallel group so controls share this horizontal or vertical region.
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            // Nest a sequential group to place controls one after another.
                             .addGroup(layout.createSequentialGroup()
-                                // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
                                 .addGap(249, 249, 249)
-                                // Nest a parallel group so controls share this horizontal or vertical region.
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    // Place jLabelAddress in this layout group; any following size arguments give minimum, preferred and
-                                    // maximum sizes.
                                     .addComponent(jLabelAddress)
-                                    // Place jLabelEmail in this layout group; any following size arguments give minimum, preferred and
-                                    // maximum sizes.
                                     .addComponent(jLabelEmail)))
-                            // Nest a sequential group to place controls one after another.
                             .addGroup(layout.createSequentialGroup()
-                                // Place jButtonAddVendor in this layout group; any following size arguments give minimum, preferred
-                                // and maximum sizes.
                                 .addComponent(jButtonAddVendor)
-                                // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
                                 .addGap(18, 18, 18)
-                                // Place jButtonUpdateVendor in this layout group; any following size arguments give minimum, preferred
-                                // and maximum sizes.
                                 .addComponent(jButtonUpdateVendor)))
-                        // Nest a parallel group so controls share this horizontal or vertical region.
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            // Nest a sequential group to place controls one after another.
                             .addGroup(layout.createSequentialGroup()
-                                // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
                                 .addGap(54, 54, 54)
-                                // Nest a parallel group so controls share this horizontal or vertical region.
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    // Place jTextFieldEmail in this layout group; any following size arguments give minimum, preferred and
-                                    // maximum sizes.
                                     .addComponent(jTextFieldEmail)
-                                    // Place jScrollPane2 in this layout group; any following size arguments give minimum, preferred and
-                                    // maximum sizes.
                                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)))
-                            // Nest a sequential group to place controls one after another.
                             .addGroup(layout.createSequentialGroup()
-                                // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
                                 .addGap(11, 11, 11)
-                                // Place jButtonClear in this layout group; any following size arguments give minimum, preferred and
-                                // maximum sizes.
                                 .addComponent(jButtonClear)
-                                // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
                                 .addGap(63, 63, 63)
-                                // Place jButtonRefresh in this layout group; any following size arguments give minimum, preferred and
-                                // maximum sizes.
                                 .addComponent(jButtonRefresh)
-                                // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
                                 .addGap(0, 0, Short.MAX_VALUE))))
-                    // Place jLabelCount in this layout group; any following size arguments give minimum, preferred and
-                    // maximum sizes.
                     .addComponent(jLabelCount)
-                    // Nest a sequential group to place controls one after another.
                     .addGroup(layout.createSequentialGroup()
-                        // Leave spacing between the group and its enclosing container edge.
                         .addContainerGap()
-                        // Nest a parallel group so controls share this horizontal or vertical region.
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            // Place jLabelTitle in this layout group; any following size arguments give minimum, preferred and
-                            // maximum sizes.
                             .addComponent(jLabelTitle)
-                            // Nest a sequential group to place controls one after another.
                             .addGroup(layout.createSequentialGroup()
-                                // Place jLabelVendorName in this layout group; any following size arguments give minimum, preferred
-                                // and maximum sizes.
                                 .addComponent(jLabelVendorName)
-                                // Insert the look-and-feel's recommended spacing between neighbouring controls.
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                // Place jTextFieldVendorName in this layout group; any following size arguments give minimum,
-                                // preferred and maximum sizes.
                                 .addComponent(jTextFieldVendorName, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            // Nest a sequential group to place controls one after another.
                             .addGroup(layout.createSequentialGroup()
-                                // Nest a parallel group so controls share this horizontal or vertical region.
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    // Place jLabelContactName in this layout group; any following size arguments give minimum, preferred
-                                    // and maximum sizes.
                                     .addComponent(jLabelContactName)
-                                    // Place jLabelPhone in this layout group; any following size arguments give minimum, preferred and
-                                    // maximum sizes.
                                     .addComponent(jLabelPhone))
-                                // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
                                 .addGap(2, 2, 2)
-                                // Nest a parallel group so controls share this horizontal or vertical region.
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    // Place jTextFieldContactPerson in this layout group; any following size arguments give minimum,
-                                    // preferred and maximum sizes.
                                     .addComponent(jTextFieldContactPerson, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
-                                    // Place jTextFieldPhone in this layout group; any following size arguments give minimum, preferred and
-                                    // maximum sizes.
                                     .addComponent(jTextFieldPhone))))))
-                // Leave spacing between the group and its enclosing container edge.
                 .addContainerGap())
-            // Place jScrollPane1 in this layout group; any following size arguments give minimum, preferred and
-            // maximum sizes.
             .addComponent(jScrollPane1)
-        );
-        // Define the top-to-bottom arrangement and heights; the horizontal group separately controls widths.
-        layout.setVerticalGroup(
-            // Start a parallel group whose children occupy the same region on this axis, using the selected
-            // alignment.
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            // Nest a sequential group to place controls one after another.
             .addGroup(layout.createSequentialGroup()
-                // Leave spacing between the group and its enclosing container edge.
-                .addContainerGap()
-                // Place jLabelTitle in this layout group; any following size arguments give minimum, preferred and
-                // maximum sizes.
-                .addComponent(jLabelTitle)
-                // Insert the look-and-feel's recommended spacing between neighbouring controls.
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                // Nest a parallel group so controls share this horizontal or vertical region.
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    // Place jLabelVendorName in this layout group; any following size arguments give minimum, preferred
-                    // and maximum sizes.
-                    .addComponent(jLabelVendorName)
-                    // Place jLabelEmail in this layout group; any following size arguments give minimum, preferred and
-                    // maximum sizes.
-                    .addComponent(jLabelEmail)
-                    // Place jTextFieldEmail in this layout group; any following size arguments give minimum, preferred and
-                    // maximum sizes.
-                    .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    // Place jTextFieldVendorName in this layout group; any following size arguments give minimum,
-                    // preferred and maximum sizes.
-                    .addComponent(jTextFieldVendorName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                // Nest a parallel group so controls share this horizontal or vertical region.
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    // Nest a sequential group to place controls one after another.
+                .addGap(41, 41, 41)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButtonPrevious)
+                    .addComponent(btnsave))
+                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        // Insert the look-and-feel's recommended spacing between neighbouring controls.
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        // Nest a parallel group so controls share this horizontal or vertical region.
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            // Place jLabelContactName in this layout group; any following size arguments give minimum, preferred
-                            // and maximum sizes.
-                            .addComponent(jLabelContactName)
-                            // Place jLabelAddress in this layout group; any following size arguments give minimum, preferred and
-                            // maximum sizes.
-                            .addComponent(jLabelAddress)
-                            // Place jTextFieldContactPerson in this layout group; any following size arguments give minimum,
-                            // preferred and maximum sizes.
-                            .addComponent(jTextFieldContactPerson, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        // Insert the look-and-feel's recommended spacing between neighbouring controls.
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        // Nest a parallel group so controls share this horizontal or vertical region.
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            // Place jLabelPhone in this layout group; any following size arguments give minimum, preferred and
-                            // maximum sizes.
-                            .addComponent(jLabelPhone)
-                            // Place jTextFieldPhone in this layout group; any following size arguments give minimum, preferred and
-                            // maximum sizes.
-                            .addComponent(jTextFieldPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    // Nest a sequential group to place controls one after another.
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
-                        .addGap(6, 6, 6)
-                        // Place jScrollPane2 in this layout group; any following size arguments give minimum, preferred and
-                        // maximum sizes.
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                // Leave the stated gap in this layout; multiple values specify minimum, preferred and maximum spacing.
-                .addGap(18, 18, 18)
-                // Nest a parallel group so controls share this horizontal or vertical region.
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    // Place jButtonRefresh in this layout group; any following size arguments give minimum, preferred and
-                    // maximum sizes.
-                    .addComponent(jButtonRefresh, javax.swing.GroupLayout.Alignment.TRAILING)
-                    // Nest a parallel group so controls share this horizontal or vertical region.
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        // Place jButtonAddVendor in this layout group; any following size arguments give minimum, preferred
-                        // and maximum sizes.
-                        .addComponent(jButtonAddVendor)
-                        // Place jButtonUpdateVendor in this layout group; any following size arguments give minimum, preferred
-                        // and maximum sizes.
-                        .addComponent(jButtonUpdateVendor)
-                        // Place jButtonClear in this layout group; any following size arguments give minimum, preferred and
-                        // maximum sizes.
-                        .addComponent(jButtonClear)))
-                // Insert the look-and-feel's recommended spacing between neighbouring controls.
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                // Place jScrollPane1 in this layout group; any following size arguments give minimum, preferred and
-                // maximum sizes.
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                // Insert the look-and-feel's recommended spacing between neighbouring controls.
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                // Place jLabelCount in this layout group; any following size arguments give minimum, preferred and
-                // maximum sizes.
-                .addComponent(jLabelCount)
-                // Leave spacing between the group and its enclosing container edge.
+                        .addComponent(jButtonDelete)
+                        .addGap(56, 56, 56)
+                        .addComponent(jButtonFind))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButtonNext)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonLast)))
+                .addGap(103, 103, 103)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButtonFirst)
+                    .addComponent(jButton8)
+                    .addComponent(jButtonExit))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelVendorName)
+                    .addComponent(jLabelEmail)
+                    .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldVendorName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelContactName)
+                            .addComponent(jLabelAddress)
+                            .addComponent(jTextFieldContactPerson, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelPhone)
+                            .addComponent(jTextFieldPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonRefresh, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButtonAddVendor)
+                        .addComponent(jButtonUpdateVendor)
+                        .addComponent(jButtonClear)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelCount)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnsave)
+                            .addComponent(jButtonDelete)
+                            .addComponent(jButtonFind)
+                            .addComponent(jButtonFirst))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButtonPrevious)
+                            .addComponent(jButtonNext)
+                            .addComponent(jButtonLast)
+                            .addComponent(jButtonExit))
+                        .addGap(27, 27, 27))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton8)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -493,62 +468,33 @@ public class VendorPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    // Only this class accesses this field directly. Declare jButtonAddVendor with type
-    // javax.swing.JButton. Java initially uses null for this object reference.
+    private javax.swing.JButton btnsave;
+    private javax.swing.JButton jButton8;
     private javax.swing.JButton jButtonAddVendor;
-    // Only this class accesses this field directly. Declare jButtonClear with type javax.swing.JButton.
-    // Java initially uses null for this object reference.
     private javax.swing.JButton jButtonClear;
-    // Only this class accesses this field directly. Declare jButtonRefresh with type javax.swing.JButton.
-    // Java initially uses null for this object reference.
+    private javax.swing.JButton jButtonDelete;
+    private javax.swing.JButton jButtonExit;
+    private javax.swing.JButton jButtonFind;
+    private javax.swing.JButton jButtonFirst;
+    private javax.swing.JButton jButtonLast;
+    private javax.swing.JButton jButtonNext;
+    private javax.swing.JButton jButtonPrevious;
     private javax.swing.JButton jButtonRefresh;
-    // Only this class accesses this field directly. Declare jButtonUpdateVendor with type
-    // javax.swing.JButton. Java initially uses null for this object reference.
     private javax.swing.JButton jButtonUpdateVendor;
-    // Only this class accesses this field directly. Declare jLabelAddress with type javax.swing.JLabel.
-    // Java initially uses null for this object reference.
     private javax.swing.JLabel jLabelAddress;
-    // Only this class accesses this field directly. Declare jLabelContactName with type
-    // javax.swing.JLabel. Java initially uses null for this object reference.
     private javax.swing.JLabel jLabelContactName;
-    // Only this class accesses this field directly. Declare jLabelCount with type javax.swing.JLabel. Java
-    // initially uses null for this object reference.
     private javax.swing.JLabel jLabelCount;
-    // Only this class accesses this field directly. Declare jLabelEmail with type javax.swing.JLabel. Java
-    // initially uses null for this object reference.
     private javax.swing.JLabel jLabelEmail;
-    // Only this class accesses this field directly. Declare jLabelPhone with type javax.swing.JLabel. Java
-    // initially uses null for this object reference.
     private javax.swing.JLabel jLabelPhone;
-    // Only this class accesses this field directly. Declare jLabelTitle with type javax.swing.JLabel. Java
-    // initially uses null for this object reference.
     private javax.swing.JLabel jLabelTitle;
-    // Only this class accesses this field directly. Declare jLabelVendorName with type javax.swing.JLabel.
-    // Java initially uses null for this object reference.
     private javax.swing.JLabel jLabelVendorName;
-    // Only this class accesses this field directly. Declare jScrollPane1 with type
-    // javax.swing.JScrollPane. Java initially uses null for this object reference.
     private javax.swing.JScrollPane jScrollPane1;
-    // Only this class accesses this field directly. Declare jScrollPane2 with type
-    // javax.swing.JScrollPane. Java initially uses null for this object reference.
     private javax.swing.JScrollPane jScrollPane2;
-    // Only this class accesses this field directly. Declare jTableVendors with type javax.swing.JTable.
-    // Java initially uses null for this object reference.
     private javax.swing.JTable jTableVendors;
-    // Only this class accesses this field directly. Declare jTextAreaAddress with type
-    // javax.swing.JTextArea. Java initially uses null for this object reference.
     private javax.swing.JTextArea jTextAreaAddress;
-    // Only this class accesses this field directly. Declare jTextFieldContactPerson with type
-    // javax.swing.JTextField. Java initially uses null for this object reference.
     private javax.swing.JTextField jTextFieldContactPerson;
-    // Only this class accesses this field directly. Declare jTextFieldEmail with type
-    // javax.swing.JTextField. Java initially uses null for this object reference.
     private javax.swing.JTextField jTextFieldEmail;
-    // Only this class accesses this field directly. Declare jTextFieldPhone with type
-    // javax.swing.JTextField. Java initially uses null for this object reference.
     private javax.swing.JTextField jTextFieldPhone;
-    // Only this class accesses this field directly. Declare jTextFieldVendorName with type
-    // javax.swing.JTextField. Java initially uses null for this object reference.
     private javax.swing.JTextField jTextFieldVendorName;
     // End of variables declaration//GEN-END:variables
 }
