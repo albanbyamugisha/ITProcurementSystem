@@ -2,7 +2,7 @@
 
 An individual Object Oriented Programming II project for Year 2, Semester 1 of B.Sc. Software Engineering. Individuals and organisations can request equipment and IT services at fixed UGX prices.
 
-Built with Java Swing, JDBC and MySQL/MariaDB. Beginner-friendly comments explain our forms, event handlers and database operations. NetBeans `.java` and `.form` pairs remain editable in Design view.
+Built with Java Swing, JDBC and MySQL/MariaDB. Beginner-friendly comments explain the forms, event handlers and database operations. NetBeans `.java` and `.form` pairs remain editable in Design view.
 
 ## Author
 
@@ -24,7 +24,7 @@ Account registration and login, equipment/service requests, a preset UGX catalog
 4. Use **Run Project**, starting `ITProcurementSystem`. Registration opens MainFrame automatically after the account is saved and its password is verified.
 5. To appoint the first Admin, register that person normally, then set their exact application username and role `Admin` in `db/promote_staff.sql`. Its empty username deliberately changes nothing. An Admin can subsequently assign staff roles through Users. Log out and back in after changing a role.
 
-The project uses JDK 26 in NetBeans. Our application source also compiles with `javac --release 8`; that does not lower the JDBC driver's Java runtime requirement. The empty database password is separate from users' application passwords.
+The project uses JDK 26 in NetBeans. The application source also compiles with `javac --release 8`; that does not lower the JDBC driver's Java runtime requirement. The empty database password is separate from users' application passwords.
 
 ## Accounts and access
 
@@ -90,13 +90,17 @@ JFrame is used for LoginFrame, RegisterFrame, ForgotPasswordFrame and MainFrame 
 
 - `Session`, `UserDAO`, `RegistrationDAO`, `PasswordResetDAO`: account access.
 - `RequestItem`, `QuotationItem`, `DeliveryUnit`: encapsulated data and validation.
-- `CatalogueDAO`, `CatalogueSeed`: catalogue operations and labelled demo data.
+- `CatalogueDAO`, `CatalogueSeed`: catalogue operations and preset starter entries.
 - `RequestDAO`, `QuotationDAO`, `DecisionDAO`, `FulfilmentDAO`: request lifecycle.
 - `ManagementDAO`, `AttachmentDAO`: supporting records and documents.
-- `ReportDAO`, `ReportData`, `PdfReports`, `ReportActions`: authorised data, PDF drawing and saving.
+- `ReportDAO`, `ReportData`, `PdfReports`, `ReportActions`: authorised data, PDF drawing and preview opening.
 - `Database`, `DatabaseSetup`, `FormSupport`: shared JDBC/setup/display helpers.
 
 These demonstrate classes/objects, private fields and getters, inheritance from Swing, event-listener interfaces, and separation of form code from database code.
+
+The Java source, SQL scripts and test runner include detailed comments in general English. Comments describe declarations, meaningful statements, validation, SQL column order, transactions, event callbacks and layout operations. Statements sharing a short line have their explanations grouped above that line; closing braces and continuation lines belong to the explanation of the enclosing statement.
+
+For a first reading, follow `ITProcurementSystem` → `DBConnection` → `LoginFrame` → `UserDAO` → `Session` → `MainFrame`. Then follow a request through `RequestPanel`, `RequestItem` and `RequestDAO`. Form constructors connect actions; DAO classes validate and save; data classes hold related values. The comments above `initComponents` explain layout constants. NetBeans can replace comments inside generated sections when Design view regenerates them, so keep the handwritten explanations outside those sections as well.
 
 ## Database and ER diagram
 
@@ -109,3 +113,5 @@ Run Project performs additive updates through `DatabaseSetup`. `db/add_catalogue
 Run `bash test/run-tests.sh` with a separate local test server on port **3307**. The script resets only `procurement_test` and refuses port 3306. Both JARs must be in `lib/`. It checks registration/duplicates, recovery and session expiry, role/ownership restrictions, fixed-price tampering/staleness, historical snapshots, order decisions, concurrent decisions/deliveries, attachment rollback and JPanel construction. PDF tests check permissions, pagination, repeated headings/logo resources and excluded password/supplier data. Sample PDFs are written under `/tmp/procurement-pdf-review/` for inspection.
 
 The latest automated run passed 105 checks. PDF layouts and the login/password-change windows were also checked.
+
+The comment-only revision was verified by compiling before and after with debug metadata disabled: all 175 class files were identical. Executable Java and SQL tokens were unchanged, all 17 form XML files parsed, and the test runner passed shell syntax validation. No application behaviour was changed by this revision.
